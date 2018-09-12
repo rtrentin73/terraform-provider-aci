@@ -1,0 +1,52 @@
+<% wrap_layout :inner do %>
+    <% content_for :sidebar do %>
+      <div class="docs-sidebar hidden-print affix-top" role="complementary">
+        <ul class="nav docs-sidenav">
+          <li<%= sidebar_current("docs-home") %>>
+          <a href="/docs/providers/index.html">All Providers</a>
+          </li>
+  
+          <li<%= sidebar_current("docs-aci-index") %>>
+          <a href="/docs/providers/heroku/index.html">ACI Provider</a>
+          </li>
+  
+
+  
+          <li<%= sidebar_current("docs-aci-resource") %>>
+          <a href="#">Resources</a>
+                  <ul class="nav nav-visible">
+                      <li<%= sidebar_current("docs-aci-resource-ap") %>>
+                        <a href="/docs/providers/aci/resources/resource_ap.html">aci_app_profile</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-bridge-domain") %>>
+                      <a href="/docs/providers/aci/resources/resource_bd.html">aci_bridge_domain</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-contract") %>>
+                      <a href="/docs/providers/aci/resources/resource_contract.html">aci_contract</a>
+                      </li>
+
+
+                      <li<%= sidebar_current("docs-aci-resource-epg") %>>
+                        <a href="/docs/providers/aci/resources/resource_epg.html">aci_epg</a>
+                      </li>
+
+                      <li<%= sidebar_current("docs-aci-resource-subject") %>>
+                      <a href="/docs/providers/aci/resources/resource_subject.html">aci_subject</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-subnet") %>>
+                      <a href="/docs/providers/aci/resources/resource_subnet.html">aci_subnet</a>
+                      </li>
+
+                      <li<%= sidebar_current("docs-aci-resource-tenant") %>>
+                        <a href="/docs/providers/aci/resources/resource_tenant.html">aci_tenant</a>
+                      </li>
+  
+
+                  </ul>
+          </li>
+        </ul>
+      </div>
+    <% end %>
+  
+    <%= yield %>
+    <% end %>
