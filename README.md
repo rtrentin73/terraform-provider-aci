@@ -12,7 +12,7 @@ Clone this repository to: `$GOPATH/src/github.com/ciscoecosystem/terraform-provi
 
 ```sh
 $ mkdir -p $GOPATH/src/github.com/ciscoecosystem; cd $GOPATH/src/github.com/ciscoecosystem
-$ git clone github.com/ciscoecosystem/terraform-provider-aci
+$ git clone https://github.com/ciscoecosystem/terraform-provider-aci.git
 ```
 
 Enter the provider directory and run make build.
