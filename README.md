@@ -18,7 +18,7 @@ $ git clone https://github.com/ciscoecosystem/terraform-provider-aci.git
 Enter the provider directory and run make build.
 
 ```sh
-$ cd $GOPATH/src/github.com/ciscoecosystem/terraform-provider-cisco-aci
+$ cd $GOPATH/src/github.com/ciscoecosystem/terraform-provider-aci
 $ make build
 
 ```
