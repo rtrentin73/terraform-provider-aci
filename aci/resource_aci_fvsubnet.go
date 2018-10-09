@@ -23,7 +23,7 @@ func resourceAciSubnet() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"fv_bd_dn": &schema.Schema{
+			"bridge_domain_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -112,15 +112,15 @@ func getRemoteSubnet(client *client.Client, dn string) (*models.Subnet, error) {
 func setSubnetAttributes(fvSubnet *models.Subnet, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(fvSubnet.DistinguishedName)
 	d.Set("description", fvSubnet.Description)
-	d.Set("fv_bd_dn", GetParentDn(fvSubnet.DistinguishedName))
-	fvSubnet_map, _ := fvSubnet.ToMap()
+	d.Set("bridge_domain_dn", GetParentDn(fvSubnet.DistinguishedName))
+	fvSubnetMap, _ := fvSubnet.ToMap()
 
-	d.Set("ctrl", fvSubnet_map["ctrl"])
-	d.Set("ip", fvSubnet_map["ip"])
-	d.Set("name_alias", fvSubnet_map["nameAlias"])
-	d.Set("preferred", fvSubnet_map["preferred"])
-	d.Set("scope", fvSubnet_map["scope"])
-	d.Set("virtual", fvSubnet_map["virtual"])
+	d.Set("ctrl", fvSubnetMap["ctrl"])
+	d.Set("ip", fvSubnetMap["ip"])
+	d.Set("name_alias", fvSubnetMap["nameAlias"])
+	d.Set("preferred", fvSubnetMap["preferred"])
+	d.Set("scope", fvSubnetMap["scope"])
+	d.Set("virtual", fvSubnetMap["virtual"])
 	return d
 }
 
@@ -143,7 +143,7 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	ip := d.Get("ip").(string)
-	fvBDDn := d.Get("fv_bd_dn").(string)
+	BridgeDomainDn := d.Get("bridge_domain_dn").(string)
 
 	fvSubnetAttr := models.SubnetAttributes{}
 	if Ctrl, ok := d.GetOk("ctrl"); ok {
@@ -164,7 +164,7 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	if Virtual, ok := d.GetOk("virtual"); ok {
 		fvSubnetAttr.Virtual = Virtual.(string)
 	}
-	fvSubnet := models.NewSubnet(fmt.Sprintf("subnet-[%s]", ip), fvBDDn, desc, fvSubnetAttr)
+	fvSubnet := models.NewSubnet(fmt.Sprintf("subnet-[%s]", ip), BridgeDomainDn, desc, fvSubnetAttr)
 
 	err := aciClient.Save(fvSubnet)
 	if err != nil {
@@ -180,7 +180,7 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	desc := d.Get("description").(string)
 
 	ip := d.Get("ip").(string)
-	fvBDDn := d.Get("fv_bd_dn").(string)
+	BridgeDomainDn := d.Get("bridge_domain_dn").(string)
 
 	fvSubnetAttr := models.SubnetAttributes{}
 	if Ctrl, ok := d.GetOk("ctrl"); ok {
@@ -201,7 +201,7 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	if Virtual, ok := d.GetOk("virtual"); ok {
 		fvSubnetAttr.Virtual = Virtual.(string)
 	}
-	fvSubnet := models.NewSubnet(fmt.Sprintf("subnet-[%s]", ip), fvBDDn, desc, fvSubnetAttr)
+	fvSubnet := models.NewSubnet(fmt.Sprintf("subnet-[%s]", ip), BridgeDomainDn, desc, fvSubnetAttr)
 
 	fvSubnet.Status = "modified"
 

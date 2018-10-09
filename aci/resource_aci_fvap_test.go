@@ -15,7 +15,7 @@ func TestAccAciApplicationProfile_Basic(t *testing.T) {
 	var application_profile models.ApplicationProfile
 	fv_tenant_name := acctest.RandString(5)
 	fv_ap_name := acctest.RandString(5)
-	description := "fv_ap created while acceptance testing"
+	description := "application_profile created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -25,7 +25,7 @@ func TestAccAciApplicationProfile_Basic(t *testing.T) {
 			{
 				Config: testAccCheckAciApplicationProfileConfig_basic(fv_tenant_name, fv_ap_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciApplicationProfileExists("aci_fv_ap.foofv_ap", &application_profile),
+					testAccCheckAciApplicationProfileExists("aci_application_profile.fooapplication_profile", &application_profile),
 					testAccCheckAciApplicationProfileAttributes(fv_tenant_name, fv_ap_name, description, &application_profile),
 				),
 			},
@@ -36,16 +36,16 @@ func TestAccAciApplicationProfile_Basic(t *testing.T) {
 func testAccCheckAciApplicationProfileConfig_basic(fv_tenant_name, fv_ap_name string) string {
 	return fmt.Sprintf(`
 
-	resource "aci_fv_tenant" "foofv_tenant" {
+	resource "aci_tenant" "footenant" {
 		name 		= "%s"
-		description = "fv_tenant created while acceptance testing"
+		description = "tenant created while acceptance testing"
 
 	}
 
-	resource "aci_fv_ap" "foofv_ap" {
+	resource "aci_application_profile" "fooapplication_profile" {
 		name 		= "%s"
-		description = "fv_ap created while acceptance testing"
-		fv_tenant_dn = "${aci_fv_tenant.foofv_tenant.id}"
+		description = "application_profile created while acceptance testing"
+		tenant_dn = "${aci_tenant.footenant.id}"
 	}
 
 	`, fv_tenant_name, fv_ap_name)
@@ -84,7 +84,7 @@ func testAccCheckAciApplicationProfileDestroy(s *terraform.State) error {
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_fv_ap" {
+		if rs.Type == "aci_application_profile" {
 			cont, err := client.Get(rs.Primary.ID)
 			application_profile := models.ApplicationProfileFromContainer(cont)
 			if err == nil {
@@ -102,14 +102,13 @@ func testAccCheckAciApplicationProfileDestroy(s *terraform.State) error {
 func testAccCheckAciApplicationProfileAttributes(fv_tenant_name, fv_ap_name, description string, application_profile *models.ApplicationProfile) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
-		if fv_tenant_name != GetMOName(application_profile.DistinguishedName) {
-			return fmt.Errorf("Bad fv_tenant %s", GetMOName(application_profile.DistinguishedName))
-		}
-
 		if fv_ap_name != GetMOName(application_profile.DistinguishedName) {
 			return fmt.Errorf("Bad fv_ap %s", GetMOName(application_profile.DistinguishedName))
 		}
 
+		if fv_tenant_name != GetMOName(GetParentDn(application_profile.DistinguishedName)) {
+			return fmt.Errorf(" Bad fv_tenant %s", GetMOName(GetParentDn(application_profile.DistinguishedName)))
+		}
 		if description != application_profile.Description {
 			return fmt.Errorf("Bad application_profile Description %s", application_profile.Description)
 		}

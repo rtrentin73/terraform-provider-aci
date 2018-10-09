@@ -15,7 +15,7 @@ func TestAccAciContract_Basic(t *testing.T) {
 	var contract models.Contract
 	fv_tenant_name := acctest.RandString(5)
 	vz_br_cp_name := acctest.RandString(5)
-	description := "vz_br_cp created while acceptance testing"
+	description := "contract created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -25,7 +25,7 @@ func TestAccAciContract_Basic(t *testing.T) {
 			{
 				Config: testAccCheckAciContractConfig_basic(fv_tenant_name, vz_br_cp_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciContractExists("aci_vz_br_cp.foovz_br_cp", &contract),
+					testAccCheckAciContractExists("aci_contract.foocontract", &contract),
 					testAccCheckAciContractAttributes(fv_tenant_name, vz_br_cp_name, description, &contract),
 				),
 			},
@@ -36,16 +36,16 @@ func TestAccAciContract_Basic(t *testing.T) {
 func testAccCheckAciContractConfig_basic(fv_tenant_name, vz_br_cp_name string) string {
 	return fmt.Sprintf(`
 
-	resource "aci_fv_tenant" "foofv_tenant" {
+	resource "aci_tenant" "footenant" {
 		name 		= "%s"
-		description = "fv_tenant created while acceptance testing"
+		description = "tenant created while acceptance testing"
 
 	}
 
-	resource "aci_vz_br_cp" "foovz_br_cp" {
+	resource "aci_contract" "foocontract" {
 		name 		= "%s"
-		description = "vz_br_cp created while acceptance testing"
-		fv_tenant_dn = "${aci_fv_tenant.foofv_tenant.id}"
+		description = "contract created while acceptance testing"
+		tenant_dn = "${aci_tenant.footenant.id}"
 	}
 
 	`, fv_tenant_name, vz_br_cp_name)
@@ -84,7 +84,7 @@ func testAccCheckAciContractDestroy(s *terraform.State) error {
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_vz_br_cp" {
+		if rs.Type == "aci_contract" {
 			cont, err := client.Get(rs.Primary.ID)
 			contract := models.ContractFromContainer(cont)
 			if err == nil {
@@ -102,14 +102,13 @@ func testAccCheckAciContractDestroy(s *terraform.State) error {
 func testAccCheckAciContractAttributes(fv_tenant_name, vz_br_cp_name, description string, contract *models.Contract) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
-		if fv_tenant_name != GetMOName(contract.DistinguishedName) {
-			return fmt.Errorf("Bad fv_tenant %s", GetMOName(contract.DistinguishedName))
-		}
-
 		if vz_br_cp_name != GetMOName(contract.DistinguishedName) {
 			return fmt.Errorf("Bad vz_br_cp %s", GetMOName(contract.DistinguishedName))
 		}
 
+		if fv_tenant_name != GetMOName(GetParentDn(contract.DistinguishedName)) {
+			return fmt.Errorf(" Bad fv_tenant %s", GetMOName(GetParentDn(contract.DistinguishedName)))
+		}
 		if description != contract.Description {
 			return fmt.Errorf("Bad contract Description %s", contract.Description)
 		}

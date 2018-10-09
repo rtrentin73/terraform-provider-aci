@@ -23,7 +23,7 @@ func resourceAciApplicationEPG() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"fv_ap_dn": &schema.Schema{
+			"application_profile_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -149,17 +149,17 @@ func getRemoteApplicationEPG(client *client.Client, dn string) (*models.Applicat
 func setApplicationEPGAttributes(fvAEPg *models.ApplicationEPG, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(fvAEPg.DistinguishedName)
 	d.Set("description", fvAEPg.Description)
-	d.Set("fv_ap_dn", GetParentDn(fvAEPg.DistinguishedName))
-	fvAEPg_map, _ := fvAEPg.ToMap()
+	d.Set("application_profile_dn", GetParentDn(fvAEPg.DistinguishedName))
+	fvAEPgMap, _ := fvAEPg.ToMap()
 
-	d.Set("flood_on_encap", fvAEPg_map["floodOnEncap"])
-	d.Set("fwd_ctrl", fvAEPg_map["fwdCtrl"])
-	d.Set("is_attr_based_e_pg", fvAEPg_map["isAttrBasedEPg"])
-	d.Set("match_t", fvAEPg_map["matchT"])
-	d.Set("name_alias", fvAEPg_map["nameAlias"])
-	d.Set("pc_enf_pref", fvAEPg_map["pcEnfPref"])
-	d.Set("pref_gr_memb", fvAEPg_map["prefGrMemb"])
-	d.Set("prio", fvAEPg_map["prio"])
+	d.Set("flood_on_encap", fvAEPgMap["floodOnEncap"])
+	d.Set("fwd_ctrl", fvAEPgMap["fwdCtrl"])
+	d.Set("is_attr_based_e_pg", fvAEPgMap["isAttrBasedEPg"])
+	d.Set("match_t", fvAEPgMap["matchT"])
+	d.Set("name_alias", fvAEPgMap["nameAlias"])
+	d.Set("pc_enf_pref", fvAEPgMap["pcEnfPref"])
+	d.Set("pref_gr_memb", fvAEPgMap["prefGrMemb"])
+	d.Set("prio", fvAEPgMap["prio"])
 	return d
 }
 
@@ -182,7 +182,7 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	fvApDn := d.Get("fv_ap_dn").(string)
+	ApplicationProfileDn := d.Get("application_profile_dn").(string)
 
 	fvAEPgAttr := models.ApplicationEPGAttributes{}
 	if FloodOnEncap, ok := d.GetOk("flood_on_encap"); ok {
@@ -209,7 +209,7 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 	if Prio, ok := d.GetOk("prio"); ok {
 		fvAEPgAttr.Prio = Prio.(string)
 	}
-	fvAEPg := models.NewApplicationEPG(fmt.Sprintf("epg-%s", name), fvApDn, desc, fvAEPgAttr)
+	fvAEPg := models.NewApplicationEPG(fmt.Sprintf("epg-%s", name), ApplicationProfileDn, desc, fvAEPgAttr)
 
 	err := aciClient.Save(fvAEPg)
 	if err != nil {
@@ -225,7 +225,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
-	fvApDn := d.Get("fv_ap_dn").(string)
+	ApplicationProfileDn := d.Get("application_profile_dn").(string)
 
 	fvAEPgAttr := models.ApplicationEPGAttributes{}
 	if FloodOnEncap, ok := d.GetOk("flood_on_encap"); ok {
@@ -252,7 +252,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 	if Prio, ok := d.GetOk("prio"); ok {
 		fvAEPgAttr.Prio = Prio.(string)
 	}
-	fvAEPg := models.NewApplicationEPG(fmt.Sprintf("epg-%s", name), fvApDn, desc, fvAEPgAttr)
+	fvAEPg := models.NewApplicationEPG(fmt.Sprintf("epg-%s", name), ApplicationProfileDn, desc, fvAEPgAttr)
 
 	fvAEPg.Status = "modified"
 

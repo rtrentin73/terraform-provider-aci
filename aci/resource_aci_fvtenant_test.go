@@ -14,7 +14,7 @@ import (
 func TestAccAciTenant_Basic(t *testing.T) {
 	var tenant models.Tenant
 	fv_tenant_name := acctest.RandString(5)
-	description := "fv_tenant created while acceptance testing"
+	description := "tenant created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -24,7 +24,7 @@ func TestAccAciTenant_Basic(t *testing.T) {
 			{
 				Config: testAccCheckAciTenantConfig_basic(fv_tenant_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciTenantExists("aci_fv_tenant.foofv_tenant", &tenant),
+					testAccCheckAciTenantExists("aci_tenant.footenant", &tenant),
 					testAccCheckAciTenantAttributes(fv_tenant_name, description, &tenant),
 				),
 			},
@@ -35,9 +35,9 @@ func TestAccAciTenant_Basic(t *testing.T) {
 func testAccCheckAciTenantConfig_basic(fv_tenant_name string) string {
 	return fmt.Sprintf(`
 
-	resource "aci_fv_tenant" "foofv_tenant" {
+	resource "aci_tenant" "footenant" {
 		name 		= "%s"
-		description = "fv_tenant created while acceptance testing"
+		description = "tenant created while acceptance testing"
 
 	}
 
@@ -77,7 +77,7 @@ func testAccCheckAciTenantDestroy(s *terraform.State) error {
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_fv_tenant" {
+		if rs.Type == "aci_tenant" {
 			cont, err := client.Get(rs.Primary.ID)
 			tenant := models.TenantFromContainer(cont)
 			if err == nil {

@@ -14,7 +14,7 @@ Manages ACI Subnet
 ```hcl
 resource "aci_subnet" "example" {
 
-  fv_bd_dn  = "${aci_fv_bd.example.id}"
+  bridge_domain_dn  = "${aci_bridge_domain.example.id}"
   ip  = "example"
   ctrl  = "example"
   ip  = "example"
@@ -25,7 +25,7 @@ resource "aci_subnet" "example" {
 }
 ```
 ## Argument Reference ##
-* `fv_bd_dn` - (Required) Distinguished name of parent fvBD object.
+* `bridge_domain_dn` - (Required) Distinguished name of parent BridgeDomain object.
 * `ip` - (Required) ip of Object subnet.
 * `ctrl` - (Optional) subnet control state
 * `ip` - (Optional) default gateway IP address and mask

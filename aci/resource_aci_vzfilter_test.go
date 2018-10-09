@@ -15,7 +15,7 @@ func TestAccAciFilter_Basic(t *testing.T) {
 	var filter models.Filter
 	fv_tenant_name := acctest.RandString(5)
 	vz_filter_name := acctest.RandString(5)
-	description := "vz_filter created while acceptance testing"
+	description := "filter created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -25,7 +25,7 @@ func TestAccAciFilter_Basic(t *testing.T) {
 			{
 				Config: testAccCheckAciFilterConfig_basic(fv_tenant_name, vz_filter_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciFilterExists("aci_vz_filter.foovz_filter", &filter),
+					testAccCheckAciFilterExists("aci_filter.foofilter", &filter),
 					testAccCheckAciFilterAttributes(fv_tenant_name, vz_filter_name, description, &filter),
 				),
 			},
@@ -36,16 +36,16 @@ func TestAccAciFilter_Basic(t *testing.T) {
 func testAccCheckAciFilterConfig_basic(fv_tenant_name, vz_filter_name string) string {
 	return fmt.Sprintf(`
 
-	resource "aci_fv_tenant" "foofv_tenant" {
+	resource "aci_tenant" "footenant" {
 		name 		= "%s"
-		description = "fv_tenant created while acceptance testing"
+		description = "tenant created while acceptance testing"
 
 	}
 
-	resource "aci_vz_filter" "foovz_filter" {
+	resource "aci_filter" "foofilter" {
 		name 		= "%s"
-		description = "vz_filter created while acceptance testing"
-		fv_tenant_dn = "${aci_fv_tenant.foofv_tenant.id}"
+		description = "filter created while acceptance testing"
+		tenant_dn = "${aci_tenant.footenant.id}"
 	}
 
 	`, fv_tenant_name, vz_filter_name)
@@ -84,7 +84,7 @@ func testAccCheckAciFilterDestroy(s *terraform.State) error {
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_vz_filter" {
+		if rs.Type == "aci_filter" {
 			cont, err := client.Get(rs.Primary.ID)
 			filter := models.FilterFromContainer(cont)
 			if err == nil {
@@ -102,14 +102,13 @@ func testAccCheckAciFilterDestroy(s *terraform.State) error {
 func testAccCheckAciFilterAttributes(fv_tenant_name, vz_filter_name, description string, filter *models.Filter) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
-		if fv_tenant_name != GetMOName(filter.DistinguishedName) {
-			return fmt.Errorf("Bad fv_tenant %s", GetMOName(filter.DistinguishedName))
-		}
-
 		if vz_filter_name != GetMOName(filter.DistinguishedName) {
 			return fmt.Errorf("Bad vz_filter %s", GetMOName(filter.DistinguishedName))
 		}
 
+		if fv_tenant_name != GetMOName(GetParentDn(filter.DistinguishedName)) {
+			return fmt.Errorf(" Bad fv_tenant %s", GetMOName(GetParentDn(filter.DistinguishedName)))
+		}
 		if description != filter.Description {
 			return fmt.Errorf("Bad filter Description %s", filter.Description)
 		}

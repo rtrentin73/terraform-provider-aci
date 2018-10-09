@@ -3,18 +3,18 @@ layout: "aci"
 page_title: "ACI: aci_filter_entry"
 sidebar_current: "docs-aci-resource-filter_entry"
 description: |-
-  Manages ACI FilterEntry
+  Manages ACI Filter Entry
 ---
 
 # aci_filter_entry #
-Manages ACI FilterEntry
+Manages ACI Filter Entry
 
 ## Example Usage ##
 
 ```hcl
 resource "aci_filter_entry" "example" {
 
-  vz_filter_dn  = "${aci_vz_filter.example.id}"
+  filter_dn  = "${aci_filter.example.id}"
   name  = "example"
   apply_to_frag  = "example"
   arp_opc  = "example"
@@ -33,7 +33,7 @@ resource "aci_filter_entry" "example" {
 }
 ```
 ## Argument Reference ##
-* `vz_filter_dn` - (Required) Distinguished name of parent vzFilter object.
+* `filter_dn` - (Required) Distinguished name of parent Filter object.
 * `name` - (Required) name of Object filter_entry.
 * `apply_to_frag` - (Optional) fragment
 * `arp_opc` - (Optional) open peripheral codes

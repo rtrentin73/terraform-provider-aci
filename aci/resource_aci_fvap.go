@@ -23,7 +23,7 @@ func resourceAciApplicationProfile() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"fv_tenant_dn": &schema.Schema{
+			"tenant_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -75,11 +75,11 @@ func getRemoteApplicationProfile(client *client.Client, dn string) (*models.Appl
 func setApplicationProfileAttributes(fvAp *models.ApplicationProfile, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(fvAp.DistinguishedName)
 	d.Set("description", fvAp.Description)
-	d.Set("fv_tenant_dn", GetParentDn(fvAp.DistinguishedName))
-	fvAp_map, _ := fvAp.ToMap()
+	d.Set("tenant_dn", GetParentDn(fvAp.DistinguishedName))
+	fvApMap, _ := fvAp.ToMap()
 
-	d.Set("name_alias", fvAp_map["nameAlias"])
-	d.Set("prio", fvAp_map["prio"])
+	d.Set("name_alias", fvApMap["nameAlias"])
+	d.Set("prio", fvApMap["prio"])
 	return d
 }
 
@@ -102,7 +102,7 @@ func resourceAciApplicationProfileCreate(d *schema.ResourceData, m interface{}) 
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	fvTenantDn := d.Get("fv_tenant_dn").(string)
+	TenantDn := d.Get("tenant_dn").(string)
 
 	fvApAttr := models.ApplicationProfileAttributes{}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
@@ -111,7 +111,7 @@ func resourceAciApplicationProfileCreate(d *schema.ResourceData, m interface{}) 
 	if Prio, ok := d.GetOk("prio"); ok {
 		fvApAttr.Prio = Prio.(string)
 	}
-	fvAp := models.NewApplicationProfile(fmt.Sprintf("ap-%s", name), fvTenantDn, desc, fvApAttr)
+	fvAp := models.NewApplicationProfile(fmt.Sprintf("ap-%s", name), TenantDn, desc, fvApAttr)
 
 	err := aciClient.Save(fvAp)
 	if err != nil {
@@ -127,7 +127,7 @@ func resourceAciApplicationProfileUpdate(d *schema.ResourceData, m interface{}) 
 	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
-	fvTenantDn := d.Get("fv_tenant_dn").(string)
+	TenantDn := d.Get("tenant_dn").(string)
 
 	fvApAttr := models.ApplicationProfileAttributes{}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
@@ -136,7 +136,7 @@ func resourceAciApplicationProfileUpdate(d *schema.ResourceData, m interface{}) 
 	if Prio, ok := d.GetOk("prio"); ok {
 		fvApAttr.Prio = Prio.(string)
 	}
-	fvAp := models.NewApplicationProfile(fmt.Sprintf("ap-%s", name), fvTenantDn, desc, fvApAttr)
+	fvAp := models.NewApplicationProfile(fmt.Sprintf("ap-%s", name), TenantDn, desc, fvApAttr)
 
 	fvAp.Status = "modified"
 

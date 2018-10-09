@@ -23,7 +23,7 @@ func resourceAciContract() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"fv_tenant_dn": &schema.Schema{
+			"tenant_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -122,13 +122,13 @@ func getRemoteContract(client *client.Client, dn string) (*models.Contract, erro
 func setContractAttributes(vzBrCP *models.Contract, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(vzBrCP.DistinguishedName)
 	d.Set("description", vzBrCP.Description)
-	d.Set("fv_tenant_dn", GetParentDn(vzBrCP.DistinguishedName))
-	vzBrCP_map, _ := vzBrCP.ToMap()
+	d.Set("tenant_dn", GetParentDn(vzBrCP.DistinguishedName))
+	vzBrCPMap, _ := vzBrCP.ToMap()
 
-	d.Set("name_alias", vzBrCP_map["nameAlias"])
-	d.Set("prio", vzBrCP_map["prio"])
-	d.Set("scope", vzBrCP_map["scope"])
-	d.Set("target_dscp", vzBrCP_map["targetDscp"])
+	d.Set("name_alias", vzBrCPMap["nameAlias"])
+	d.Set("prio", vzBrCPMap["prio"])
+	d.Set("scope", vzBrCPMap["scope"])
+	d.Set("target_dscp", vzBrCPMap["targetDscp"])
 	return d
 }
 
@@ -151,7 +151,7 @@ func resourceAciContractCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	fvTenantDn := d.Get("fv_tenant_dn").(string)
+	TenantDn := d.Get("tenant_dn").(string)
 
 	vzBrCPAttr := models.ContractAttributes{}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
@@ -166,7 +166,7 @@ func resourceAciContractCreate(d *schema.ResourceData, m interface{}) error {
 	if TargetDscp, ok := d.GetOk("target_dscp"); ok {
 		vzBrCPAttr.TargetDscp = TargetDscp.(string)
 	}
-	vzBrCP := models.NewContract(fmt.Sprintf("brc-%s", name), fvTenantDn, desc, vzBrCPAttr)
+	vzBrCP := models.NewContract(fmt.Sprintf("brc-%s", name), TenantDn, desc, vzBrCPAttr)
 
 	err := aciClient.Save(vzBrCP)
 	if err != nil {
@@ -182,7 +182,7 @@ func resourceAciContractUpdate(d *schema.ResourceData, m interface{}) error {
 	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
-	fvTenantDn := d.Get("fv_tenant_dn").(string)
+	TenantDn := d.Get("tenant_dn").(string)
 
 	vzBrCPAttr := models.ContractAttributes{}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
@@ -197,7 +197,7 @@ func resourceAciContractUpdate(d *schema.ResourceData, m interface{}) error {
 	if TargetDscp, ok := d.GetOk("target_dscp"); ok {
 		vzBrCPAttr.TargetDscp = TargetDscp.(string)
 	}
-	vzBrCP := models.NewContract(fmt.Sprintf("brc-%s", name), fvTenantDn, desc, vzBrCPAttr)
+	vzBrCP := models.NewContract(fmt.Sprintf("brc-%s", name), TenantDn, desc, vzBrCPAttr)
 
 	vzBrCP.Status = "modified"
 

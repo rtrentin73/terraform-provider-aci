@@ -16,7 +16,7 @@ func TestAccAciApplicationEPG_Basic(t *testing.T) {
 	fv_tenant_name := acctest.RandString(5)
 	fv_ap_name := acctest.RandString(5)
 	fv_ae_pg_name := acctest.RandString(5)
-	description := "fv_ae_pg created while acceptance testing"
+	description := "application_epg created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -26,7 +26,7 @@ func TestAccAciApplicationEPG_Basic(t *testing.T) {
 			{
 				Config: testAccCheckAciApplicationEPGConfig_basic(fv_tenant_name, fv_ap_name, fv_ae_pg_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciApplicationEPGExists("aci_fv_ae_pg.foofv_ae_pg", &application_epg),
+					testAccCheckAciApplicationEPGExists("aci_application_epg.fooapplication_epg", &application_epg),
 					testAccCheckAciApplicationEPGAttributes(fv_tenant_name, fv_ap_name, fv_ae_pg_name, description, &application_epg),
 				),
 			},
@@ -37,22 +37,22 @@ func TestAccAciApplicationEPG_Basic(t *testing.T) {
 func testAccCheckAciApplicationEPGConfig_basic(fv_tenant_name, fv_ap_name, fv_ae_pg_name string) string {
 	return fmt.Sprintf(`
 
-	resource "aci_fv_tenant" "foofv_tenant" {
+	resource "aci_tenant" "footenant" {
 		name 		= "%s"
-		description = "fv_tenant created while acceptance testing"
+		description = "tenant created while acceptance testing"
 
 	}
 
-	resource "aci_fv_ap" "foofv_ap" {
+	resource "aci_application_profile" "fooapplication_profile" {
 		name 		= "%s"
-		description = "fv_ap created while acceptance testing"
-		fv_tenant_dn = "${aci_fv_tenant.foofv_tenant.id}"
+		description = "application_profile created while acceptance testing"
+		tenant_dn = "${aci_tenant.footenant.id}"
 	}
 
-	resource "aci_fv_ae_pg" "foofv_ae_pg" {
+	resource "aci_application_epg" "fooapplication_epg" {
 		name 		= "%s"
-		description = "fv_ae_pg created while acceptance testing"
-		fv_ap_dn = "${aci_fv_ap.foofv_ap.id}"
+		description = "application_epg created while acceptance testing"
+		application_profile_dn = "${aci_application_profile.fooapplication_profile.id}"
 	}
 
 	`, fv_tenant_name, fv_ap_name, fv_ae_pg_name)
@@ -91,7 +91,7 @@ func testAccCheckAciApplicationEPGDestroy(s *terraform.State) error {
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_fv_ae_pg" {
+		if rs.Type == "aci_application_epg" {
 			cont, err := client.Get(rs.Primary.ID)
 			application_epg := models.ApplicationEPGFromContainer(cont)
 			if err == nil {
@@ -109,18 +109,13 @@ func testAccCheckAciApplicationEPGDestroy(s *terraform.State) error {
 func testAccCheckAciApplicationEPGAttributes(fv_tenant_name, fv_ap_name, fv_ae_pg_name, description string, application_epg *models.ApplicationEPG) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
-		if fv_tenant_name != GetMOName(application_epg.DistinguishedName) {
-			return fmt.Errorf("Bad fv_tenant %s", GetMOName(application_epg.DistinguishedName))
-		}
-
-		if fv_ap_name != GetMOName(application_epg.DistinguishedName) {
-			return fmt.Errorf("Bad fv_ap %s", GetMOName(application_epg.DistinguishedName))
-		}
-
 		if fv_ae_pg_name != GetMOName(application_epg.DistinguishedName) {
 			return fmt.Errorf("Bad fv_ae_pg %s", GetMOName(application_epg.DistinguishedName))
 		}
 
+		if fv_ap_name != GetMOName(GetParentDn(application_epg.DistinguishedName)) {
+			return fmt.Errorf(" Bad fv_ap %s", GetMOName(GetParentDn(application_epg.DistinguishedName)))
+		}
 		if description != application_epg.Description {
 			return fmt.Errorf("Bad application_epg Description %s", application_epg.Description)
 		}

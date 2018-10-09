@@ -3,14 +3,14 @@ resource "aci_tenant" "tenant_for_epg" {
   description = "This tenant is created by terraform ACI provider"
 }
 
-resource "aci_app_profile" "app_profile_for_epg" {
-  fv_tenant_dn   = "${aci_tenant.tenant_for_epg.id}"
+resource "aci_application_profile" "app_profile_for_epg" {
+  tenant_dn   = "${aci_tenant.tenant_for_epg.id}"
   name        = "ap_for_epg"
   description = "This app profile is created by terraform ACI providers"
 }
 
-resource "aci_epg" "demoepg" {
-  fv_ap_dn = "${aci_app_profile.app_profile_for_epg.id}"
+resource "aci_application_epg" "demoepg" {
+  application_profile_dn = "${aci_application_profile.app_profile_for_epg.id}"
   name                   = "tf_test_epg"
   description            = "This epg is created by terraform ACI providers"
 }

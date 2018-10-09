@@ -3,18 +3,18 @@ layout: "aci"
 page_title: "ACI: aci_application_epg"
 sidebar_current: "docs-aci-resource-application_epg"
 description: |-
-  Manages ACI ApplicationEPG
+  Manages ACI Application EPG
 ---
 
 # aci_application_epg #
-Manages ACI ApplicationEPG
+Manages ACI Application EPG
 
 ## Example Usage ##
 
 ```hcl
 resource "aci_application_epg" "example" {
 
-  fv_ap_dn  = "${aci_fv_ap.example.id}"
+  application_profile_dn  = "${aci_application_profile.example.id}"
   name  = "example"
   flood_on_encap  = "example"
   fwd_ctrl  = "example"
@@ -27,7 +27,7 @@ resource "aci_application_epg" "example" {
 }
 ```
 ## Argument Reference ##
-* `fv_ap_dn` - (Required) Distinguished name of parent fvAp object.
+* `application_profile_dn` - (Required) Distinguished name of parent ApplicationProfile object.
 * `name` - (Required) name of Object application_epg.
 * `flood_on_encap` - (Optional) flood_on_encap for object application_epg.
 * `fwd_ctrl` - (Optional) fwd_ctrl for object application_epg.

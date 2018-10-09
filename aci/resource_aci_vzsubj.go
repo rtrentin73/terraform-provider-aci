@@ -23,7 +23,7 @@ func resourceAciContractSubject() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"vz_br_cp_dn": &schema.Schema{
+			"contract_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -148,15 +148,15 @@ func getRemoteContractSubject(client *client.Client, dn string) (*models.Contrac
 func setContractSubjectAttributes(vzSubj *models.ContractSubject, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(vzSubj.DistinguishedName)
 	d.Set("description", vzSubj.Description)
-	d.Set("vz_br_cp_dn", GetParentDn(vzSubj.DistinguishedName))
-	vzSubj_map, _ := vzSubj.ToMap()
+	d.Set("contract_dn", GetParentDn(vzSubj.DistinguishedName))
+	vzSubjMap, _ := vzSubj.ToMap()
 
-	d.Set("cons_match_t", vzSubj_map["consMatchT"])
-	d.Set("name_alias", vzSubj_map["nameAlias"])
-	d.Set("prio", vzSubj_map["prio"])
-	d.Set("prov_match_t", vzSubj_map["provMatchT"])
-	d.Set("rev_flt_ports", vzSubj_map["revFltPorts"])
-	d.Set("target_dscp", vzSubj_map["targetDscp"])
+	d.Set("cons_match_t", vzSubjMap["consMatchT"])
+	d.Set("name_alias", vzSubjMap["nameAlias"])
+	d.Set("prio", vzSubjMap["prio"])
+	d.Set("prov_match_t", vzSubjMap["provMatchT"])
+	d.Set("rev_flt_ports", vzSubjMap["revFltPorts"])
+	d.Set("target_dscp", vzSubjMap["targetDscp"])
 	return d
 }
 
@@ -179,7 +179,7 @@ func resourceAciContractSubjectCreate(d *schema.ResourceData, m interface{}) err
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	vzBrCPDn := d.Get("vz_br_cp_dn").(string)
+	ContractDn := d.Get("contract_dn").(string)
 
 	vzSubjAttr := models.ContractSubjectAttributes{}
 	if ConsMatchT, ok := d.GetOk("cons_match_t"); ok {
@@ -200,7 +200,7 @@ func resourceAciContractSubjectCreate(d *schema.ResourceData, m interface{}) err
 	if TargetDscp, ok := d.GetOk("target_dscp"); ok {
 		vzSubjAttr.TargetDscp = TargetDscp.(string)
 	}
-	vzSubj := models.NewContractSubject(fmt.Sprintf("subj-%s", name), vzBrCPDn, desc, vzSubjAttr)
+	vzSubj := models.NewContractSubject(fmt.Sprintf("subj-%s", name), ContractDn, desc, vzSubjAttr)
 
 	err := aciClient.Save(vzSubj)
 	if err != nil {
@@ -216,7 +216,7 @@ func resourceAciContractSubjectUpdate(d *schema.ResourceData, m interface{}) err
 	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
-	vzBrCPDn := d.Get("vz_br_cp_dn").(string)
+	ContractDn := d.Get("contract_dn").(string)
 
 	vzSubjAttr := models.ContractSubjectAttributes{}
 	if ConsMatchT, ok := d.GetOk("cons_match_t"); ok {
@@ -237,7 +237,7 @@ func resourceAciContractSubjectUpdate(d *schema.ResourceData, m interface{}) err
 	if TargetDscp, ok := d.GetOk("target_dscp"); ok {
 		vzSubjAttr.TargetDscp = TargetDscp.(string)
 	}
-	vzSubj := models.NewContractSubject(fmt.Sprintf("subj-%s", name), vzBrCPDn, desc, vzSubjAttr)
+	vzSubj := models.NewContractSubject(fmt.Sprintf("subj-%s", name), ContractDn, desc, vzSubjAttr)
 
 	vzSubj.Status = "modified"
 

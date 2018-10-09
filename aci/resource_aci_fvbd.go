@@ -23,7 +23,7 @@ func resourceAciBridgeDomain() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"fv_tenant_dn": &schema.Schema{
+			"tenant_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -254,27 +254,27 @@ func getRemoteBridgeDomain(client *client.Client, dn string) (*models.BridgeDoma
 func setBridgeDomainAttributes(fvBD *models.BridgeDomain, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(fvBD.DistinguishedName)
 	d.Set("description", fvBD.Description)
-	d.Set("fv_tenant_dn", GetParentDn(fvBD.DistinguishedName))
-	fvBD_map, _ := fvBD.ToMap()
+	d.Set("tenant_dn", GetParentDn(fvBD.DistinguishedName))
+	fvBDMap, _ := fvBD.ToMap()
 
-	d.Set("optimize_wan_bandwidth", fvBD_map["OptimizeWanBandwidth"])
-	d.Set("arp_flood", fvBD_map["arpFlood"])
-	d.Set("ep_clear", fvBD_map["epClear"])
-	d.Set("ep_move_detect_mode", fvBD_map["epMoveDetectMode"])
-	d.Set("intersite_bum_traffic_allow", fvBD_map["intersiteBumTrafficAllow"])
-	d.Set("intersite_l2_stretch", fvBD_map["intersiteL2Stretch"])
-	d.Set("ip_learning", fvBD_map["ipLearning"])
-	d.Set("limit_ip_learn_to_subnets", fvBD_map["limitIpLearnToSubnets"])
-	d.Set("ll_addr", fvBD_map["llAddr"])
-	d.Set("mac", fvBD_map["mac"])
-	d.Set("mcast_allow", fvBD_map["mcastAllow"])
-	d.Set("multi_dst_pkt_act", fvBD_map["multiDstPktAct"])
-	d.Set("name_alias", fvBD_map["nameAlias"])
-	d.Set("type", fvBD_map["type"])
-	d.Set("unicast_route", fvBD_map["unicastRoute"])
-	d.Set("unk_mac_ucast_act", fvBD_map["unkMacUcastAct"])
-	d.Set("unk_mcast_act", fvBD_map["unkMcastAct"])
-	d.Set("vmac", fvBD_map["vmac"])
+	d.Set("optimize_wan_bandwidth", fvBDMap["OptimizeWanBandwidth"])
+	d.Set("arp_flood", fvBDMap["arpFlood"])
+	d.Set("ep_clear", fvBDMap["epClear"])
+	d.Set("ep_move_detect_mode", fvBDMap["epMoveDetectMode"])
+	d.Set("intersite_bum_traffic_allow", fvBDMap["intersiteBumTrafficAllow"])
+	d.Set("intersite_l2_stretch", fvBDMap["intersiteL2Stretch"])
+	d.Set("ip_learning", fvBDMap["ipLearning"])
+	d.Set("limit_ip_learn_to_subnets", fvBDMap["limitIpLearnToSubnets"])
+	d.Set("ll_addr", fvBDMap["llAddr"])
+	d.Set("mac", fvBDMap["mac"])
+	d.Set("mcast_allow", fvBDMap["mcastAllow"])
+	d.Set("multi_dst_pkt_act", fvBDMap["multiDstPktAct"])
+	d.Set("name_alias", fvBDMap["nameAlias"])
+	d.Set("type", fvBDMap["type"])
+	d.Set("unicast_route", fvBDMap["unicastRoute"])
+	d.Set("unk_mac_ucast_act", fvBDMap["unkMacUcastAct"])
+	d.Set("unk_mcast_act", fvBDMap["unkMcastAct"])
+	d.Set("vmac", fvBDMap["vmac"])
 	return d
 }
 
@@ -297,7 +297,7 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	fvTenantDn := d.Get("fv_tenant_dn").(string)
+	TenantDn := d.Get("tenant_dn").(string)
 
 	fvBDAttr := models.BridgeDomainAttributes{}
 	if OptimizeWanBandwidth, ok := d.GetOk("optimize_wan_bandwidth"); ok {
@@ -354,7 +354,7 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 	if Vmac, ok := d.GetOk("vmac"); ok {
 		fvBDAttr.Vmac = Vmac.(string)
 	}
-	fvBD := models.NewBridgeDomain(fmt.Sprintf("BD-%s", name), fvTenantDn, desc, fvBDAttr)
+	fvBD := models.NewBridgeDomain(fmt.Sprintf("BD-%s", name), TenantDn, desc, fvBDAttr)
 
 	err := aciClient.Save(fvBD)
 	if err != nil {
@@ -370,7 +370,7 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
-	fvTenantDn := d.Get("fv_tenant_dn").(string)
+	TenantDn := d.Get("tenant_dn").(string)
 
 	fvBDAttr := models.BridgeDomainAttributes{}
 	if OptimizeWanBandwidth, ok := d.GetOk("optimize_wan_bandwidth"); ok {
@@ -427,7 +427,7 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 	if Vmac, ok := d.GetOk("vmac"); ok {
 		fvBDAttr.Vmac = Vmac.(string)
 	}
-	fvBD := models.NewBridgeDomain(fmt.Sprintf("BD-%s", name), fvTenantDn, desc, fvBDAttr)
+	fvBD := models.NewBridgeDomain(fmt.Sprintf("BD-%s", name), TenantDn, desc, fvBDAttr)
 
 	fvBD.Status = "modified"
 

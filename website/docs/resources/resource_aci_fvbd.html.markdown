@@ -3,18 +3,18 @@ layout: "aci"
 page_title: "ACI: aci_bridge_domain"
 sidebar_current: "docs-aci-resource-bridge_domain"
 description: |-
-  Manages ACI BridgeDomain
+  Manages ACI Bridge Domain
 ---
 
 # aci_bridge_domain #
-Manages ACI BridgeDomain
+Manages ACI Bridge Domain
 
 ## Example Usage ##
 
 ```hcl
 resource "aci_bridge_domain" "example" {
 
-  fv_tenant_dn  = "${aci_fv_tenant.example.id}"
+  tenant_dn  = "${aci_tenant.example.id}"
   name  = "example"
   optimize_wan_bandwidth  = "example"
   arp_flood  = "example"
@@ -37,7 +37,7 @@ resource "aci_bridge_domain" "example" {
 }
 ```
 ## Argument Reference ##
-* `fv_tenant_dn` - (Required) Distinguished name of parent fvTenant object.
+* `tenant_dn` - (Required) Distinguished name of parent Tenant object.
 * `name` - (Required) name of Object bridge_domain.
 * `optimize_wan_bandwidth` - (Optional) optimize_wan_bandwidth for object bridge_domain.
 * `arp_flood` - (Optional) arp flood enable

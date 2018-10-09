@@ -56,9 +56,9 @@ func getRemoteTenant(client *client.Client, dn string) (*models.Tenant, error) {
 func setTenantAttributes(fvTenant *models.Tenant, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(fvTenant.DistinguishedName)
 	d.Set("description", fvTenant.Description)
-	fvTenant_map, _ := fvTenant.ToMap()
+	fvTenantMap, _ := fvTenant.ToMap()
 
-	d.Set("name_alias", fvTenant_map["nameAlias"])
+	d.Set("name_alias", fvTenantMap["nameAlias"])
 	return d
 }
 

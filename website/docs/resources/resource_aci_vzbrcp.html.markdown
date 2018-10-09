@@ -14,7 +14,7 @@ Manages ACI Contract
 ```hcl
 resource "aci_contract" "example" {
 
-  fv_tenant_dn  = "${aci_fv_tenant.example.id}"
+  tenant_dn  = "${aci_tenant.example.id}"
   name  = "example"
   name_alias  = "example"
   prio  = "example"
@@ -23,7 +23,7 @@ resource "aci_contract" "example" {
 }
 ```
 ## Argument Reference ##
-* `fv_tenant_dn` - (Required) Distinguished name of parent fvTenant object.
+* `tenant_dn` - (Required) Distinguished name of parent Tenant object.
 * `name` - (Required) name of Object contract.
 * `name_alias` - (Optional) name_alias for object contract.
 * `prio` - (Optional) priority level of the service contract

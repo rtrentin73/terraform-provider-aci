@@ -22,7 +22,7 @@ func resourceAciFilter() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"fv_tenant_dn": &schema.Schema{
+			"tenant_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -60,10 +60,10 @@ func getRemoteFilter(client *client.Client, dn string) (*models.Filter, error) {
 func setFilterAttributes(vzFilter *models.Filter, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(vzFilter.DistinguishedName)
 	d.Set("description", vzFilter.Description)
-	d.Set("fv_tenant_dn", GetParentDn(vzFilter.DistinguishedName))
-	vzFilter_map, _ := vzFilter.ToMap()
+	d.Set("tenant_dn", GetParentDn(vzFilter.DistinguishedName))
+	vzFilterMap, _ := vzFilter.ToMap()
 
-	d.Set("name_alias", vzFilter_map["nameAlias"])
+	d.Set("name_alias", vzFilterMap["nameAlias"])
 	return d
 }
 
@@ -86,13 +86,13 @@ func resourceAciFilterCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	fvTenantDn := d.Get("fv_tenant_dn").(string)
+	TenantDn := d.Get("tenant_dn").(string)
 
 	vzFilterAttr := models.FilterAttributes{}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		vzFilterAttr.NameAlias = NameAlias.(string)
 	}
-	vzFilter := models.NewFilter(fmt.Sprintf("flt-%s", name), fvTenantDn, desc, vzFilterAttr)
+	vzFilter := models.NewFilter(fmt.Sprintf("flt-%s", name), TenantDn, desc, vzFilterAttr)
 
 	err := aciClient.Save(vzFilter)
 	if err != nil {
@@ -108,13 +108,13 @@ func resourceAciFilterUpdate(d *schema.ResourceData, m interface{}) error {
 	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
-	fvTenantDn := d.Get("fv_tenant_dn").(string)
+	TenantDn := d.Get("tenant_dn").(string)
 
 	vzFilterAttr := models.FilterAttributes{}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		vzFilterAttr.NameAlias = NameAlias.(string)
 	}
-	vzFilter := models.NewFilter(fmt.Sprintf("flt-%s", name), fvTenantDn, desc, vzFilterAttr)
+	vzFilter := models.NewFilter(fmt.Sprintf("flt-%s", name), TenantDn, desc, vzFilterAttr)
 
 	vzFilter.Status = "modified"
 

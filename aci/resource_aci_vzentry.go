@@ -23,7 +23,7 @@ func resourceAciFilterEntry() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"vz_filter_dn": &schema.Schema{
+			"filter_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -294,23 +294,23 @@ func getRemoteFilterEntry(client *client.Client, dn string) (*models.FilterEntry
 func setFilterEntryAttributes(vzEntry *models.FilterEntry, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(vzEntry.DistinguishedName)
 	d.Set("description", vzEntry.Description)
-	d.Set("vz_filter_dn", GetParentDn(vzEntry.DistinguishedName))
-	vzEntry_map, _ := vzEntry.ToMap()
+	d.Set("filter_dn", GetParentDn(vzEntry.DistinguishedName))
+	vzEntryMap, _ := vzEntry.ToMap()
 
-	d.Set("apply_to_frag", vzEntry_map["applyToFrag"])
-	d.Set("arp_opc", vzEntry_map["arpOpc"])
-	d.Set("d_from_port", vzEntry_map["dFromPort"])
-	d.Set("d_to_port", vzEntry_map["dToPort"])
-	d.Set("ether_t", vzEntry_map["etherT"])
-	d.Set("icmpv4_t", vzEntry_map["icmpv4T"])
-	d.Set("icmpv6_t", vzEntry_map["icmpv6T"])
-	d.Set("match_dscp", vzEntry_map["matchDscp"])
-	d.Set("name_alias", vzEntry_map["nameAlias"])
-	d.Set("prot", vzEntry_map["prot"])
-	d.Set("s_from_port", vzEntry_map["sFromPort"])
-	d.Set("s_to_port", vzEntry_map["sToPort"])
-	d.Set("stateful", vzEntry_map["stateful"])
-	d.Set("tcp_rules", vzEntry_map["tcpRules"])
+	d.Set("apply_to_frag", vzEntryMap["applyToFrag"])
+	d.Set("arp_opc", vzEntryMap["arpOpc"])
+	d.Set("d_from_port", vzEntryMap["dFromPort"])
+	d.Set("d_to_port", vzEntryMap["dToPort"])
+	d.Set("ether_t", vzEntryMap["etherT"])
+	d.Set("icmpv4_t", vzEntryMap["icmpv4T"])
+	d.Set("icmpv6_t", vzEntryMap["icmpv6T"])
+	d.Set("match_dscp", vzEntryMap["matchDscp"])
+	d.Set("name_alias", vzEntryMap["nameAlias"])
+	d.Set("prot", vzEntryMap["prot"])
+	d.Set("s_from_port", vzEntryMap["sFromPort"])
+	d.Set("s_to_port", vzEntryMap["sToPort"])
+	d.Set("stateful", vzEntryMap["stateful"])
+	d.Set("tcp_rules", vzEntryMap["tcpRules"])
 	return d
 }
 
@@ -333,7 +333,7 @@ func resourceAciFilterEntryCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	vzFilterDn := d.Get("vz_filter_dn").(string)
+	FilterDn := d.Get("filter_dn").(string)
 
 	vzEntryAttr := models.FilterEntryAttributes{}
 	if ApplyToFrag, ok := d.GetOk("apply_to_frag"); ok {
@@ -378,7 +378,7 @@ func resourceAciFilterEntryCreate(d *schema.ResourceData, m interface{}) error {
 	if TcpRules, ok := d.GetOk("tcp_rules"); ok {
 		vzEntryAttr.TcpRules = TcpRules.(string)
 	}
-	vzEntry := models.NewFilterEntry(fmt.Sprintf("e-%s", name), vzFilterDn, desc, vzEntryAttr)
+	vzEntry := models.NewFilterEntry(fmt.Sprintf("e-%s", name), FilterDn, desc, vzEntryAttr)
 
 	err := aciClient.Save(vzEntry)
 	if err != nil {
@@ -394,7 +394,7 @@ func resourceAciFilterEntryUpdate(d *schema.ResourceData, m interface{}) error {
 	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
-	vzFilterDn := d.Get("vz_filter_dn").(string)
+	FilterDn := d.Get("filter_dn").(string)
 
 	vzEntryAttr := models.FilterEntryAttributes{}
 	if ApplyToFrag, ok := d.GetOk("apply_to_frag"); ok {
@@ -439,7 +439,7 @@ func resourceAciFilterEntryUpdate(d *schema.ResourceData, m interface{}) error {
 	if TcpRules, ok := d.GetOk("tcp_rules"); ok {
 		vzEntryAttr.TcpRules = TcpRules.(string)
 	}
-	vzEntry := models.NewFilterEntry(fmt.Sprintf("e-%s", name), vzFilterDn, desc, vzEntryAttr)
+	vzEntry := models.NewFilterEntry(fmt.Sprintf("e-%s", name), FilterDn, desc, vzEntryAttr)
 
 	vzEntry.Status = "modified"
 
