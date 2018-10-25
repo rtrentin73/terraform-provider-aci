@@ -16,6 +16,17 @@ func toStrMap(inputMap map[string]interface{}) map[string]string {
 	return rt
 }
 
+func toStringList(configured []interface{}) []string {
+	vs := make([]string, 0, len(configured))
+	for _, v := range configured {
+		val, ok := v.(string)
+		if ok && val != "" {
+			vs = append(vs, val)
+		}
+	}
+	return vs
+}
+
 func preparePayload(className string, inputMap map[string]string) (*container.Container, error) {
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
