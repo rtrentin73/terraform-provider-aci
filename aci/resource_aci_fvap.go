@@ -2,7 +2,6 @@ package aci
 
 import (
 	"fmt"
-
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -52,6 +51,12 @@ func resourceAciApplicationProfile() *schema.Resource {
 					"level3",
 					"unspecified",
 				}, false),
+			},
+
+			"relation_to_mon_epg_pol": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Create relation to monEPGPol",
 			},
 		}),
 	}
@@ -117,6 +122,10 @@ func resourceAciApplicationProfileCreate(d *schema.ResourceData, m interface{}) 
 	if err != nil {
 		return err
 	}
+	if relationTomonEPGPol, ok := d.GetOk("relation_to_mon_epg_pol"); ok {
+		tDn := relationTomonEPGPol.(string)
+		err = aciClient.CreateRelationTomonEPGPol(fvAp.DistinguishedName, tDn)
+	}
 
 	d.SetId(fvAp.DistinguishedName)
 	return resourceAciApplicationProfileRead(d, m)
@@ -144,6 +153,17 @@ func resourceAciApplicationProfileUpdate(d *schema.ResourceData, m interface{}) 
 
 	if err != nil {
 		return err
+	}
+	if d.HasChange("relation_to_mon_epg_pol") {
+		oldTdn, newTdn := d.GetChange("relation_to_mon_epg_pol")
+		err = aciClient.DeleteRelationTomonEPGPol(fvAp.DistinguishedName, oldTdn.(string))
+		if err != nil {
+			return err
+		}
+		err = aciClient.CreateRelationTomonEPGPol(fvAp.DistinguishedName, newTdn.(string))
+		if err != nil {
+			return err
+		}
 	}
 
 	d.SetId(fvAp.DistinguishedName)
