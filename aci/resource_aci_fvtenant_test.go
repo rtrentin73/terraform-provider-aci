@@ -11,13 +11,17 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
+
+
+
+
 func TestAccAciTenant_Basic(t *testing.T) {
 	var tenant models.Tenant
 	fv_tenant_name := acctest.RandString(5)
 	description := "tenant created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
+		PreCheck:	  func(){ testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAciTenantDestroy,
 		Steps: []resource.TestStep{
@@ -76,15 +80,15 @@ func testAccCheckAciTenantDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 
 	for _, rs := range s.RootModule().Resources {
-
-		if rs.Type == "aci_tenant" {
-			cont, err := client.Get(rs.Primary.ID)
+		
+		 if rs.Type == "aci_tenant" {
+			cont,err := client.Get(rs.Primary.ID)
 			tenant := models.TenantFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("Tenant %s Still exists", tenant.DistinguishedName)
+				return fmt.Errorf("Tenant %s Still exists",tenant.DistinguishedName)
 			}
 
-		} else {
+		}else{
 			continue
 		}
 	}
@@ -92,13 +96,15 @@ func testAccCheckAciTenantDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciTenantAttributes(fv_tenant_name, description string, tenant *models.Tenant) resource.TestCheckFunc {
+func testAccCheckAciTenantAttributes(fv_tenant_name, description string, tenant  *models.Tenant) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
+
+		
 
 		if fv_tenant_name != GetMOName(tenant.DistinguishedName) {
 			return fmt.Errorf("Bad fv_tenant %s", GetMOName(tenant.DistinguishedName))
 		}
-
+		
 		if description != tenant.Description {
 			return fmt.Errorf("Bad tenant Description %s", tenant.Description)
 		}

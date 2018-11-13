@@ -11,6 +11,10 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
+
+
+
+
 func TestAccAciFilter_Basic(t *testing.T) {
 	var filter models.Filter
 	fv_tenant_name := acctest.RandString(5)
@@ -18,7 +22,7 @@ func TestAccAciFilter_Basic(t *testing.T) {
 	description := "filter created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
+		PreCheck:	  func(){ testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAciFilterDestroy,
 		Steps: []resource.TestStep{
@@ -83,15 +87,15 @@ func testAccCheckAciFilterDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 
 	for _, rs := range s.RootModule().Resources {
-
-		if rs.Type == "aci_filter" {
-			cont, err := client.Get(rs.Primary.ID)
+		
+		 if rs.Type == "aci_filter" {
+			cont,err := client.Get(rs.Primary.ID)
 			filter := models.FilterFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("Filter %s Still exists", filter.DistinguishedName)
+				return fmt.Errorf("Filter %s Still exists",filter.DistinguishedName)
 			}
 
-		} else {
+		}else{
 			continue
 		}
 	}
@@ -99,14 +103,16 @@ func testAccCheckAciFilterDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciFilterAttributes(fv_tenant_name, vz_filter_name, description string, filter *models.Filter) resource.TestCheckFunc {
+func testAccCheckAciFilterAttributes(fv_tenant_name, vz_filter_name, description string, filter  *models.Filter) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
+
+		
 
 		if vz_filter_name != GetMOName(filter.DistinguishedName) {
 			return fmt.Errorf("Bad vz_filter %s", GetMOName(filter.DistinguishedName))
 		}
-
-		if fv_tenant_name != GetMOName(GetParentDn(filter.DistinguishedName)) {
+		
+		if fv_tenant_name != GetMOName(GetParentDn(filter.DistinguishedName)){
 			return fmt.Errorf(" Bad fv_tenant %s", GetMOName(GetParentDn(filter.DistinguishedName)))
 		}
 		if description != filter.Description {

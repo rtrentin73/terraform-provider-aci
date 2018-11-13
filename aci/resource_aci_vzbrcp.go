@@ -1,8 +1,8 @@
 package aci
 
+
 import (
 	"fmt"
-
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -27,79 +27,94 @@ func resourceAciContract() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-
+			
 			"name": &schema.Schema{
-				Type:     schema.TypeString,
+				Type: schema.TypeString,
 				Required: true,
 			},
-
+			
+            
 			"name_alias": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Computed:    true,
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 				Description: "Mo doc not defined in techpub!!!",
+                
 			},
-
+            
 			"prio": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Computed:    true,
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 				Description: "priority level of the service contract",
-
+                
 				ValidateFunc: validation.StringInSlice([]string{
-					"level1",
-					"level2",
-					"level3",
-					"unspecified",
-				}, false),
+				"level1",
+                "level2",
+                "level3",
+                "unspecified",
+                }, false),
+                
 			},
-
+            
 			"scope": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Computed:    true,
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 				Description: "scope of contract",
-
+                
 				ValidateFunc: validation.StringInSlice([]string{
-					"application-profile",
-					"context",
-					"global",
-					"tenant",
-				}, false),
+				"application-profile",
+                "context",
+                "global",
+                "tenant",
+                }, false),
+                
 			},
-
+            
 			"target_dscp": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Computed:    true,
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 				Description: "target dscp",
-
+                
 				ValidateFunc: validation.StringInSlice([]string{
-					"AF11",
-					"AF12",
-					"AF13",
-					"AF21",
-					"AF22",
-					"AF23",
-					"AF31",
-					"AF32",
-					"AF33",
-					"AF41",
-					"AF42",
-					"AF43",
-					"CS0",
-					"CS1",
-					"CS2",
-					"CS3",
-					"CS4",
-					"CS5",
-					"CS6",
-					"CS7",
-					"EF",
-					"VA",
-					"unspecified",
-				}, false),
+				"AF11",
+                "AF12",
+                "AF13",
+                "AF21",
+                "AF22",
+                "AF23",
+                "AF31",
+                "AF32",
+                "AF33",
+                "AF41",
+                "AF42",
+                "AF43",
+                "CS0",
+                "CS1",
+                "CS2",
+                "CS3",
+                "CS4",
+                "CS5",
+                "CS6",
+                "CS7",
+                "EF",
+                "VA",
+                "unspecified",
+                }, false),
+                
 			},
+            
+			
+			"relation_vz_rs_graph_att": &schema.Schema{
+				Type:     schema.TypeString,
+
+				Optional: 	 true,
+				Description: "Create relation to vnsAbsGraph",
+
+			},
+
 		}),
 	}
 }
@@ -123,11 +138,11 @@ func setContractAttributes(vzBrCP *models.Contract, d *schema.ResourceData) *sch
 	d.SetId(vzBrCP.DistinguishedName)
 	d.Set("description", vzBrCP.Description)
 	d.Set("tenant_dn", GetParentDn(vzBrCP.DistinguishedName))
-	vzBrCPMap, _ := vzBrCP.ToMap()
-
-	d.Set("name_alias", vzBrCPMap["nameAlias"])
-	d.Set("prio", vzBrCPMap["prio"])
-	d.Set("scope", vzBrCPMap["scope"])
+	vzBrCPMap , _ := vzBrCP.ToMap()
+     
+	d.Set("name_alias", vzBrCPMap["nameAlias"]) 
+	d.Set("prio", vzBrCPMap["prio"]) 
+	d.Set("scope", vzBrCPMap["scope"]) 
 	d.Set("target_dscp", vzBrCPMap["targetDscp"])
 	return d
 }
@@ -152,26 +167,37 @@ func resourceAciContractCreate(d *schema.ResourceData, m interface{}) error {
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
 	TenantDn := d.Get("tenant_dn").(string)
-
-	vzBrCPAttr := models.ContractAttributes{}
-	if NameAlias, ok := d.GetOk("name_alias"); ok {
-		vzBrCPAttr.NameAlias = NameAlias.(string)
-	}
-	if Prio, ok := d.GetOk("prio"); ok {
-		vzBrCPAttr.Prio = Prio.(string)
-	}
-	if Scope, ok := d.GetOk("scope"); ok {
-		vzBrCPAttr.Scope = Scope.(string)
-	}
-	if TargetDscp, ok := d.GetOk("target_dscp"); ok {
-		vzBrCPAttr.TargetDscp = TargetDscp.(string)
-	}
-	vzBrCP := models.NewContract(fmt.Sprintf("brc-%s", name), TenantDn, desc, vzBrCPAttr)
-
+	
+	vzBrCPAttr := models.ContractAttributes{} 
+    if NameAlias, ok := d.GetOk("name_alias"); ok {
+        vzBrCPAttr.NameAlias  = NameAlias.(string)
+    } 
+    if Prio, ok := d.GetOk("prio"); ok {
+        vzBrCPAttr.Prio  = Prio.(string)
+    } 
+    if Scope, ok := d.GetOk("scope"); ok {
+        vzBrCPAttr.Scope  = Scope.(string)
+    } 
+    if TargetDscp, ok := d.GetOk("target_dscp"); ok {
+        vzBrCPAttr.TargetDscp  = TargetDscp.(string)
+    }
+	vzBrCP := models.NewContract(fmt.Sprintf("brc-%s",name),TenantDn, desc, vzBrCPAttr)  
+	
+	
 	err := aciClient.Save(vzBrCP)
 	if err != nil {
 		return err
 	}
+	
+	if  relationTovzRsGraphAtt, ok := d.GetOk("relation_vz_rs_graph_att") ; ok {
+		relationParam := relationTovzRsGraphAtt.(string)
+		err = aciClient.CreateRelationvzRsGraphAtt(vzBrCP.DistinguishedName, relationParam)
+		if err != nil {
+			return err
+		}
+		
+	}
+	
 
 	d.SetId(vzBrCP.DistinguishedName)
 	return resourceAciContractRead(d, m)
@@ -181,31 +207,47 @@ func resourceAciContractUpdate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
+	
 	name := d.Get("name").(string)
 	TenantDn := d.Get("tenant_dn").(string)
+	
 
-	vzBrCPAttr := models.ContractAttributes{}
-	if NameAlias, ok := d.GetOk("name_alias"); ok {
-		vzBrCPAttr.NameAlias = NameAlias.(string)
-	}
-	if Prio, ok := d.GetOk("prio"); ok {
-		vzBrCPAttr.Prio = Prio.(string)
-	}
-	if Scope, ok := d.GetOk("scope"); ok {
-		vzBrCPAttr.Scope = Scope.(string)
-	}
-	if TargetDscp, ok := d.GetOk("target_dscp"); ok {
-		vzBrCPAttr.TargetDscp = TargetDscp.(string)
-	}
-	vzBrCP := models.NewContract(fmt.Sprintf("brc-%s", name), TenantDn, desc, vzBrCPAttr)
+    vzBrCPAttr := models.ContractAttributes{}     
+    if NameAlias, ok := d.GetOk("name_alias"); ok {
+        vzBrCPAttr.NameAlias = NameAlias.(string)
+    }     
+    if Prio, ok := d.GetOk("prio"); ok {
+        vzBrCPAttr.Prio = Prio.(string)
+    }     
+    if Scope, ok := d.GetOk("scope"); ok {
+        vzBrCPAttr.Scope = Scope.(string)
+    }     
+    if TargetDscp, ok := d.GetOk("target_dscp"); ok {
+        vzBrCPAttr.TargetDscp = TargetDscp.(string)
+    }
+	vzBrCP := models.NewContract(fmt.Sprintf("brc-%s",name),TenantDn, desc, vzBrCPAttr)  
+		
 
 	vzBrCP.Status = "modified"
 
 	err := aciClient.Save(vzBrCP)
-
+	
 	if err != nil {
 		return err
 	}
+	if d.HasChange("relation_vz_rs_graph_att") {
+		oldTdn, newTdn := d.GetChange("relation_vz_rs_graph_att")
+		err = aciClient.DeleteRelationvzRsGraphAtt(vzBrCP.DistinguishedName, oldTdn.(string))
+		if err != nil {
+			return err
+		}
+		err = aciClient.CreateRelationvzRsGraphAtt(vzBrCP.DistinguishedName, newTdn.(string))
+		if err != nil {
+			return err
+		}
+	
+	}
+	
 
 	d.SetId(vzBrCP.DistinguishedName)
 	return resourceAciContractRead(d, m)

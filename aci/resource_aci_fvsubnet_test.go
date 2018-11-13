@@ -11,6 +11,10 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
+
+
+
+
 func TestAccAciSubnet_Basic(t *testing.T) {
 	var subnet models.Subnet
 	fv_tenant_name := acctest.RandString(5)
@@ -19,7 +23,7 @@ func TestAccAciSubnet_Basic(t *testing.T) {
 	description := "subnet created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
+		PreCheck:	  func(){ testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAciSubnetDestroy,
 		Steps: []resource.TestStep{
@@ -90,15 +94,15 @@ func testAccCheckAciSubnetDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 
 	for _, rs := range s.RootModule().Resources {
-
-		if rs.Type == "aci_subnet" {
-			cont, err := client.Get(rs.Primary.ID)
+		
+		 if rs.Type == "aci_subnet" {
+			cont,err := client.Get(rs.Primary.ID)
 			subnet := models.SubnetFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("Subnet %s Still exists", subnet.DistinguishedName)
+				return fmt.Errorf("Subnet %s Still exists",subnet.DistinguishedName)
 			}
 
-		} else {
+		}else{
 			continue
 		}
 	}
@@ -106,14 +110,16 @@ func testAccCheckAciSubnetDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciSubnetAttributes(fv_tenant_name, fv_bd_name, fv_subnet_name, description string, subnet *models.Subnet) resource.TestCheckFunc {
+func testAccCheckAciSubnetAttributes(fv_tenant_name, fv_bd_name, fv_subnet_name, description string, subnet  *models.Subnet) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
+
+		
 
 		if fv_subnet_name != GetMOName(subnet.DistinguishedName) {
 			return fmt.Errorf("Bad fv_subnet %s", GetMOName(subnet.DistinguishedName))
 		}
-
-		if fv_bd_name != GetMOName(GetParentDn(subnet.DistinguishedName)) {
+		
+		if fv_bd_name != GetMOName(GetParentDn(subnet.DistinguishedName)){
 			return fmt.Errorf(" Bad fv_bd %s", GetMOName(GetParentDn(subnet.DistinguishedName)))
 		}
 		if description != subnet.Description {

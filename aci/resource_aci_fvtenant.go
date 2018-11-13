@@ -1,5 +1,6 @@
 package aci
 
+
 import (
 	"fmt"
 	"github.com/ciscoecosystem/aci-go-client/client"
@@ -21,26 +22,30 @@ func resourceAciTenant() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-
+			
 			"name": &schema.Schema{
-				Type:     schema.TypeString,
+				Type: schema.TypeString,
 				Required: true,
 			},
-
+			
+            
 			"name_alias": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Computed:    true,
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 				Description: "Mo doc not defined in techpub!!!",
+                
+			},
+            
+			
+			"relation_fv_rs_tn_deny_rule": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{ Type: schema.TypeString,},
+				Optional: 	 true,
+				Description: "Create relation to vzFilter",
+     			Set:         schema.HashString,
 			},
 
-			"relation_to_vz_filter": &schema.Schema{
-				Type:        schema.TypeSet,
-				Elem:        &schema.Schema{Type: schema.TypeString},
-				Optional:    true,
-				Description: "Create relation to vzFilter",
-				Set:         schema.HashString,
-			},
 		}),
 	}
 }
@@ -63,8 +68,8 @@ func getRemoteTenant(client *client.Client, dn string) (*models.Tenant, error) {
 func setTenantAttributes(fvTenant *models.Tenant, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(fvTenant.DistinguishedName)
 	d.Set("description", fvTenant.Description)
-	fvTenantMap, _ := fvTenant.ToMap()
-
+	fvTenantMap , _ := fvTenant.ToMap()
+     
 	d.Set("name_alias", fvTenantMap["nameAlias"])
 	return d
 }
@@ -88,25 +93,28 @@ func resourceAciTenantCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	fvTenantAttr := models.TenantAttributes{}
-	if NameAlias, ok := d.GetOk("name_alias"); ok {
-		fvTenantAttr.NameAlias = NameAlias.(string)
-	}
-	fvTenant := models.NewTenant(fmt.Sprintf("tn-%s", name), "uni", desc, fvTenantAttr)
-
+	fvTenantAttr := models.TenantAttributes{} 
+    if NameAlias, ok := d.GetOk("name_alias"); ok {
+        fvTenantAttr.NameAlias  = NameAlias.(string)
+    }
+	fvTenant := models.NewTenant(fmt.Sprintf("tn-%s",name),"uni", desc, fvTenantAttr)
+	
 	err := aciClient.Save(fvTenant)
 	if err != nil {
 		return err
 	}
-	if relationTovzFilter, ok := d.GetOk("relation_to_vz_filter"); ok {
-		tDnList := toStringList(relationTovzFilter.(*schema.Set).List())
-		for _, tDn := range tDnList {
-			err = aciClient.CreateRelationTovzFilter(fvTenant.DistinguishedName, tDn)
+	
+	if  relationTofvRsTnDenyRule, ok := d.GetOk("relation_fv_rs_tn_deny_rule") ; ok {
+		relationParamList := toStringList(relationTofvRsTnDenyRule.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			err = aciClient.CreateRelationfvRsTnDenyRule(fvTenant.DistinguishedName, relationParam)
+		
 			if err != nil {
 				return err
 			}
 		}
 	}
+	
 
 	d.SetId(fvTenant.DistinguishedName)
 	return resourceAciTenantRead(d, m)
@@ -116,23 +124,25 @@ func resourceAciTenantUpdate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
+	
 	name := d.Get("name").(string)
 
-	fvTenantAttr := models.TenantAttributes{}
-	if NameAlias, ok := d.GetOk("name_alias"); ok {
-		fvTenantAttr.NameAlias = NameAlias.(string)
-	}
-	fvTenant := models.NewTenant(fmt.Sprintf("tn-%s", name), "uni", desc, fvTenantAttr)
+    fvTenantAttr := models.TenantAttributes{}     
+    if NameAlias, ok := d.GetOk("name_alias"); ok {
+        fvTenantAttr.NameAlias = NameAlias.(string)
+    }
+	fvTenant := models.NewTenant(fmt.Sprintf("tn-%s",name),"uni", desc, fvTenantAttr)  
+		
 
 	fvTenant.Status = "modified"
 
 	err := aciClient.Save(fvTenant)
-
+	
 	if err != nil {
 		return err
 	}
-	if d.HasChange("relation_to_vz_filter") {
-		oldc, newc := d.GetChange("relation_to_vz_filter")
+	if d.HasChange("relation_fv_rs_tn_deny_rule") {
+		oldc, newc := d.GetChange("relation_fv_rs_tn_deny_rule")
 		oldRelSet := oldc.(*schema.Set)
 		newRelSet := newc.(*schema.Set)
 
@@ -140,7 +150,7 @@ func resourceAciTenantUpdate(d *schema.ResourceData, m interface{}) error {
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationTovzFilter(fvTenant.DistinguishedName, relDn)
+			err = aciClient.DeleteRelationfvRsTnDenyRule(fvTenant.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
@@ -148,14 +158,14 @@ func resourceAciTenantUpdate(d *schema.ResourceData, m interface{}) error {
 		}
 
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationTovzFilter(fvTenant.DistinguishedName, relDn)
+			err = aciClient.CreateRelationfvRsTnDenyRule(fvTenant.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
 
 		}
-
 	}
+	
 
 	d.SetId(fvTenant.DistinguishedName)
 	return resourceAciTenantRead(d, m)
