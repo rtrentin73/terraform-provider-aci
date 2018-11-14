@@ -11,10 +11,6 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
-
-
-
-
 func TestAccAciContractSubject_Basic(t *testing.T) {
 	var contract_subject models.ContractSubject
 	fv_tenant_name := acctest.RandString(5)
@@ -23,7 +19,7 @@ func TestAccAciContractSubject_Basic(t *testing.T) {
 	description := "contract_subject created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:	  func(){ testAccPreCheck(t) },
+		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAciContractSubjectDestroy,
 		Steps: []resource.TestStep{
@@ -94,15 +90,15 @@ func testAccCheckAciContractSubjectDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 
 	for _, rs := range s.RootModule().Resources {
-		
-		 if rs.Type == "aci_contract_subject" {
-			cont,err := client.Get(rs.Primary.ID)
+
+		if rs.Type == "aci_contract_subject" {
+			cont, err := client.Get(rs.Primary.ID)
 			contract_subject := models.ContractSubjectFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("Contract Subject %s Still exists",contract_subject.DistinguishedName)
+				return fmt.Errorf("Contract Subject %s Still exists", contract_subject.DistinguishedName)
 			}
 
-		}else{
+		} else {
 			continue
 		}
 	}
@@ -110,16 +106,14 @@ func testAccCheckAciContractSubjectDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciContractSubjectAttributes(fv_tenant_name, vz_br_cp_name, vz_subj_name, description string, contract_subject  *models.ContractSubject) resource.TestCheckFunc {
+func testAccCheckAciContractSubjectAttributes(fv_tenant_name, vz_br_cp_name, vz_subj_name, description string, contract_subject *models.ContractSubject) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-
-		
 
 		if vz_subj_name != GetMOName(contract_subject.DistinguishedName) {
 			return fmt.Errorf("Bad vz_subj %s", GetMOName(contract_subject.DistinguishedName))
 		}
-		
-		if vz_br_cp_name != GetMOName(GetParentDn(contract_subject.DistinguishedName)){
+
+		if vz_br_cp_name != GetMOName(GetParentDn(contract_subject.DistinguishedName)) {
 			return fmt.Errorf(" Bad vz_br_cp %s", GetMOName(GetParentDn(contract_subject.DistinguishedName)))
 		}
 		if description != contract_subject.Description {

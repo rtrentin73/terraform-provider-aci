@@ -15,4 +15,6 @@ resource "aci_contract_subject" "demosubject" {
   contract_dn = "${aci_contract.contract_for_subject.id}"
   name        = "test_tf_subject"
   description = "This subject is created by terraform ACI provider"
+  relation_vz_rs_subj_graph_att = "test"
+  relation_vz_rs_subj_filt_att = ["demo"]
 }

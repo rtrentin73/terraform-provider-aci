@@ -1,6 +1,5 @@
 package aci
 
-
 import (
 	"fmt"
 	"github.com/ciscoecosystem/aci-go-client/client"
@@ -27,45 +26,39 @@ func resourceAciApplicationProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			
+
 			"name": &schema.Schema{
-				Type: schema.TypeString,
+				Type:     schema.TypeString,
 				Required: true,
 			},
-			
-            
+
 			"name_alias": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
 				Description: "Mo doc not defined in techpub!!!",
-                
 			},
-            
+
 			"prio": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
 				Description: "priority class id",
-                
+
 				ValidateFunc: validation.StringInSlice([]string{
-				"level1",
-                "level2",
-                "level3",
-                "unspecified",
-                }, false),
-                
+					"level1",
+					"level2",
+					"level3",
+					"unspecified",
+				}, false),
 			},
-            
-			
+
 			"relation_fv_rs_ap_mon_pol": &schema.Schema{
-				Type:     schema.TypeString,
+				Type: schema.TypeString,
 
-				Optional: 	 true,
+				Optional:    true,
 				Description: "Create relation to monEPGPol",
-
 			},
-
 		}),
 	}
 }
@@ -89,9 +82,9 @@ func setApplicationProfileAttributes(fvAp *models.ApplicationProfile, d *schema.
 	d.SetId(fvAp.DistinguishedName)
 	d.Set("description", fvAp.Description)
 	d.Set("tenant_dn", GetParentDn(fvAp.DistinguishedName))
-	fvApMap , _ := fvAp.ToMap()
-     
-	d.Set("name_alias", fvApMap["nameAlias"]) 
+	fvApMap, _ := fvAp.ToMap()
+
+	d.Set("name_alias", fvApMap["nameAlias"])
 	d.Set("prio", fvApMap["prio"])
 	return d
 }
@@ -116,31 +109,29 @@ func resourceAciApplicationProfileCreate(d *schema.ResourceData, m interface{}) 
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
 	TenantDn := d.Get("tenant_dn").(string)
-	
-	fvApAttr := models.ApplicationProfileAttributes{} 
-    if NameAlias, ok := d.GetOk("name_alias"); ok {
-        fvApAttr.NameAlias  = NameAlias.(string)
-    } 
-    if Prio, ok := d.GetOk("prio"); ok {
-        fvApAttr.Prio  = Prio.(string)
-    }
-	fvAp := models.NewApplicationProfile(fmt.Sprintf("ap-%s",name),TenantDn, desc, fvApAttr)  
-	
-	
+
+	fvApAttr := models.ApplicationProfileAttributes{}
+	if NameAlias, ok := d.GetOk("name_alias"); ok {
+		fvApAttr.NameAlias = NameAlias.(string)
+	}
+	if Prio, ok := d.GetOk("prio"); ok {
+		fvApAttr.Prio = Prio.(string)
+	}
+	fvAp := models.NewApplicationProfile(fmt.Sprintf("ap-%s", name), TenantDn, desc, fvApAttr)
+
 	err := aciClient.Save(fvAp)
 	if err != nil {
 		return err
 	}
-	
-	if  relationTofvRsApMonPol, ok := d.GetOk("relation_fv_rs_ap_mon_pol") ; ok {
+
+	if relationTofvRsApMonPol, ok := d.GetOk("relation_fv_rs_ap_mon_pol"); ok {
 		relationParam := relationTofvRsApMonPol.(string)
 		err = aciClient.CreateRelationfvRsApMonPol(fvAp.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
-		
+
 	}
-	
 
 	d.SetId(fvAp.DistinguishedName)
 	return resourceAciApplicationProfileRead(d, m)
@@ -150,41 +141,37 @@ func resourceAciApplicationProfileUpdate(d *schema.ResourceData, m interface{}) 
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
-	
 	name := d.Get("name").(string)
 	TenantDn := d.Get("tenant_dn").(string)
-	
 
-    fvApAttr := models.ApplicationProfileAttributes{}     
-    if NameAlias, ok := d.GetOk("name_alias"); ok {
-        fvApAttr.NameAlias = NameAlias.(string)
-    }     
-    if Prio, ok := d.GetOk("prio"); ok {
-        fvApAttr.Prio = Prio.(string)
-    }
-	fvAp := models.NewApplicationProfile(fmt.Sprintf("ap-%s",name),TenantDn, desc, fvApAttr)  
-		
+	fvApAttr := models.ApplicationProfileAttributes{}
+	if NameAlias, ok := d.GetOk("name_alias"); ok {
+		fvApAttr.NameAlias = NameAlias.(string)
+	}
+	if Prio, ok := d.GetOk("prio"); ok {
+		fvApAttr.Prio = Prio.(string)
+	}
+	fvAp := models.NewApplicationProfile(fmt.Sprintf("ap-%s", name), TenantDn, desc, fvApAttr)
 
 	fvAp.Status = "modified"
 
 	err := aciClient.Save(fvAp)
-	
+
 	if err != nil {
 		return err
 	}
 	if d.HasChange("relation_fv_rs_ap_mon_pol") {
-		oldTdn, newTdn := d.GetChange("relation_fv_rs_ap_mon_pol")
-		err = aciClient.DeleteRelationfvRsApMonPol(fvAp.DistinguishedName, oldTdn.(string))
+		_, newRelParam := d.GetChange("relation_fv_rs_ap_mon_pol")
+		err = aciClient.DeleteRelationfvRsApMonPol(fvAp.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationfvRsApMonPol(fvAp.DistinguishedName, newTdn.(string))
+		err = aciClient.CreateRelationfvRsApMonPol(fvAp.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
-	
+
 	}
-	
 
 	d.SetId(fvAp.DistinguishedName)
 	return resourceAciApplicationProfileRead(d, m)

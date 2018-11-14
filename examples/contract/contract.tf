@@ -9,4 +9,5 @@ resource "aci_contract" "democontract" {
   description = "This contract is created by terraform ACI provider"
   scope       = "context"
   target_dscp = "VA"
+  relation_vz_rs_graph_att = "test3"
 }

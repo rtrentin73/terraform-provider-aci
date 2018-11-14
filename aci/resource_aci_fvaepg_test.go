@@ -11,10 +11,6 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
-
-
-
-
 func TestAccAciApplicationEPG_Basic(t *testing.T) {
 	var application_epg models.ApplicationEPG
 	fv_tenant_name := acctest.RandString(5)
@@ -23,7 +19,7 @@ func TestAccAciApplicationEPG_Basic(t *testing.T) {
 	description := "application_epg created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:	  func(){ testAccPreCheck(t) },
+		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAciApplicationEPGDestroy,
 		Steps: []resource.TestStep{
@@ -94,15 +90,15 @@ func testAccCheckAciApplicationEPGDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 
 	for _, rs := range s.RootModule().Resources {
-		
-		 if rs.Type == "aci_application_epg" {
-			cont,err := client.Get(rs.Primary.ID)
+
+		if rs.Type == "aci_application_epg" {
+			cont, err := client.Get(rs.Primary.ID)
 			application_epg := models.ApplicationEPGFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("Application EPG %s Still exists",application_epg.DistinguishedName)
+				return fmt.Errorf("Application EPG %s Still exists", application_epg.DistinguishedName)
 			}
 
-		}else{
+		} else {
 			continue
 		}
 	}
@@ -110,16 +106,14 @@ func testAccCheckAciApplicationEPGDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciApplicationEPGAttributes(fv_tenant_name, fv_ap_name, fv_ae_pg_name, description string, application_epg  *models.ApplicationEPG) resource.TestCheckFunc {
+func testAccCheckAciApplicationEPGAttributes(fv_tenant_name, fv_ap_name, fv_ae_pg_name, description string, application_epg *models.ApplicationEPG) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-
-		
 
 		if fv_ae_pg_name != GetMOName(application_epg.DistinguishedName) {
 			return fmt.Errorf("Bad fv_ae_pg %s", GetMOName(application_epg.DistinguishedName))
 		}
-		
-		if fv_ap_name != GetMOName(GetParentDn(application_epg.DistinguishedName)){
+
+		if fv_ap_name != GetMOName(GetParentDn(application_epg.DistinguishedName)) {
 			return fmt.Errorf(" Bad fv_ap %s", GetMOName(GetParentDn(application_epg.DistinguishedName)))
 		}
 		if description != application_epg.Description {

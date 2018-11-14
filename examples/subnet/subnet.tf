@@ -16,4 +16,7 @@ resource "aci_subnet" "demosubnet" {
   ip               = "10.0.3.28/27"
   scope            = "private"
   description      = "This subject is created by terraform"
+  relation_fv_rs_bd_subnet_to_profile = "testprofle"
+  relation_fv_rs_bd_subnet_to_out = ["testtoout"]
+  relation_fv_rs_nd_pfx_pol = "testpxfpol"
 }

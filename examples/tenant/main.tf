@@ -8,5 +8,5 @@ provider "aci" {
 resource "aci_tenant" "demotenant" {
   name        = "tf_test_tenant"
   description = "This tenant is created by terraform"
-  relation_to_vz_filter = ["uni/tn-1/flt-test_update","uni/tn-1/flt-test_update2"]
+  relation_fv_rs_tn_deny_rule = ["uni/tn-1/flt-test_update","uni/tn-1/flt-test_update2"]
 }

@@ -1,6 +1,5 @@
 package aci
 
-
 import (
 	"fmt"
 	"github.com/ciscoecosystem/aci-go-client/client"
@@ -26,23 +25,18 @@ func resourceAciFilter() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			
+
 			"name": &schema.Schema{
-				Type: schema.TypeString,
+				Type:     schema.TypeString,
 				Required: true,
 			},
-			
-            
-			"name_alias": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				Description: "Mo doc not defined in techpub!!!",
-                
-			},
-            
-			
 
+			"name_alias": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: "Mo doc not defined in techpub!!!",
+			},
 		}),
 	}
 }
@@ -66,8 +60,8 @@ func setFilterAttributes(vzFilter *models.Filter, d *schema.ResourceData) *schem
 	d.SetId(vzFilter.DistinguishedName)
 	d.Set("description", vzFilter.Description)
 	d.Set("tenant_dn", GetParentDn(vzFilter.DistinguishedName))
-	vzFilterMap , _ := vzFilter.ToMap()
-     
+	vzFilterMap, _ := vzFilter.ToMap()
+
 	d.Set("name_alias", vzFilterMap["nameAlias"])
 	return d
 }
@@ -92,19 +86,17 @@ func resourceAciFilterCreate(d *schema.ResourceData, m interface{}) error {
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
 	TenantDn := d.Get("tenant_dn").(string)
-	
-	vzFilterAttr := models.FilterAttributes{} 
-    if NameAlias, ok := d.GetOk("name_alias"); ok {
-        vzFilterAttr.NameAlias  = NameAlias.(string)
-    }
-	vzFilter := models.NewFilter(fmt.Sprintf("flt-%s",name),TenantDn, desc, vzFilterAttr)  
-	
-	
+
+	vzFilterAttr := models.FilterAttributes{}
+	if NameAlias, ok := d.GetOk("name_alias"); ok {
+		vzFilterAttr.NameAlias = NameAlias.(string)
+	}
+	vzFilter := models.NewFilter(fmt.Sprintf("flt-%s", name), TenantDn, desc, vzFilterAttr)
+
 	err := aciClient.Save(vzFilter)
 	if err != nil {
 		return err
 	}
-	
 
 	d.SetId(vzFilter.DistinguishedName)
 	return resourceAciFilterRead(d, m)
@@ -114,26 +106,22 @@ func resourceAciFilterUpdate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
-	
 	name := d.Get("name").(string)
 	TenantDn := d.Get("tenant_dn").(string)
-	
 
-    vzFilterAttr := models.FilterAttributes{}     
-    if NameAlias, ok := d.GetOk("name_alias"); ok {
-        vzFilterAttr.NameAlias = NameAlias.(string)
-    }
-	vzFilter := models.NewFilter(fmt.Sprintf("flt-%s",name),TenantDn, desc, vzFilterAttr)  
-		
+	vzFilterAttr := models.FilterAttributes{}
+	if NameAlias, ok := d.GetOk("name_alias"); ok {
+		vzFilterAttr.NameAlias = NameAlias.(string)
+	}
+	vzFilter := models.NewFilter(fmt.Sprintf("flt-%s", name), TenantDn, desc, vzFilterAttr)
 
 	vzFilter.Status = "modified"
 
 	err := aciClient.Save(vzFilter)
-	
+
 	if err != nil {
 		return err
 	}
-	
 
 	d.SetId(vzFilter.DistinguishedName)
 	return resourceAciFilterRead(d, m)

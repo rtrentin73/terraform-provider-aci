@@ -11,10 +11,6 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
-
-
-
-
 func TestAccAciApplicationProfile_Basic(t *testing.T) {
 	var application_profile models.ApplicationProfile
 	fv_tenant_name := acctest.RandString(5)
@@ -22,7 +18,7 @@ func TestAccAciApplicationProfile_Basic(t *testing.T) {
 	description := "application_profile created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:	  func(){ testAccPreCheck(t) },
+		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAciApplicationProfileDestroy,
 		Steps: []resource.TestStep{
@@ -87,15 +83,15 @@ func testAccCheckAciApplicationProfileDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 
 	for _, rs := range s.RootModule().Resources {
-		
-		 if rs.Type == "aci_application_profile" {
-			cont,err := client.Get(rs.Primary.ID)
+
+		if rs.Type == "aci_application_profile" {
+			cont, err := client.Get(rs.Primary.ID)
 			application_profile := models.ApplicationProfileFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("Application Profile %s Still exists",application_profile.DistinguishedName)
+				return fmt.Errorf("Application Profile %s Still exists", application_profile.DistinguishedName)
 			}
 
-		}else{
+		} else {
 			continue
 		}
 	}
@@ -103,16 +99,14 @@ func testAccCheckAciApplicationProfileDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciApplicationProfileAttributes(fv_tenant_name, fv_ap_name, description string, application_profile  *models.ApplicationProfile) resource.TestCheckFunc {
+func testAccCheckAciApplicationProfileAttributes(fv_tenant_name, fv_ap_name, description string, application_profile *models.ApplicationProfile) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-
-		
 
 		if fv_ap_name != GetMOName(application_profile.DistinguishedName) {
 			return fmt.Errorf("Bad fv_ap %s", GetMOName(application_profile.DistinguishedName))
 		}
-		
-		if fv_tenant_name != GetMOName(GetParentDn(application_profile.DistinguishedName)){
+
+		if fv_tenant_name != GetMOName(GetParentDn(application_profile.DistinguishedName)) {
 			return fmt.Errorf(" Bad fv_tenant %s", GetMOName(GetParentDn(application_profile.DistinguishedName)))
 		}
 		if description != application_profile.Description {

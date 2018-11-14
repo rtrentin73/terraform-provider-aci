@@ -11,10 +11,6 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
-
-
-
-
 func TestAccAciContract_Basic(t *testing.T) {
 	var contract models.Contract
 	fv_tenant_name := acctest.RandString(5)
@@ -22,7 +18,7 @@ func TestAccAciContract_Basic(t *testing.T) {
 	description := "contract created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:	  func(){ testAccPreCheck(t) },
+		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAciContractDestroy,
 		Steps: []resource.TestStep{
@@ -87,15 +83,15 @@ func testAccCheckAciContractDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 
 	for _, rs := range s.RootModule().Resources {
-		
-		 if rs.Type == "aci_contract" {
-			cont,err := client.Get(rs.Primary.ID)
+
+		if rs.Type == "aci_contract" {
+			cont, err := client.Get(rs.Primary.ID)
 			contract := models.ContractFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("Contract %s Still exists",contract.DistinguishedName)
+				return fmt.Errorf("Contract %s Still exists", contract.DistinguishedName)
 			}
 
-		}else{
+		} else {
 			continue
 		}
 	}
@@ -103,16 +99,14 @@ func testAccCheckAciContractDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciContractAttributes(fv_tenant_name, vz_br_cp_name, description string, contract  *models.Contract) resource.TestCheckFunc {
+func testAccCheckAciContractAttributes(fv_tenant_name, vz_br_cp_name, description string, contract *models.Contract) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-
-		
 
 		if vz_br_cp_name != GetMOName(contract.DistinguishedName) {
 			return fmt.Errorf("Bad vz_br_cp %s", GetMOName(contract.DistinguishedName))
 		}
-		
-		if fv_tenant_name != GetMOName(GetParentDn(contract.DistinguishedName)){
+
+		if fv_tenant_name != GetMOName(GetParentDn(contract.DistinguishedName)) {
 			return fmt.Errorf(" Bad fv_tenant %s", GetMOName(GetParentDn(contract.DistinguishedName)))
 		}
 		if description != contract.Description {

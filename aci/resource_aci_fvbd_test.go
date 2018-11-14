@@ -11,10 +11,6 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
-
-
-
-
 func TestAccAciBridgeDomain_Basic(t *testing.T) {
 	var bridge_domain models.BridgeDomain
 	fv_tenant_name := acctest.RandString(5)
@@ -22,7 +18,7 @@ func TestAccAciBridgeDomain_Basic(t *testing.T) {
 	description := "bridge_domain created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:	  func(){ testAccPreCheck(t) },
+		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAciBridgeDomainDestroy,
 		Steps: []resource.TestStep{
@@ -87,15 +83,15 @@ func testAccCheckAciBridgeDomainDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 
 	for _, rs := range s.RootModule().Resources {
-		
-		 if rs.Type == "aci_bridge_domain" {
-			cont,err := client.Get(rs.Primary.ID)
+
+		if rs.Type == "aci_bridge_domain" {
+			cont, err := client.Get(rs.Primary.ID)
 			bridge_domain := models.BridgeDomainFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("Bridge Domain %s Still exists",bridge_domain.DistinguishedName)
+				return fmt.Errorf("Bridge Domain %s Still exists", bridge_domain.DistinguishedName)
 			}
 
-		}else{
+		} else {
 			continue
 		}
 	}
@@ -103,16 +99,14 @@ func testAccCheckAciBridgeDomainDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciBridgeDomainAttributes(fv_tenant_name, fv_bd_name, description string, bridge_domain  *models.BridgeDomain) resource.TestCheckFunc {
+func testAccCheckAciBridgeDomainAttributes(fv_tenant_name, fv_bd_name, description string, bridge_domain *models.BridgeDomain) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-
-		
 
 		if fv_bd_name != GetMOName(bridge_domain.DistinguishedName) {
 			return fmt.Errorf("Bad fv_bd %s", GetMOName(bridge_domain.DistinguishedName))
 		}
-		
-		if fv_tenant_name != GetMOName(GetParentDn(bridge_domain.DistinguishedName)){
+
+		if fv_tenant_name != GetMOName(GetParentDn(bridge_domain.DistinguishedName)) {
 			return fmt.Errorf(" Bad fv_tenant %s", GetMOName(GetParentDn(bridge_domain.DistinguishedName)))
 		}
 		if description != bridge_domain.Description {
