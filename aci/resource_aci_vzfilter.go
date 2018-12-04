@@ -37,6 +37,25 @@ func resourceAciFilter() *schema.Resource {
 				Computed:    true,
 				Description: "Mo doc not defined in techpub!!!",
 			},
+
+			"relation_vz_rs_filt_graph_att": &schema.Schema{
+				Type: schema.TypeString,
+
+				Optional:    true,
+				Description: "Create relation to vnsInTerm",
+			},
+			"relation_vz_rs_fwd_r_flt_p_att": &schema.Schema{
+				Type: schema.TypeString,
+
+				Optional:    true,
+				Description: "Create relation to vzAFilterableUnit",
+			},
+			"relation_vz_rs_rev_r_flt_p_att": &schema.Schema{
+				Type: schema.TypeString,
+
+				Optional:    true,
+				Description: "Create relation to vzAFilterableUnit",
+			},
 		}),
 	}
 }
@@ -98,6 +117,31 @@ func resourceAciFilterCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
+	if relationTovzRsFiltGraphAtt, ok := d.GetOk("relation_vz_rs_filt_graph_att"); ok {
+		relationParam := relationTovzRsFiltGraphAtt.(string)
+		err = aciClient.CreateRelationvzRsFiltGraphAtt(vzFilter.DistinguishedName, relationParam)
+		if err != nil {
+			return err
+		}
+
+	}
+	if relationTovzRsFwdRFltPAtt, ok := d.GetOk("relation_vz_rs_fwd_r_flt_p_att"); ok {
+		relationParam := relationTovzRsFwdRFltPAtt.(string)
+		err = aciClient.CreateRelationvzRsFwdRFltPAtt(vzFilter.DistinguishedName, relationParam)
+		if err != nil {
+			return err
+		}
+
+	}
+	if relationTovzRsRevRFltPAtt, ok := d.GetOk("relation_vz_rs_rev_r_flt_p_att"); ok {
+		relationParam := relationTovzRsRevRFltPAtt.(string)
+		err = aciClient.CreateRelationvzRsRevRFltPAtt(vzFilter.DistinguishedName, relationParam)
+		if err != nil {
+			return err
+		}
+
+	}
+
 	d.SetId(vzFilter.DistinguishedName)
 	return resourceAciFilterRead(d, m)
 }
@@ -121,6 +165,31 @@ func resourceAciFilterUpdate(d *schema.ResourceData, m interface{}) error {
 
 	if err != nil {
 		return err
+	}
+
+	if d.HasChange("relation_vz_rs_filt_graph_att") {
+		_, newRelParam := d.GetChange("relation_vz_rs_filt_graph_att")
+		err = aciClient.CreateRelationvzRsFiltGraphAtt(vzFilter.DistinguishedName, newRelParam.(string))
+		if err != nil {
+			return err
+		}
+
+	}
+	if d.HasChange("relation_vz_rs_fwd_r_flt_p_att") {
+		_, newRelParam := d.GetChange("relation_vz_rs_fwd_r_flt_p_att")
+		err = aciClient.CreateRelationvzRsFwdRFltPAtt(vzFilter.DistinguishedName, newRelParam.(string))
+		if err != nil {
+			return err
+		}
+
+	}
+	if d.HasChange("relation_vz_rs_rev_r_flt_p_att") {
+		_, newRelParam := d.GetChange("relation_vz_rs_rev_r_flt_p_att")
+		err = aciClient.CreateRelationvzRsRevRFltPAtt(vzFilter.DistinguishedName, newRelParam.(string))
+		if err != nil {
+			return err
+		}
+
 	}
 
 	d.SetId(vzFilter.DistinguishedName)

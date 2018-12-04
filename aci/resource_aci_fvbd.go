@@ -5,7 +5,6 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/hashicorp/terraform/helper/validation"
 )
 
 func resourceAciBridgeDomain() *schema.Resource {
@@ -37,11 +36,6 @@ func resourceAciBridgeDomain() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "Mo doc not defined in techpub!!!",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"no",
-					"yes",
-				}, false),
 			},
 
 			"arp_flood": &schema.Schema{
@@ -49,11 +43,6 @@ func resourceAciBridgeDomain() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "arp flood enable",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"no",
-					"yes",
-				}, false),
 			},
 
 			"ep_clear": &schema.Schema{
@@ -61,11 +50,6 @@ func resourceAciBridgeDomain() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "Mo doc not defined in techpub!!!",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"no",
-					"yes",
-				}, false),
 			},
 
 			"ep_move_detect_mode": &schema.Schema{
@@ -73,10 +57,6 @@ func resourceAciBridgeDomain() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "ep move detection garp based mode",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"garp",
-				}, false),
 			},
 
 			"intersite_bum_traffic_allow": &schema.Schema{
@@ -84,11 +64,6 @@ func resourceAciBridgeDomain() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "Mo doc not defined in techpub!!!",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"no",
-					"yes",
-				}, false),
 			},
 
 			"intersite_l2_stretch": &schema.Schema{
@@ -96,11 +71,6 @@ func resourceAciBridgeDomain() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "Mo doc not defined in techpub!!!",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"no",
-					"yes",
-				}, false),
 			},
 
 			"ip_learning": &schema.Schema{
@@ -108,11 +78,6 @@ func resourceAciBridgeDomain() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "Endpoint Dataplane Learning",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"no",
-					"yes",
-				}, false),
 			},
 
 			"limit_ip_learn_to_subnets": &schema.Schema{
@@ -120,11 +85,6 @@ func resourceAciBridgeDomain() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "limits ip learning to bd subnets only",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"no",
-					"yes",
-				}, false),
 			},
 
 			"ll_addr": &schema.Schema{
@@ -146,11 +106,6 @@ func resourceAciBridgeDomain() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "Mo doc not defined in techpub!!!",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"no",
-					"yes",
-				}, false),
 			},
 
 			"multi_dst_pkt_act": &schema.Schema{
@@ -158,12 +113,6 @@ func resourceAciBridgeDomain() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "forwarding method for multi destinations",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"bd-flood",
-					"drop",
-					"encap-flood",
-				}, false),
 			},
 
 			"name_alias": &schema.Schema{
@@ -178,11 +127,6 @@ func resourceAciBridgeDomain() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "component type",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"fc",
-					"regular",
-				}, false),
 			},
 
 			"unicast_route": &schema.Schema{
@@ -190,11 +134,6 @@ func resourceAciBridgeDomain() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "Unicast routing",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"no",
-					"yes",
-				}, false),
 			},
 
 			"unk_mac_ucast_act": &schema.Schema{
@@ -202,11 +141,6 @@ func resourceAciBridgeDomain() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "forwarding method for l2 destinations",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"flood",
-					"proxy",
-				}, false),
 			},
 
 			"unk_mcast_act": &schema.Schema{
@@ -214,11 +148,6 @@ func resourceAciBridgeDomain() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "parameter used by node to forward data",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"flood",
-					"opt-flood",
-				}, false),
 			},
 
 			"vmac": &schema.Schema{
@@ -226,10 +155,6 @@ func resourceAciBridgeDomain() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "Mo doc not defined in techpub!!!",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"not-applicable",
-				}, false),
 			},
 
 			"relation_fv_rs_bd_to_profile": &schema.Schema{
@@ -250,6 +175,12 @@ func resourceAciBridgeDomain() *schema.Resource {
 				Optional:    true,
 				Description: "Create relation to monEPGPol",
 			},
+			"relation_fv_rs_bd_to_nd_p": &schema.Schema{
+				Type: schema.TypeString,
+
+				Optional:    true,
+				Description: "Create relation to ndIfPol",
+			},
 			"relation_fv_rs_bd_flood_to": &schema.Schema{
 				Type:        schema.TypeSet,
 				Elem:        &schema.Schema{Type: schema.TypeString},
@@ -262,6 +193,12 @@ func resourceAciBridgeDomain() *schema.Resource {
 
 				Optional:    true,
 				Description: "Create relation to fhsBDPol",
+			},
+			"relation_fv_rs_ctx": &schema.Schema{
+				Type: schema.TypeString,
+
+				Optional:    true,
+				Description: "Create relation to fvCtx",
 			},
 			"relation_fv_rs_bd_to_netflow_monitor_pol": &schema.Schema{
 				Type:        schema.TypeSet,
@@ -279,6 +216,18 @@ func resourceAciBridgeDomain() *schema.Resource {
 						},
 					},
 				},
+			},
+			"relation_fv_rs_igmpsn": &schema.Schema{
+				Type: schema.TypeString,
+
+				Optional:    true,
+				Description: "Create relation to igmpSnoopPol",
+			},
+			"relation_fv_rs_bd_to_ep_ret": &schema.Schema{
+				Type: schema.TypeString,
+
+				Optional:    true,
+				Description: "Create relation to fvEpRetPol",
 			},
 			"relation_fv_rs_bd_to_out": &schema.Schema{
 				Type:        schema.TypeSet,
@@ -424,7 +373,6 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 		}
 
 	}
-
 	if relationTofvRsBDToRelayP, ok := d.GetOk("relation_fv_rs_bd_to_relay_p"); ok {
 		relationParam := relationTofvRsBDToRelayP.(string)
 		err = aciClient.CreateRelationfvRsBDToRelayP(fvBD.DistinguishedName, relationParam)
@@ -433,7 +381,6 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 		}
 
 	}
-
 	if relationTofvRsABDPolMonPol, ok := d.GetOk("relation_fv_rs_abd_pol_mon_pol"); ok {
 		relationParam := relationTofvRsABDPolMonPol.(string)
 		err = aciClient.CreateRelationfvRsABDPolMonPol(fvBD.DistinguishedName, relationParam)
@@ -442,7 +389,14 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 		}
 
 	}
+	if relationTofvRsBDToNdP, ok := d.GetOk("relation_fv_rs_bd_to_nd_p"); ok {
+		relationParam := relationTofvRsBDToNdP.(string)
+		err = aciClient.CreateRelationfvRsBDToNdP(fvBD.DistinguishedName, relationParam)
+		if err != nil {
+			return err
+		}
 
+	}
 	if relationTofvRsBdFloodTo, ok := d.GetOk("relation_fv_rs_bd_flood_to"); ok {
 		relationParamList := toStringList(relationTofvRsBdFloodTo.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
@@ -453,7 +407,6 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 			}
 		}
 	}
-
 	if relationTofvRsBDToFhs, ok := d.GetOk("relation_fv_rs_bd_to_fhs"); ok {
 		relationParam := relationTofvRsBDToFhs.(string)
 		err = aciClient.CreateRelationfvRsBDToFhs(fvBD.DistinguishedName, relationParam)
@@ -462,7 +415,14 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 		}
 
 	}
+	if relationTofvRsCtx, ok := d.GetOk("relation_fv_rs_ctx"); ok {
+		relationParam := relationTofvRsCtx.(string)
+		err = aciClient.CreateRelationfvRsCtx(fvBD.DistinguishedName, relationParam)
+		if err != nil {
+			return err
+		}
 
+	}
 	if relationTofvRsBDToNetflowMonitorPol, ok := d.GetOk("relation_fv_rs_bd_to_netflow_monitor_pol"); ok {
 
 		relationParamList := relationTofvRsBDToNetflowMonitorPol.(*schema.Set).List()
@@ -475,7 +435,22 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 		}
 
 	}
+	if relationTofvRsIgmpsn, ok := d.GetOk("relation_fv_rs_igmpsn"); ok {
+		relationParam := relationTofvRsIgmpsn.(string)
+		err = aciClient.CreateRelationfvRsIgmpsn(fvBD.DistinguishedName, relationParam)
+		if err != nil {
+			return err
+		}
 
+	}
+	if relationTofvRsBdToEpRet, ok := d.GetOk("relation_fv_rs_bd_to_ep_ret"); ok {
+		relationParam := relationTofvRsBdToEpRet.(string)
+		err = aciClient.CreateRelationfvRsBdToEpRet(fvBD.DistinguishedName, relationParam)
+		if err != nil {
+			return err
+		}
+
+	}
 	if relationTofvRsBDToOut, ok := d.GetOk("relation_fv_rs_bd_to_out"); ok {
 		relationParamList := toStringList(relationTofvRsBDToOut.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
@@ -562,6 +537,7 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 	if err != nil {
 		return err
 	}
+
 	if d.HasChange("relation_fv_rs_bd_to_profile") {
 		_, newRelParam := d.GetChange("relation_fv_rs_bd_to_profile")
 		err = aciClient.DeleteRelationfvRsBDToProfile(fvBD.DistinguishedName)
@@ -598,6 +574,14 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 		}
 
 	}
+	if d.HasChange("relation_fv_rs_bd_to_nd_p") {
+		_, newRelParam := d.GetChange("relation_fv_rs_bd_to_nd_p")
+		err = aciClient.CreateRelationfvRsBDToNdP(fvBD.DistinguishedName, newRelParam.(string))
+		if err != nil {
+			return err
+		}
+
+	}
 	if d.HasChange("relation_fv_rs_bd_flood_to") {
 		oldRel, newRel := d.GetChange("relation_fv_rs_bd_flood_to")
 		oldRelSet := oldRel.(*schema.Set)
@@ -620,6 +604,7 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 			}
 
 		}
+
 	}
 	if d.HasChange("relation_fv_rs_bd_to_fhs") {
 		_, newRelParam := d.GetChange("relation_fv_rs_bd_to_fhs")
@@ -628,6 +613,14 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		err = aciClient.CreateRelationfvRsBDToFhs(fvBD.DistinguishedName, newRelParam.(string))
+		if err != nil {
+			return err
+		}
+
+	}
+	if d.HasChange("relation_fv_rs_ctx") {
+		_, newRelParam := d.GetChange("relation_fv_rs_ctx")
+		err = aciClient.CreateRelationfvRsCtx(fvBD.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -651,6 +644,23 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 				return err
 			}
 		}
+
+	}
+	if d.HasChange("relation_fv_rs_igmpsn") {
+		_, newRelParam := d.GetChange("relation_fv_rs_igmpsn")
+		err = aciClient.CreateRelationfvRsIgmpsn(fvBD.DistinguishedName, newRelParam.(string))
+		if err != nil {
+			return err
+		}
+
+	}
+	if d.HasChange("relation_fv_rs_bd_to_ep_ret") {
+		_, newRelParam := d.GetChange("relation_fv_rs_bd_to_ep_ret")
+		err = aciClient.CreateRelationfvRsBdToEpRet(fvBD.DistinguishedName, newRelParam.(string))
+		if err != nil {
+			return err
+		}
+
 	}
 	if d.HasChange("relation_fv_rs_bd_to_out") {
 		oldRel, newRel := d.GetChange("relation_fv_rs_bd_to_out")
@@ -674,6 +684,7 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 			}
 
 		}
+
 	}
 
 	d.SetId(fvBD.DistinguishedName)

@@ -6,7 +6,6 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/hashicorp/terraform/helper/validation"
 )
 
 func resourceAciSubnet() *schema.Resource {
@@ -38,13 +37,6 @@ func resourceAciSubnet() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "subnet control state",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"nd",
-					"no-default-gateway",
-					"querier",
-					"unspecified",
-				}, false),
 			},
 
 			"name_alias": &schema.Schema{
@@ -59,11 +51,6 @@ func resourceAciSubnet() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "subnet preferred status",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"no",
-					"yes",
-				}, false),
 			},
 
 			"scope": &schema.Schema{
@@ -71,12 +58,6 @@ func resourceAciSubnet() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "subnet visibility",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"private",
-					"public",
-					"shared",
-				}, false),
 			},
 
 			"virtual": &schema.Schema{
@@ -84,11 +65,6 @@ func resourceAciSubnet() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "Mo doc not defined in techpub!!!",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"no",
-					"yes",
-				}, false),
 			},
 
 			"relation_fv_rs_bd_subnet_to_profile": &schema.Schema{
@@ -199,7 +175,6 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 		}
 
 	}
-
 	if relationTofvRsBDSubnetToOut, ok := d.GetOk("relation_fv_rs_bd_subnet_to_out"); ok {
 		relationParamList := toStringList(relationTofvRsBDSubnetToOut.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
@@ -210,7 +185,6 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 			}
 		}
 	}
-
 	if relationTofvRsNdPfxPol, ok := d.GetOk("relation_fv_rs_nd_pfx_pol"); ok {
 		relationParam := relationTofvRsNdPfxPol.(string)
 		err = aciClient.CreateRelationfvRsNdPfxPol(fvSubnet.DistinguishedName, relationParam)
@@ -259,6 +233,7 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
+
 	if d.HasChange("relation_fv_rs_bd_subnet_to_profile") {
 		_, newRelParam := d.GetChange("relation_fv_rs_bd_subnet_to_profile")
 		err = aciClient.DeleteRelationfvRsBDSubnetToProfile(fvSubnet.DistinguishedName)
@@ -293,6 +268,7 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 			}
 
 		}
+
 	}
 	if d.HasChange("relation_fv_rs_nd_pfx_pol") {
 		_, newRelParam := d.GetChange("relation_fv_rs_nd_pfx_pol")

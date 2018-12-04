@@ -5,7 +5,6 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/hashicorp/terraform/helper/validation"
 )
 
 func resourceAciApplicationEPG() *schema.Resource {
@@ -37,11 +36,6 @@ func resourceAciApplicationEPG() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "Mo doc not defined in techpub!!!",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"disabled",
-					"enabled",
-				}, false),
 			},
 
 			"fwd_ctrl": &schema.Schema{
@@ -49,11 +43,6 @@ func resourceAciApplicationEPG() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "Mo doc not defined in techpub!!!",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"none",
-					"proxy-arp",
-				}, false),
 			},
 
 			"is_attr_based_e_pg": &schema.Schema{
@@ -61,11 +50,6 @@ func resourceAciApplicationEPG() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "Mo doc not defined in techpub!!!",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"no",
-					"yes",
-				}, false),
 			},
 
 			"match_t": &schema.Schema{
@@ -73,13 +57,6 @@ func resourceAciApplicationEPG() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "match criteria",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"All",
-					"AtleastOne",
-					"AtmostOne",
-					"None",
-				}, false),
 			},
 
 			"name_alias": &schema.Schema{
@@ -94,11 +71,6 @@ func resourceAciApplicationEPG() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "enforcement preference",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"enforced",
-					"unenforced",
-				}, false),
 			},
 
 			"pref_gr_memb": &schema.Schema{
@@ -106,11 +78,6 @@ func resourceAciApplicationEPG() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "Mo doc not defined in techpub!!!",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"exclude",
-					"include",
-				}, false),
 			},
 
 			"prio": &schema.Schema{
@@ -118,15 +85,20 @@ func resourceAciApplicationEPG() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "qos priority class id",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"level1",
-					"level2",
-					"level3",
-					"unspecified",
-				}, false),
 			},
 
+			"relation_fv_rs_bd": &schema.Schema{
+				Type: schema.TypeString,
+
+				Optional:    true,
+				Description: "Create relation to fvBD",
+			},
+			"relation_fv_rs_cust_qos_pol": &schema.Schema{
+				Type: schema.TypeString,
+
+				Optional:    true,
+				Description: "Create relation to qosCustomPol",
+			},
 			"relation_fv_rs_dom_att": &schema.Schema{
 				Type:        schema.TypeSet,
 				Elem:        &schema.Schema{Type: schema.TypeString},
@@ -146,6 +118,13 @@ func resourceAciApplicationEPG() *schema.Resource {
 				Elem:        &schema.Schema{Type: schema.TypeString},
 				Optional:    true,
 				Description: "Create relation to vzBrCP",
+				Set:         schema.HashString,
+			},
+			"relation_fv_rs_graph_def": &schema.Schema{
+				Type:        schema.TypeSet,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+				Optional:    true,
+				Description: "Create relation to vzGraphCont",
 				Set:         schema.HashString,
 			},
 			"relation_fv_rs_cons_if": &schema.Schema{
@@ -180,6 +159,13 @@ func resourceAciApplicationEPG() *schema.Resource {
 				Elem:        &schema.Schema{Type: schema.TypeString},
 				Optional:    true,
 				Description: "Create relation to vzBrCP",
+				Set:         schema.HashString,
+			},
+			"relation_fv_rs_prov_def": &schema.Schema{
+				Type:        schema.TypeSet,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+				Optional:    true,
+				Description: "Create relation to vzCtrctEPgCont",
 				Set:         schema.HashString,
 			},
 			"relation_fv_rs_trust_ctrl": &schema.Schema{
@@ -304,6 +290,22 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 		return err
 	}
 
+	if relationTofvRsBd, ok := d.GetOk("relation_fv_rs_bd"); ok {
+		relationParam := relationTofvRsBd.(string)
+		err = aciClient.CreateRelationfvRsBd(fvAEPg.DistinguishedName, relationParam)
+		if err != nil {
+			return err
+		}
+
+	}
+	if relationTofvRsCustQosPol, ok := d.GetOk("relation_fv_rs_cust_qos_pol"); ok {
+		relationParam := relationTofvRsCustQosPol.(string)
+		err = aciClient.CreateRelationfvRsCustQosPol(fvAEPg.DistinguishedName, relationParam)
+		if err != nil {
+			return err
+		}
+
+	}
 	if relationTofvRsDomAtt, ok := d.GetOk("relation_fv_rs_dom_att"); ok {
 		relationParamList := toStringList(relationTofvRsDomAtt.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
@@ -314,7 +316,6 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 			}
 		}
 	}
-
 	if relationTofvRsFcPathAtt, ok := d.GetOk("relation_fv_rs_fc_path_att"); ok {
 		relationParamList := toStringList(relationTofvRsFcPathAtt.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
@@ -325,7 +326,6 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 			}
 		}
 	}
-
 	if relationTofvRsProv, ok := d.GetOk("relation_fv_rs_prov"); ok {
 		relationParamList := toStringList(relationTofvRsProv.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
@@ -336,7 +336,16 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 			}
 		}
 	}
+	if relationTofvRsGraphDef, ok := d.GetOk("relation_fv_rs_graph_def"); ok {
+		relationParamList := toStringList(relationTofvRsGraphDef.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			err = aciClient.CreateRelationfvRsGraphDef(fvAEPg.DistinguishedName, relationParam)
 
+			if err != nil {
+				return err
+			}
+		}
+	}
 	if relationTofvRsConsIf, ok := d.GetOk("relation_fv_rs_cons_if"); ok {
 		relationParamList := toStringList(relationTofvRsConsIf.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
@@ -347,7 +356,6 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 			}
 		}
 	}
-
 	if relationTofvRsSecInherited, ok := d.GetOk("relation_fv_rs_sec_inherited"); ok {
 		relationParamList := toStringList(relationTofvRsSecInherited.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
@@ -358,7 +366,6 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 			}
 		}
 	}
-
 	if relationTofvRsNodeAtt, ok := d.GetOk("relation_fv_rs_node_att"); ok {
 		relationParamList := toStringList(relationTofvRsNodeAtt.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
@@ -369,7 +376,6 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 			}
 		}
 	}
-
 	if relationTofvRsDppPol, ok := d.GetOk("relation_fv_rs_dpp_pol"); ok {
 		relationParam := relationTofvRsDppPol.(string)
 		err = aciClient.CreateRelationfvRsDppPol(fvAEPg.DistinguishedName, relationParam)
@@ -378,7 +384,6 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 		}
 
 	}
-
 	if relationTofvRsCons, ok := d.GetOk("relation_fv_rs_cons"); ok {
 		relationParamList := toStringList(relationTofvRsCons.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
@@ -389,7 +394,16 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 			}
 		}
 	}
+	if relationTofvRsProvDef, ok := d.GetOk("relation_fv_rs_prov_def"); ok {
+		relationParamList := toStringList(relationTofvRsProvDef.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			err = aciClient.CreateRelationfvRsProvDef(fvAEPg.DistinguishedName, relationParam)
 
+			if err != nil {
+				return err
+			}
+		}
+	}
 	if relationTofvRsTrustCtrl, ok := d.GetOk("relation_fv_rs_trust_ctrl"); ok {
 		relationParam := relationTofvRsTrustCtrl.(string)
 		err = aciClient.CreateRelationfvRsTrustCtrl(fvAEPg.DistinguishedName, relationParam)
@@ -398,7 +412,6 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 		}
 
 	}
-
 	if relationTofvRsPathAtt, ok := d.GetOk("relation_fv_rs_path_att"); ok {
 		relationParamList := toStringList(relationTofvRsPathAtt.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
@@ -409,7 +422,6 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 			}
 		}
 	}
-
 	if relationTofvRsProtBy, ok := d.GetOk("relation_fv_rs_prot_by"); ok {
 		relationParamList := toStringList(relationTofvRsProtBy.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
@@ -420,7 +432,6 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 			}
 		}
 	}
-
 	if relationTofvRsAEPgMonPol, ok := d.GetOk("relation_fv_rs_ae_pg_mon_pol"); ok {
 		relationParam := relationTofvRsAEPgMonPol.(string)
 		err = aciClient.CreateRelationfvRsAEPgMonPol(fvAEPg.DistinguishedName, relationParam)
@@ -429,7 +440,6 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 		}
 
 	}
-
 	if relationTofvRsIntraEpg, ok := d.GetOk("relation_fv_rs_intra_epg"); ok {
 		relationParamList := toStringList(relationTofvRsIntraEpg.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
@@ -486,6 +496,23 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 	if err != nil {
 		return err
 	}
+
+	if d.HasChange("relation_fv_rs_bd") {
+		_, newRelParam := d.GetChange("relation_fv_rs_bd")
+		err = aciClient.CreateRelationfvRsBd(fvAEPg.DistinguishedName, newRelParam.(string))
+		if err != nil {
+			return err
+		}
+
+	}
+	if d.HasChange("relation_fv_rs_cust_qos_pol") {
+		_, newRelParam := d.GetChange("relation_fv_rs_cust_qos_pol")
+		err = aciClient.CreateRelationfvRsCustQosPol(fvAEPg.DistinguishedName, newRelParam.(string))
+		if err != nil {
+			return err
+		}
+
+	}
 	if d.HasChange("relation_fv_rs_dom_att") {
 		oldRel, newRel := d.GetChange("relation_fv_rs_dom_att")
 		oldRelSet := oldRel.(*schema.Set)
@@ -508,6 +535,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 			}
 
 		}
+
 	}
 	if d.HasChange("relation_fv_rs_fc_path_att") {
 		oldRel, newRel := d.GetChange("relation_fv_rs_fc_path_att")
@@ -531,6 +559,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 			}
 
 		}
+
 	}
 	if d.HasChange("relation_fv_rs_prov") {
 		oldRel, newRel := d.GetChange("relation_fv_rs_prov")
@@ -554,6 +583,22 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 			}
 
 		}
+
+	}
+	if d.HasChange("relation_fv_rs_graph_def") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_graph_def")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			err = aciClient.CreateRelationfvRsGraphDef(fvAEPg.DistinguishedName, relDn)
+			if err != nil {
+				return err
+			}
+
+		}
+
 	}
 	if d.HasChange("relation_fv_rs_cons_if") {
 		oldRel, newRel := d.GetChange("relation_fv_rs_cons_if")
@@ -577,6 +622,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 			}
 
 		}
+
 	}
 	if d.HasChange("relation_fv_rs_sec_inherited") {
 		oldRel, newRel := d.GetChange("relation_fv_rs_sec_inherited")
@@ -600,6 +646,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 			}
 
 		}
+
 	}
 	if d.HasChange("relation_fv_rs_node_att") {
 		oldRel, newRel := d.GetChange("relation_fv_rs_node_att")
@@ -623,6 +670,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 			}
 
 		}
+
 	}
 	if d.HasChange("relation_fv_rs_dpp_pol") {
 		_, newRelParam := d.GetChange("relation_fv_rs_dpp_pol")
@@ -658,6 +706,22 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 			}
 
 		}
+
+	}
+	if d.HasChange("relation_fv_rs_prov_def") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_prov_def")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			err = aciClient.CreateRelationfvRsProvDef(fvAEPg.DistinguishedName, relDn)
+			if err != nil {
+				return err
+			}
+
+		}
+
 	}
 	if d.HasChange("relation_fv_rs_trust_ctrl") {
 		_, newRelParam := d.GetChange("relation_fv_rs_trust_ctrl")
@@ -693,6 +757,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 			}
 
 		}
+
 	}
 	if d.HasChange("relation_fv_rs_prot_by") {
 		oldRel, newRel := d.GetChange("relation_fv_rs_prot_by")
@@ -716,6 +781,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 			}
 
 		}
+
 	}
 	if d.HasChange("relation_fv_rs_ae_pg_mon_pol") {
 		_, newRelParam := d.GetChange("relation_fv_rs_ae_pg_mon_pol")
@@ -751,6 +817,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 			}
 
 		}
+
 	}
 
 	d.SetId(fvAEPg.DistinguishedName)

@@ -5,7 +5,6 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/hashicorp/terraform/helper/validation"
 )
 
 func resourceAciFilterEntry() *schema.Resource {
@@ -37,11 +36,6 @@ func resourceAciFilterEntry() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "fragment",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"no",
-					"yes",
-				}, false),
 			},
 
 			"arp_opc": &schema.Schema{
@@ -49,12 +43,6 @@ func resourceAciFilterEntry() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "open peripheral codes",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"reply",
-					"req",
-					"unspecified",
-				}, false),
 			},
 
 			"d_from_port": &schema.Schema{
@@ -62,17 +50,6 @@ func resourceAciFilterEntry() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "end of the destination port range",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"dns",
-					"ftpData",
-					"http",
-					"https",
-					"pop3",
-					"rtsp",
-					"smtp",
-					"unspecified",
-				}, false),
 			},
 
 			"d_to_port": &schema.Schema{
@@ -80,17 +57,6 @@ func resourceAciFilterEntry() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "start of the destination port range",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"dns",
-					"ftpData",
-					"http",
-					"https",
-					"pop3",
-					"rtsp",
-					"smtp",
-					"unspecified",
-				}, false),
 			},
 
 			"ether_t": &schema.Schema{
@@ -98,18 +64,6 @@ func resourceAciFilterEntry() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "ethertype",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"arp",
-					"fcoe",
-					"ip",
-					"ipv4",
-					"ipv6",
-					"mac_security",
-					"mpls_ucast",
-					"trill",
-					"unspecified",
-				}, false),
 			},
 
 			"icmpv4_t": &schema.Schema{
@@ -117,15 +71,6 @@ func resourceAciFilterEntry() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"dst-unreach",
-					"echo",
-					"echo-rep",
-					"src-quench",
-					"time-exceeded",
-					"unspecified",
-				}, false),
 			},
 
 			"icmpv6_t": &schema.Schema{
@@ -133,17 +78,6 @@ func resourceAciFilterEntry() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"dst-unreach",
-					"echo-rep",
-					"echo-req",
-					"nbr-advert",
-					"nbr-solicit",
-					"redirect",
-					"time-exceeded",
-					"unspecified",
-				}, false),
 			},
 
 			"match_dscp": &schema.Schema{
@@ -151,32 +85,6 @@ func resourceAciFilterEntry() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "Mo doc not defined in techpub!!!",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"AF11",
-					"AF12",
-					"AF13",
-					"AF21",
-					"AF22",
-					"AF23",
-					"AF31",
-					"AF32",
-					"AF33",
-					"AF41",
-					"AF42",
-					"AF43",
-					"CS0",
-					"CS1",
-					"CS2",
-					"CS3",
-					"CS4",
-					"CS5",
-					"CS6",
-					"CS7",
-					"EF",
-					"VA",
-					"unspecified",
-				}, false),
 			},
 
 			"name_alias": &schema.Schema{
@@ -191,21 +99,6 @@ func resourceAciFilterEntry() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "level 3 ip protocol",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"egp",
-					"eigrp",
-					"icmp",
-					"icmpv6",
-					"igmp",
-					"igp",
-					"l2tp",
-					"ospfigp",
-					"pim",
-					"tcp",
-					"udp",
-					"unspecified",
-				}, false),
 			},
 
 			"s_from_port": &schema.Schema{
@@ -213,17 +106,6 @@ func resourceAciFilterEntry() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "start of the source port range",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"dns",
-					"ftpData",
-					"http",
-					"https",
-					"pop3",
-					"rtsp",
-					"smtp",
-					"unspecified",
-				}, false),
 			},
 
 			"s_to_port": &schema.Schema{
@@ -231,17 +113,6 @@ func resourceAciFilterEntry() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "end of the source port range",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"dns",
-					"ftpData",
-					"http",
-					"https",
-					"pop3",
-					"rtsp",
-					"smtp",
-					"unspecified",
-				}, false),
 			},
 
 			"stateful": &schema.Schema{
@@ -249,11 +120,6 @@ func resourceAciFilterEntry() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "stateful entry",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"no",
-					"yes",
-				}, false),
 			},
 
 			"tcp_rules": &schema.Schema{
@@ -261,15 +127,6 @@ func resourceAciFilterEntry() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "tcp flags",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"ack",
-					"est",
-					"fin",
-					"rst",
-					"syn",
-					"unspecified",
-				}, false),
 			},
 		}),
 	}

@@ -5,7 +5,6 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/hashicorp/terraform/helper/validation"
 )
 
 func resourceAciContract() *schema.Resource {
@@ -44,13 +43,6 @@ func resourceAciContract() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "priority level of the service contract",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"level1",
-					"level2",
-					"level3",
-					"unspecified",
-				}, false),
 			},
 
 			"scope": &schema.Schema{
@@ -58,13 +50,6 @@ func resourceAciContract() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "scope of contract",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"application-profile",
-					"context",
-					"global",
-					"tenant",
-				}, false),
 			},
 
 			"target_dscp": &schema.Schema{
@@ -72,32 +57,6 @@ func resourceAciContract() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "target dscp",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"AF11",
-					"AF12",
-					"AF13",
-					"AF21",
-					"AF22",
-					"AF23",
-					"AF31",
-					"AF32",
-					"AF33",
-					"AF41",
-					"AF42",
-					"AF43",
-					"CS0",
-					"CS1",
-					"CS2",
-					"CS3",
-					"CS4",
-					"CS5",
-					"CS6",
-					"CS7",
-					"EF",
-					"VA",
-					"unspecified",
-				}, false),
 			},
 
 			"relation_vz_rs_graph_att": &schema.Schema{
@@ -221,6 +180,7 @@ func resourceAciContractUpdate(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
+
 	if d.HasChange("relation_vz_rs_graph_att") {
 		_, newRelParam := d.GetChange("relation_vz_rs_graph_att")
 		err = aciClient.DeleteRelationvzRsGraphAtt(vzBrCP.DistinguishedName)

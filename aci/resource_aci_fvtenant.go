@@ -41,6 +41,12 @@ func resourceAciTenant() *schema.Resource {
 				Description: "Create relation to vzFilter",
 				Set:         schema.HashString,
 			},
+			"relation_fv_rs_tenant_mon_pol": &schema.Schema{
+				Type: schema.TypeString,
+
+				Optional:    true,
+				Description: "Create relation to monEPGPol",
+			},
 		}),
 	}
 }
@@ -109,6 +115,14 @@ func resourceAciTenantCreate(d *schema.ResourceData, m interface{}) error {
 			}
 		}
 	}
+	if relationTofvRsTenantMonPol, ok := d.GetOk("relation_fv_rs_tenant_mon_pol"); ok {
+		relationParam := relationTofvRsTenantMonPol.(string)
+		err = aciClient.CreateRelationfvRsTenantMonPol(fvTenant.DistinguishedName, relationParam)
+		if err != nil {
+			return err
+		}
+
+	}
 
 	d.SetId(fvTenant.DistinguishedName)
 	return resourceAciTenantRead(d, m)
@@ -133,6 +147,7 @@ func resourceAciTenantUpdate(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
+
 	if d.HasChange("relation_fv_rs_tn_deny_rule") {
 		oldRel, newRel := d.GetChange("relation_fv_rs_tn_deny_rule")
 		oldRelSet := oldRel.(*schema.Set)
@@ -155,6 +170,15 @@ func resourceAciTenantUpdate(d *schema.ResourceData, m interface{}) error {
 			}
 
 		}
+
+	}
+	if d.HasChange("relation_fv_rs_tenant_mon_pol") {
+		_, newRelParam := d.GetChange("relation_fv_rs_tenant_mon_pol")
+		err = aciClient.CreateRelationfvRsTenantMonPol(fvTenant.DistinguishedName, newRelParam.(string))
+		if err != nil {
+			return err
+		}
+
 	}
 
 	d.SetId(fvTenant.DistinguishedName)

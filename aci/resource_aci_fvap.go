@@ -5,7 +5,6 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/hashicorp/terraform/helper/validation"
 )
 
 func resourceAciApplicationProfile() *schema.Resource {
@@ -44,13 +43,6 @@ func resourceAciApplicationProfile() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "priority class id",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"level1",
-					"level2",
-					"level3",
-					"unspecified",
-				}, false),
 			},
 
 			"relation_fv_rs_ap_mon_pol": &schema.Schema{
@@ -160,6 +152,7 @@ func resourceAciApplicationProfileUpdate(d *schema.ResourceData, m interface{}) 
 	if err != nil {
 		return err
 	}
+
 	if d.HasChange("relation_fv_rs_ap_mon_pol") {
 		_, newRelParam := d.GetChange("relation_fv_rs_ap_mon_pol")
 		err = aciClient.DeleteRelationfvRsApMonPol(fvAp.DistinguishedName)

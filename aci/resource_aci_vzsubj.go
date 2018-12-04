@@ -5,7 +5,6 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/hashicorp/terraform/helper/validation"
 )
 
 func resourceAciContractSubject() *schema.Resource {
@@ -37,13 +36,6 @@ func resourceAciContractSubject() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "consumer subject match criteria",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"All",
-					"AtleastOne",
-					"AtmostOne",
-					"None",
-				}, false),
 			},
 
 			"name_alias": &schema.Schema{
@@ -58,13 +50,6 @@ func resourceAciContractSubject() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "priority level specifier",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"level1",
-					"level2",
-					"level3",
-					"unspecified",
-				}, false),
 			},
 
 			"prov_match_t": &schema.Schema{
@@ -72,13 +57,6 @@ func resourceAciContractSubject() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "consumer subject match criteria",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"All",
-					"AtleastOne",
-					"AtmostOne",
-					"None",
-				}, false),
 			},
 
 			"rev_flt_ports": &schema.Schema{
@@ -86,11 +64,6 @@ func resourceAciContractSubject() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "enables filter to apply on ingress and egress traffic",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"no",
-					"yes",
-				}, false),
 			},
 
 			"target_dscp": &schema.Schema{
@@ -98,32 +71,6 @@ func resourceAciContractSubject() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "target dscp",
-
-				ValidateFunc: validation.StringInSlice([]string{
-					"AF11",
-					"AF12",
-					"AF13",
-					"AF21",
-					"AF22",
-					"AF23",
-					"AF31",
-					"AF32",
-					"AF33",
-					"AF41",
-					"AF42",
-					"AF43",
-					"CS0",
-					"CS1",
-					"CS2",
-					"CS3",
-					"CS4",
-					"CS5",
-					"CS6",
-					"CS7",
-					"EF",
-					"VA",
-					"unspecified",
-				}, false),
 			},
 
 			"relation_vz_rs_subj_graph_att": &schema.Schema{
@@ -228,7 +175,6 @@ func resourceAciContractSubjectCreate(d *schema.ResourceData, m interface{}) err
 		}
 
 	}
-
 	if relationTovzRsSubjFiltAtt, ok := d.GetOk("relation_vz_rs_subj_filt_att"); ok {
 		relationParamList := toStringList(relationTovzRsSubjFiltAtt.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
@@ -279,6 +225,7 @@ func resourceAciContractSubjectUpdate(d *schema.ResourceData, m interface{}) err
 	if err != nil {
 		return err
 	}
+
 	if d.HasChange("relation_vz_rs_subj_graph_att") {
 		_, newRelParam := d.GetChange("relation_vz_rs_subj_graph_att")
 		err = aciClient.DeleteRelationvzRsSubjGraphAtt(vzSubj.DistinguishedName)
@@ -313,6 +260,7 @@ func resourceAciContractSubjectUpdate(d *schema.ResourceData, m interface{}) err
 			}
 
 		}
+
 	}
 
 	d.SetId(vzSubj.DistinguishedName)

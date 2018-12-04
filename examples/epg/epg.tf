@@ -20,6 +20,7 @@ resource "aci_application_epg" "demoepg" {
   pc_enf_pref                  = "unenforced"
   pref_gr_memb                 = "exclude"
   prio                         = "unspecified"
+  relation_fv_rs_bd            = "testbd_update"
   relation_fv_rs_dom_att       = ["test"]                                            # Relation to infraDomP class. Cardinality - N_TO_M.
   relation_fv_rs_fc_path_att   = ["testfabric"]                                      # Relation to fabricPathEp class. Cardinality - N_TO_M.
   relation_fv_rs_prov          = ["testcontract"]                                    # Relation to vzBrCP class. Cardinality - N_TO_M.
