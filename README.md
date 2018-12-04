@@ -51,6 +51,20 @@ resource "aci_app_profile" "test-app" {
   description = "This app profile is created by terraform"
 }
 ```
+Note : If you are facing the issue of `invalid character '<' looking for beginning of value` while running terraform apply, Use signature based authentication in that case.
+```hcl
+  provider "aci" {
+      # cisco-aci user name
+      username = "admin"
+      # private key path
+      private_key = "path to private key"
+      # Certificate Name
+      cert_name = "certificate.crt"
+      # cisco-aci url
+      url      = "https://my-cisco-aci.com"
+      insecure = true
+  }
+```
 
 Developing The Provider
 -----------------------
