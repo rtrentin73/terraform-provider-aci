@@ -9,6 +9,13 @@ resource "aci_application_profile" "app_profile_for_epg" {
   description = "This app profile is created by terraform ACI providers"
 }
 
+resource "aci_application_epg" "inherit_epg" {
+  application_profile_dn = "${aci_application_profile.app_profile_for_epg.id}"
+  name                   = "inherit_epg"
+  description            = "epg to create relation sec_inherited"
+
+}
+
 resource "aci_application_epg" "demoepg" {
   application_profile_dn       = "${aci_application_profile.app_profile_for_epg.id}"
   name                         = "tf_test_epg"
@@ -21,17 +28,17 @@ resource "aci_application_epg" "demoepg" {
   pref_gr_memb                 = "exclude"
   prio                         = "unspecified"
   relation_fv_rs_bd            = "testbd_update"
-  relation_fv_rs_dom_att       = ["test"]                                            # Relation to infraDomP class. Cardinality - N_TO_M.
-  relation_fv_rs_fc_path_att   = ["testfabric"]                                      # Relation to fabricPathEp class. Cardinality - N_TO_M.
-  relation_fv_rs_prov          = ["testcontract"]                                    # Relation to vzBrCP class. Cardinality - N_TO_M.
-  relation_fv_rs_cons_if       = ["testconsif"]                                      # Relation to vzCPIf class. Cardinality - N_TO_M.
-  relation_fv_rs_sec_inherited = ["testinherited"]                                   # Relation to fvEPg class. Cardinality - N_TO_M.
-  relation_fv_rs_node_att      = ["testnodeatt"]                                     # Relation to fabricNode class. Cardinality - N_TO_M.
-  relation_fv_rs_dpp_pol       = "testdpppol"                                        # Relation to qosDppPol class. Cardinality - N_TO_ONE.
-  relation_fv_rs_cons          = ["testrscons"]                                      # Relation to vzBrCP class. Cardinality - N_TO_M.
-  relation_fv_rs_trust_ctrl    = "testtrustctrl"                                     # Relation to fhsTrustCtrlPol class. Cardinality - N_TO_ONE.
-  relation_fv_rs_path_att      = ["testpathatt"]                                     # Relation to fabricPathEp class. Cardinality - N_TO_M.
-  relation_fv_rs_prot_by       = ["testprot"]                                        # Relation to vzTaboo class. Cardinality - N_TO_M.
-  relation_fv_rs_ae_pg_mon_pol = "aepgmonpol"                                        # Relation to monEPGPol class. Cardinality - N_TO_ONE.
-  relation_fv_rs_intra_epg     = ["testintraepg"]                                    # Relation to vzBrCP class. Cardinality - N_TO_M.
+  relation_fv_rs_dom_att       = ["test"]                                  # Relation to infraDomP class. Cardinality - N_TO_M.
+  relation_fv_rs_fc_path_att   = ["testfabric"]                            # Relation to fabricPathEp class. Cardinality - N_TO_M.
+  relation_fv_rs_prov          = ["${aci_contract.rs_prov_contract.id}"]   # Relation to vzBrCP class. Cardinality - N_TO_M.
+  relation_fv_rs_cons_if       = ["testconsif"]                            # Relation to vzCPIf class. Cardinality - N_TO_M.
+  relation_fv_rs_sec_inherited = ["${aci_application_epg.inherit_epg.id}"] # Relation to fvEPg class. Cardinality - N_TO_M.
+  relation_fv_rs_node_att      = ["testnodeatt"]                           # Relation to fabricNode class. Cardinality - N_TO_M.
+  relation_fv_rs_dpp_pol       = "testdpppol"                              # Relation to qosDppPol class. Cardinality - N_TO_ONE.
+  relation_fv_rs_cons          = ["${aci_contract.rs_cons_contract.id}"]   # Relation to vzBrCP class. Cardinality - N_TO_M.
+  relation_fv_rs_trust_ctrl    = "testtrustctrl"                           # Relation to fhsTrustCtrlPol class. Cardinality - N_TO_ONE.
+  relation_fv_rs_path_att      = ["testpathatt"]                           # Relation to fabricPathEp class. Cardinality - N_TO_M.
+  relation_fv_rs_prot_by       = ["testprot"]                              # Relation to vzTaboo class. Cardinality - N_TO_M.
+  relation_fv_rs_ae_pg_mon_pol = "aepgmonpol"                              # Relation to monEPGPol class. Cardinality - N_TO_ONE.
+  relation_fv_rs_intra_epg     = ["${aci_contract.intra_epg_contract.id}"] # Relation to vzBrCP class. Cardinality - N_TO_M.
 }

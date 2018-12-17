@@ -20,7 +20,7 @@ resource "aci_subnet" "demosubnet" {
   preferred                           = "no"
   scope                               = "private"
   virtual                             = "yes"
-  relation_fv_rs_bd_subnet_to_profile = "testprofle"                            # Relation to rtctrlProfile class. Cardinality - N_TO_ONE.
-  relation_fv_rs_bd_subnet_to_out     = ["testtoout"]                           # Relation to l3extOut class. Cardinality - N_TO_M.
-  relation_fv_rs_nd_pfx_pol           = "testpxfpol"                            # Relation to ndPfxPol class. Cardinality - N_TO_ONE.
+  relation_fv_rs_bd_subnet_to_profile = "testprofle"  # Relation to rtctrlProfile class. Cardinality - N_TO_ONE.
+  relation_fv_rs_bd_subnet_to_out     = ["testtoout"] # Relation to l3extOut class. Cardinality - N_TO_M.
+  relation_fv_rs_nd_pfx_pol           = "testpxfpol"  # Relation to ndPfxPol class. Cardinality - N_TO_ONE.
 }
