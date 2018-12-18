@@ -292,7 +292,7 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 
 	if relationTofvRsBd, ok := d.GetOk("relation_fv_rs_bd"); ok {
 		relationParam := relationTofvRsBd.(string)
-		err = aciClient.CreateRelationfvRsBd(fvAEPg.DistinguishedName, relationParam)
+		err = aciClient.CreateRelationfvRsBdFromApplicationEPG(fvAEPg.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -300,7 +300,7 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 	}
 	if relationTofvRsCustQosPol, ok := d.GetOk("relation_fv_rs_cust_qos_pol"); ok {
 		relationParam := relationTofvRsCustQosPol.(string)
-		err = aciClient.CreateRelationfvRsCustQosPol(fvAEPg.DistinguishedName, relationParam)
+		err = aciClient.CreateRelationfvRsCustQosPolFromApplicationEPG(fvAEPg.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -309,7 +309,7 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 	if relationTofvRsDomAtt, ok := d.GetOk("relation_fv_rs_dom_att"); ok {
 		relationParamList := toStringList(relationTofvRsDomAtt.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsDomAtt(fvAEPg.DistinguishedName, relationParam)
+			err = aciClient.CreateRelationfvRsDomAttFromApplicationEPG(fvAEPg.DistinguishedName, relationParam)
 
 			if err != nil {
 				return err
@@ -319,7 +319,7 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 	if relationTofvRsFcPathAtt, ok := d.GetOk("relation_fv_rs_fc_path_att"); ok {
 		relationParamList := toStringList(relationTofvRsFcPathAtt.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsFcPathAtt(fvAEPg.DistinguishedName, relationParam)
+			err = aciClient.CreateRelationfvRsFcPathAttFromApplicationEPG(fvAEPg.DistinguishedName, relationParam)
 
 			if err != nil {
 				return err
@@ -329,7 +329,7 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 	if relationTofvRsProv, ok := d.GetOk("relation_fv_rs_prov"); ok {
 		relationParamList := toStringList(relationTofvRsProv.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsProv(fvAEPg.DistinguishedName, relationParam)
+			err = aciClient.CreateRelationfvRsProvFromApplicationEPG(fvAEPg.DistinguishedName, relationParam)
 
 			if err != nil {
 				return err
@@ -339,7 +339,7 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 	if relationTofvRsGraphDef, ok := d.GetOk("relation_fv_rs_graph_def"); ok {
 		relationParamList := toStringList(relationTofvRsGraphDef.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsGraphDef(fvAEPg.DistinguishedName, relationParam)
+			err = aciClient.CreateRelationfvRsGraphDefFromApplicationEPG(fvAEPg.DistinguishedName, relationParam)
 
 			if err != nil {
 				return err
@@ -349,7 +349,7 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 	if relationTofvRsConsIf, ok := d.GetOk("relation_fv_rs_cons_if"); ok {
 		relationParamList := toStringList(relationTofvRsConsIf.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsConsIf(fvAEPg.DistinguishedName, relationParam)
+			err = aciClient.CreateRelationfvRsConsIfFromApplicationEPG(fvAEPg.DistinguishedName, relationParam)
 
 			if err != nil {
 				return err
@@ -359,7 +359,7 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 	if relationTofvRsSecInherited, ok := d.GetOk("relation_fv_rs_sec_inherited"); ok {
 		relationParamList := toStringList(relationTofvRsSecInherited.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsSecInherited(fvAEPg.DistinguishedName, relationParam)
+			err = aciClient.CreateRelationfvRsSecInheritedFromApplicationEPG(fvAEPg.DistinguishedName, relationParam)
 
 			if err != nil {
 				return err
@@ -369,7 +369,7 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 	if relationTofvRsNodeAtt, ok := d.GetOk("relation_fv_rs_node_att"); ok {
 		relationParamList := toStringList(relationTofvRsNodeAtt.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsNodeAtt(fvAEPg.DistinguishedName, relationParam)
+			err = aciClient.CreateRelationfvRsNodeAttFromApplicationEPG(fvAEPg.DistinguishedName, relationParam)
 
 			if err != nil {
 				return err
@@ -378,7 +378,7 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 	}
 	if relationTofvRsDppPol, ok := d.GetOk("relation_fv_rs_dpp_pol"); ok {
 		relationParam := relationTofvRsDppPol.(string)
-		err = aciClient.CreateRelationfvRsDppPol(fvAEPg.DistinguishedName, relationParam)
+		err = aciClient.CreateRelationfvRsDppPolFromApplicationEPG(fvAEPg.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -387,7 +387,7 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 	if relationTofvRsCons, ok := d.GetOk("relation_fv_rs_cons"); ok {
 		relationParamList := toStringList(relationTofvRsCons.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsCons(fvAEPg.DistinguishedName, relationParam)
+			err = aciClient.CreateRelationfvRsConsFromApplicationEPG(fvAEPg.DistinguishedName, relationParam)
 
 			if err != nil {
 				return err
@@ -397,7 +397,7 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 	if relationTofvRsProvDef, ok := d.GetOk("relation_fv_rs_prov_def"); ok {
 		relationParamList := toStringList(relationTofvRsProvDef.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsProvDef(fvAEPg.DistinguishedName, relationParam)
+			err = aciClient.CreateRelationfvRsProvDefFromApplicationEPG(fvAEPg.DistinguishedName, relationParam)
 
 			if err != nil {
 				return err
@@ -406,7 +406,7 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 	}
 	if relationTofvRsTrustCtrl, ok := d.GetOk("relation_fv_rs_trust_ctrl"); ok {
 		relationParam := relationTofvRsTrustCtrl.(string)
-		err = aciClient.CreateRelationfvRsTrustCtrl(fvAEPg.DistinguishedName, relationParam)
+		err = aciClient.CreateRelationfvRsTrustCtrlFromApplicationEPG(fvAEPg.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -415,7 +415,7 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 	if relationTofvRsPathAtt, ok := d.GetOk("relation_fv_rs_path_att"); ok {
 		relationParamList := toStringList(relationTofvRsPathAtt.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsPathAtt(fvAEPg.DistinguishedName, relationParam)
+			err = aciClient.CreateRelationfvRsPathAttFromApplicationEPG(fvAEPg.DistinguishedName, relationParam)
 
 			if err != nil {
 				return err
@@ -425,7 +425,7 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 	if relationTofvRsProtBy, ok := d.GetOk("relation_fv_rs_prot_by"); ok {
 		relationParamList := toStringList(relationTofvRsProtBy.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsProtBy(fvAEPg.DistinguishedName, relationParam)
+			err = aciClient.CreateRelationfvRsProtByFromApplicationEPG(fvAEPg.DistinguishedName, relationParam)
 
 			if err != nil {
 				return err
@@ -434,7 +434,7 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 	}
 	if relationTofvRsAEPgMonPol, ok := d.GetOk("relation_fv_rs_ae_pg_mon_pol"); ok {
 		relationParam := relationTofvRsAEPgMonPol.(string)
-		err = aciClient.CreateRelationfvRsAEPgMonPol(fvAEPg.DistinguishedName, relationParam)
+		err = aciClient.CreateRelationfvRsAEPgMonPolFromApplicationEPG(fvAEPg.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -443,7 +443,7 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 	if relationTofvRsIntraEpg, ok := d.GetOk("relation_fv_rs_intra_epg"); ok {
 		relationParamList := toStringList(relationTofvRsIntraEpg.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsIntraEpg(fvAEPg.DistinguishedName, relationParam)
+			err = aciClient.CreateRelationfvRsIntraEpgFromApplicationEPG(fvAEPg.DistinguishedName, relationParam)
 
 			if err != nil {
 				return err
@@ -499,7 +499,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 
 	if d.HasChange("relation_fv_rs_bd") {
 		_, newRelParam := d.GetChange("relation_fv_rs_bd")
-		err = aciClient.CreateRelationfvRsBd(fvAEPg.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationfvRsBdFromApplicationEPG(fvAEPg.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -507,7 +507,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 	}
 	if d.HasChange("relation_fv_rs_cust_qos_pol") {
 		_, newRelParam := d.GetChange("relation_fv_rs_cust_qos_pol")
-		err = aciClient.CreateRelationfvRsCustQosPol(fvAEPg.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationfvRsCustQosPolFromApplicationEPG(fvAEPg.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -521,7 +521,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationfvRsDomAtt(fvAEPg.DistinguishedName, relDn)
+			err = aciClient.DeleteRelationfvRsDomAttFromApplicationEPG(fvAEPg.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
@@ -529,7 +529,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 		}
 
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationfvRsDomAtt(fvAEPg.DistinguishedName, relDn)
+			err = aciClient.CreateRelationfvRsDomAttFromApplicationEPG(fvAEPg.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
@@ -545,7 +545,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationfvRsFcPathAtt(fvAEPg.DistinguishedName, relDn)
+			err = aciClient.DeleteRelationfvRsFcPathAttFromApplicationEPG(fvAEPg.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
@@ -553,7 +553,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 		}
 
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationfvRsFcPathAtt(fvAEPg.DistinguishedName, relDn)
+			err = aciClient.CreateRelationfvRsFcPathAttFromApplicationEPG(fvAEPg.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
@@ -569,7 +569,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationfvRsProv(fvAEPg.DistinguishedName, relDn)
+			err = aciClient.DeleteRelationfvRsProvFromApplicationEPG(fvAEPg.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
@@ -577,7 +577,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 		}
 
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationfvRsProv(fvAEPg.DistinguishedName, relDn)
+			err = aciClient.CreateRelationfvRsProvFromApplicationEPG(fvAEPg.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
@@ -592,7 +592,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationfvRsGraphDef(fvAEPg.DistinguishedName, relDn)
+			err = aciClient.CreateRelationfvRsGraphDefFromApplicationEPG(fvAEPg.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
@@ -608,7 +608,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationfvRsConsIf(fvAEPg.DistinguishedName, relDn)
+			err = aciClient.DeleteRelationfvRsConsIfFromApplicationEPG(fvAEPg.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
@@ -616,7 +616,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 		}
 
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationfvRsConsIf(fvAEPg.DistinguishedName, relDn)
+			err = aciClient.CreateRelationfvRsConsIfFromApplicationEPG(fvAEPg.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
@@ -632,7 +632,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationfvRsSecInherited(fvAEPg.DistinguishedName, relDn)
+			err = aciClient.DeleteRelationfvRsSecInheritedFromApplicationEPG(fvAEPg.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
@@ -640,7 +640,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 		}
 
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationfvRsSecInherited(fvAEPg.DistinguishedName, relDn)
+			err = aciClient.CreateRelationfvRsSecInheritedFromApplicationEPG(fvAEPg.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
@@ -656,7 +656,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationfvRsNodeAtt(fvAEPg.DistinguishedName, relDn)
+			err = aciClient.DeleteRelationfvRsNodeAttFromApplicationEPG(fvAEPg.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
@@ -664,7 +664,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 		}
 
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationfvRsNodeAtt(fvAEPg.DistinguishedName, relDn)
+			err = aciClient.CreateRelationfvRsNodeAttFromApplicationEPG(fvAEPg.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
@@ -674,11 +674,11 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 	}
 	if d.HasChange("relation_fv_rs_dpp_pol") {
 		_, newRelParam := d.GetChange("relation_fv_rs_dpp_pol")
-		err = aciClient.DeleteRelationfvRsDppPol(fvAEPg.DistinguishedName)
+		err = aciClient.DeleteRelationfvRsDppPolFromApplicationEPG(fvAEPg.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationfvRsDppPol(fvAEPg.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationfvRsDppPolFromApplicationEPG(fvAEPg.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -692,7 +692,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationfvRsCons(fvAEPg.DistinguishedName, relDn)
+			err = aciClient.DeleteRelationfvRsConsFromApplicationEPG(fvAEPg.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
@@ -700,7 +700,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 		}
 
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationfvRsCons(fvAEPg.DistinguishedName, relDn)
+			err = aciClient.CreateRelationfvRsConsFromApplicationEPG(fvAEPg.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
@@ -715,7 +715,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationfvRsProvDef(fvAEPg.DistinguishedName, relDn)
+			err = aciClient.CreateRelationfvRsProvDefFromApplicationEPG(fvAEPg.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
@@ -725,11 +725,11 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 	}
 	if d.HasChange("relation_fv_rs_trust_ctrl") {
 		_, newRelParam := d.GetChange("relation_fv_rs_trust_ctrl")
-		err = aciClient.DeleteRelationfvRsTrustCtrl(fvAEPg.DistinguishedName)
+		err = aciClient.DeleteRelationfvRsTrustCtrlFromApplicationEPG(fvAEPg.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationfvRsTrustCtrl(fvAEPg.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationfvRsTrustCtrlFromApplicationEPG(fvAEPg.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -743,7 +743,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationfvRsPathAtt(fvAEPg.DistinguishedName, relDn)
+			err = aciClient.DeleteRelationfvRsPathAttFromApplicationEPG(fvAEPg.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
@@ -751,7 +751,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 		}
 
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationfvRsPathAtt(fvAEPg.DistinguishedName, relDn)
+			err = aciClient.CreateRelationfvRsPathAttFromApplicationEPG(fvAEPg.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
@@ -767,7 +767,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationfvRsProtBy(fvAEPg.DistinguishedName, relDn)
+			err = aciClient.DeleteRelationfvRsProtByFromApplicationEPG(fvAEPg.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
@@ -775,7 +775,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 		}
 
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationfvRsProtBy(fvAEPg.DistinguishedName, relDn)
+			err = aciClient.CreateRelationfvRsProtByFromApplicationEPG(fvAEPg.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
@@ -785,11 +785,11 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 	}
 	if d.HasChange("relation_fv_rs_ae_pg_mon_pol") {
 		_, newRelParam := d.GetChange("relation_fv_rs_ae_pg_mon_pol")
-		err = aciClient.DeleteRelationfvRsAEPgMonPol(fvAEPg.DistinguishedName)
+		err = aciClient.DeleteRelationfvRsAEPgMonPolFromApplicationEPG(fvAEPg.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationfvRsAEPgMonPol(fvAEPg.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationfvRsAEPgMonPolFromApplicationEPG(fvAEPg.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -803,7 +803,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationfvRsIntraEpg(fvAEPg.DistinguishedName, relDn)
+			err = aciClient.DeleteRelationfvRsIntraEpgFromApplicationEPG(fvAEPg.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
@@ -811,7 +811,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 		}
 
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationfvRsIntraEpg(fvAEPg.DistinguishedName, relDn)
+			err = aciClient.CreateRelationfvRsIntraEpgFromApplicationEPG(fvAEPg.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}

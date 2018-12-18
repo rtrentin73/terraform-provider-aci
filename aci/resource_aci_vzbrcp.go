@@ -140,7 +140,7 @@ func resourceAciContractCreate(d *schema.ResourceData, m interface{}) error {
 
 	if relationTovzRsGraphAtt, ok := d.GetOk("relation_vz_rs_graph_att"); ok {
 		relationParam := relationTovzRsGraphAtt.(string)
-		err = aciClient.CreateRelationvzRsGraphAtt(vzBrCP.DistinguishedName, relationParam)
+		err = aciClient.CreateRelationvzRsGraphAttFromContract(vzBrCP.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -183,11 +183,11 @@ func resourceAciContractUpdate(d *schema.ResourceData, m interface{}) error {
 
 	if d.HasChange("relation_vz_rs_graph_att") {
 		_, newRelParam := d.GetChange("relation_vz_rs_graph_att")
-		err = aciClient.DeleteRelationvzRsGraphAtt(vzBrCP.DistinguishedName)
+		err = aciClient.DeleteRelationvzRsGraphAttFromContract(vzBrCP.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationvzRsGraphAtt(vzBrCP.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationvzRsGraphAttFromContract(vzBrCP.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}

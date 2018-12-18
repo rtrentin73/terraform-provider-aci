@@ -119,7 +119,7 @@ func resourceAciFilterCreate(d *schema.ResourceData, m interface{}) error {
 
 	if relationTovzRsFiltGraphAtt, ok := d.GetOk("relation_vz_rs_filt_graph_att"); ok {
 		relationParam := relationTovzRsFiltGraphAtt.(string)
-		err = aciClient.CreateRelationvzRsFiltGraphAtt(vzFilter.DistinguishedName, relationParam)
+		err = aciClient.CreateRelationvzRsFiltGraphAttFromFilter(vzFilter.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -127,7 +127,7 @@ func resourceAciFilterCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if relationTovzRsFwdRFltPAtt, ok := d.GetOk("relation_vz_rs_fwd_r_flt_p_att"); ok {
 		relationParam := relationTovzRsFwdRFltPAtt.(string)
-		err = aciClient.CreateRelationvzRsFwdRFltPAtt(vzFilter.DistinguishedName, relationParam)
+		err = aciClient.CreateRelationvzRsFwdRFltPAttFromFilter(vzFilter.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -135,7 +135,7 @@ func resourceAciFilterCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if relationTovzRsRevRFltPAtt, ok := d.GetOk("relation_vz_rs_rev_r_flt_p_att"); ok {
 		relationParam := relationTovzRsRevRFltPAtt.(string)
-		err = aciClient.CreateRelationvzRsRevRFltPAtt(vzFilter.DistinguishedName, relationParam)
+		err = aciClient.CreateRelationvzRsRevRFltPAttFromFilter(vzFilter.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -169,7 +169,7 @@ func resourceAciFilterUpdate(d *schema.ResourceData, m interface{}) error {
 
 	if d.HasChange("relation_vz_rs_filt_graph_att") {
 		_, newRelParam := d.GetChange("relation_vz_rs_filt_graph_att")
-		err = aciClient.CreateRelationvzRsFiltGraphAtt(vzFilter.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationvzRsFiltGraphAttFromFilter(vzFilter.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -177,7 +177,7 @@ func resourceAciFilterUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if d.HasChange("relation_vz_rs_fwd_r_flt_p_att") {
 		_, newRelParam := d.GetChange("relation_vz_rs_fwd_r_flt_p_att")
-		err = aciClient.CreateRelationvzRsFwdRFltPAtt(vzFilter.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationvzRsFwdRFltPAttFromFilter(vzFilter.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -185,7 +185,7 @@ func resourceAciFilterUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if d.HasChange("relation_vz_rs_rev_r_flt_p_att") {
 		_, newRelParam := d.GetChange("relation_vz_rs_rev_r_flt_p_att")
-		err = aciClient.CreateRelationvzRsRevRFltPAtt(vzFilter.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationvzRsRevRFltPAttFromFilter(vzFilter.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}

@@ -118,7 +118,7 @@ func resourceAciApplicationProfileCreate(d *schema.ResourceData, m interface{}) 
 
 	if relationTofvRsApMonPol, ok := d.GetOk("relation_fv_rs_ap_mon_pol"); ok {
 		relationParam := relationTofvRsApMonPol.(string)
-		err = aciClient.CreateRelationfvRsApMonPol(fvAp.DistinguishedName, relationParam)
+		err = aciClient.CreateRelationfvRsApMonPolFromApplicationProfile(fvAp.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -155,11 +155,11 @@ func resourceAciApplicationProfileUpdate(d *schema.ResourceData, m interface{}) 
 
 	if d.HasChange("relation_fv_rs_ap_mon_pol") {
 		_, newRelParam := d.GetChange("relation_fv_rs_ap_mon_pol")
-		err = aciClient.DeleteRelationfvRsApMonPol(fvAp.DistinguishedName)
+		err = aciClient.DeleteRelationfvRsApMonPolFromApplicationProfile(fvAp.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationfvRsApMonPol(fvAp.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationfvRsApMonPolFromApplicationProfile(fvAp.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}

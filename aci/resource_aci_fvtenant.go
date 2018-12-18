@@ -108,7 +108,7 @@ func resourceAciTenantCreate(d *schema.ResourceData, m interface{}) error {
 	if relationTofvRsTnDenyRule, ok := d.GetOk("relation_fv_rs_tn_deny_rule"); ok {
 		relationParamList := toStringList(relationTofvRsTnDenyRule.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsTnDenyRule(fvTenant.DistinguishedName, relationParam)
+			err = aciClient.CreateRelationfvRsTnDenyRuleFromTenant(fvTenant.DistinguishedName, relationParam)
 
 			if err != nil {
 				return err
@@ -117,7 +117,7 @@ func resourceAciTenantCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if relationTofvRsTenantMonPol, ok := d.GetOk("relation_fv_rs_tenant_mon_pol"); ok {
 		relationParam := relationTofvRsTenantMonPol.(string)
-		err = aciClient.CreateRelationfvRsTenantMonPol(fvTenant.DistinguishedName, relationParam)
+		err = aciClient.CreateRelationfvRsTenantMonPolFromTenant(fvTenant.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -156,7 +156,7 @@ func resourceAciTenantUpdate(d *schema.ResourceData, m interface{}) error {
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationfvRsTnDenyRule(fvTenant.DistinguishedName, relDn)
+			err = aciClient.DeleteRelationfvRsTnDenyRuleFromTenant(fvTenant.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
@@ -164,7 +164,7 @@ func resourceAciTenantUpdate(d *schema.ResourceData, m interface{}) error {
 		}
 
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationfvRsTnDenyRule(fvTenant.DistinguishedName, relDn)
+			err = aciClient.CreateRelationfvRsTnDenyRuleFromTenant(fvTenant.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
@@ -174,7 +174,7 @@ func resourceAciTenantUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if d.HasChange("relation_fv_rs_tenant_mon_pol") {
 		_, newRelParam := d.GetChange("relation_fv_rs_tenant_mon_pol")
-		err = aciClient.CreateRelationfvRsTenantMonPol(fvTenant.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationfvRsTenantMonPolFromTenant(fvTenant.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}

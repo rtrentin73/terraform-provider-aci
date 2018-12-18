@@ -2,7 +2,6 @@ package aci
 
 import (
 	"fmt"
-
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -169,7 +168,7 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 
 	if relationTofvRsBDSubnetToProfile, ok := d.GetOk("relation_fv_rs_bd_subnet_to_profile"); ok {
 		relationParam := relationTofvRsBDSubnetToProfile.(string)
-		err = aciClient.CreateRelationfvRsBDSubnetToProfile(fvSubnet.DistinguishedName, relationParam)
+		err = aciClient.CreateRelationfvRsBDSubnetToProfileFromSubnet(fvSubnet.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -178,7 +177,7 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	if relationTofvRsBDSubnetToOut, ok := d.GetOk("relation_fv_rs_bd_subnet_to_out"); ok {
 		relationParamList := toStringList(relationTofvRsBDSubnetToOut.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsBDSubnetToOut(fvSubnet.DistinguishedName, relationParam)
+			err = aciClient.CreateRelationfvRsBDSubnetToOutFromSubnet(fvSubnet.DistinguishedName, relationParam)
 
 			if err != nil {
 				return err
@@ -187,7 +186,7 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if relationTofvRsNdPfxPol, ok := d.GetOk("relation_fv_rs_nd_pfx_pol"); ok {
 		relationParam := relationTofvRsNdPfxPol.(string)
-		err = aciClient.CreateRelationfvRsNdPfxPol(fvSubnet.DistinguishedName, relationParam)
+		err = aciClient.CreateRelationfvRsNdPfxPolFromSubnet(fvSubnet.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -236,11 +235,11 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 
 	if d.HasChange("relation_fv_rs_bd_subnet_to_profile") {
 		_, newRelParam := d.GetChange("relation_fv_rs_bd_subnet_to_profile")
-		err = aciClient.DeleteRelationfvRsBDSubnetToProfile(fvSubnet.DistinguishedName)
+		err = aciClient.DeleteRelationfvRsBDSubnetToProfileFromSubnet(fvSubnet.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationfvRsBDSubnetToProfile(fvSubnet.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationfvRsBDSubnetToProfileFromSubnet(fvSubnet.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -254,7 +253,7 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationfvRsBDSubnetToOut(fvSubnet.DistinguishedName, relDn)
+			err = aciClient.DeleteRelationfvRsBDSubnetToOutFromSubnet(fvSubnet.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
@@ -262,7 +261,7 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 		}
 
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationfvRsBDSubnetToOut(fvSubnet.DistinguishedName, relDn)
+			err = aciClient.CreateRelationfvRsBDSubnetToOutFromSubnet(fvSubnet.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
@@ -272,11 +271,11 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if d.HasChange("relation_fv_rs_nd_pfx_pol") {
 		_, newRelParam := d.GetChange("relation_fv_rs_nd_pfx_pol")
-		err = aciClient.DeleteRelationfvRsNdPfxPol(fvSubnet.DistinguishedName)
+		err = aciClient.DeleteRelationfvRsNdPfxPolFromSubnet(fvSubnet.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationfvRsNdPfxPol(fvSubnet.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationfvRsNdPfxPolFromSubnet(fvSubnet.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}

@@ -169,7 +169,7 @@ func resourceAciContractSubjectCreate(d *schema.ResourceData, m interface{}) err
 
 	if relationTovzRsSubjGraphAtt, ok := d.GetOk("relation_vz_rs_subj_graph_att"); ok {
 		relationParam := relationTovzRsSubjGraphAtt.(string)
-		err = aciClient.CreateRelationvzRsSubjGraphAtt(vzSubj.DistinguishedName, relationParam)
+		err = aciClient.CreateRelationvzRsSubjGraphAttFromContractSubject(vzSubj.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -178,7 +178,7 @@ func resourceAciContractSubjectCreate(d *schema.ResourceData, m interface{}) err
 	if relationTovzRsSubjFiltAtt, ok := d.GetOk("relation_vz_rs_subj_filt_att"); ok {
 		relationParamList := toStringList(relationTovzRsSubjFiltAtt.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationvzRsSubjFiltAtt(vzSubj.DistinguishedName, relationParam)
+			err = aciClient.CreateRelationvzRsSubjFiltAttFromContractSubject(vzSubj.DistinguishedName, relationParam)
 
 			if err != nil {
 				return err
@@ -228,11 +228,11 @@ func resourceAciContractSubjectUpdate(d *schema.ResourceData, m interface{}) err
 
 	if d.HasChange("relation_vz_rs_subj_graph_att") {
 		_, newRelParam := d.GetChange("relation_vz_rs_subj_graph_att")
-		err = aciClient.DeleteRelationvzRsSubjGraphAtt(vzSubj.DistinguishedName)
+		err = aciClient.DeleteRelationvzRsSubjGraphAttFromContractSubject(vzSubj.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationvzRsSubjGraphAtt(vzSubj.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationvzRsSubjGraphAttFromContractSubject(vzSubj.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -246,7 +246,7 @@ func resourceAciContractSubjectUpdate(d *schema.ResourceData, m interface{}) err
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationvzRsSubjFiltAtt(vzSubj.DistinguishedName, relDn)
+			err = aciClient.DeleteRelationvzRsSubjFiltAttFromContractSubject(vzSubj.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
@@ -254,7 +254,7 @@ func resourceAciContractSubjectUpdate(d *schema.ResourceData, m interface{}) err
 		}
 
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationvzRsSubjFiltAtt(vzSubj.DistinguishedName, relDn)
+			err = aciClient.CreateRelationvzRsSubjFiltAttFromContractSubject(vzSubj.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
