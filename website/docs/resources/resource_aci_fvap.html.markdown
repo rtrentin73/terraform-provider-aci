@@ -25,3 +25,8 @@ resource "aci_application_profile" "example" {
 * `name` - (Required) name of Object application_profile.
 * `name_alias` - (Optional) name_alias for object application_profile.
 * `prio` - (Optional) priority class id
+
+* `relation_fv_rs_ap_mon_pol` - (Optional) Relation to class monEPGPol. Cardinality - N_TO_ONE. Type - String.
+                
+
+

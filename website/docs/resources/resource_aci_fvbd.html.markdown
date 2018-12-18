@@ -57,3 +57,28 @@ resource "aci_bridge_domain" "example" {
 * `unk_mac_ucast_act` - (Optional) forwarding method for l2 destinations
 * `unk_mcast_act` - (Optional) parameter used by node to forward data
 * `vmac` - (Optional) vmac for object bridge_domain.
+
+* `relation_fv_rs_bd_to_profile` - (Optional) Relation to class rtctrlProfile. Cardinality - N_TO_ONE. Type - String.
+                
+* `relation_fv_rs_bd_to_relay_p` - (Optional) Relation to class dhcpRelayP. Cardinality - N_TO_ONE. Type - String.
+                
+* `relation_fv_rs_abd_pol_mon_pol` - (Optional) Relation to class monEPGPol. Cardinality - N_TO_ONE. Type - String.
+                
+* `relation_fv_rs_bd_to_nd_p` - (Optional) Relation to class ndIfPol. Cardinality - N_TO_ONE. Type - String.
+                
+* `relation_fv_rs_bd_flood_to` - (Optional) Relation to class vzFilter. Cardinality - N_TO_M. Type - Set of String.
+                
+* `relation_fv_rs_bd_to_fhs` - (Optional) Relation to class fhsBDPol. Cardinality - N_TO_ONE. Type - String.
+                
+* `relation_fv_rs_ctx` - (Optional) Relation to class fvCtx. Cardinality - N_TO_ONE. Type - String.
+                
+* `relation_fv_rs_bd_to_netflow_monitor_pol` - (Optional) Relation to class netflowMonitorPol. Cardinality - N_TO_M. Type - Set of Map.
+                
+* `relation_fv_rs_igmpsn` - (Optional) Relation to class igmpSnoopPol. Cardinality - N_TO_ONE. Type - String.
+                
+* `relation_fv_rs_bd_to_ep_ret` - (Optional) Relation to class fvEpRetPol. Cardinality - N_TO_ONE. Type - String.
+                
+* `relation_fv_rs_bd_to_out` - (Optional) Relation to class l3extOut. Cardinality - N_TO_M. Type - Set of String.
+                
+
+

@@ -49,3 +49,6 @@ resource "aci_filter_entry" "example" {
 * `s_to_port` - (Optional) end of the source port range
 * `stateful` - (Optional) stateful entry
 * `tcp_rules` - (Optional) tcp flags
+
+
+

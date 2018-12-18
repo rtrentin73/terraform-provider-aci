@@ -37,3 +37,40 @@ resource "aci_application_epg" "example" {
 * `pc_enf_pref` - (Optional) enforcement preference
 * `pref_gr_memb` - (Optional) pref_gr_memb for object application_epg.
 * `prio` - (Optional) qos priority class id
+
+* `relation_fv_rs_bd` - (Optional) Relation to class fvBD. Cardinality - N_TO_ONE. Type - String.
+                
+* `relation_fv_rs_cust_qos_pol` - (Optional) Relation to class qosCustomPol. Cardinality - N_TO_ONE. Type - String.
+                
+* `relation_fv_rs_dom_att` - (Optional) Relation to class infraDomP. Cardinality - N_TO_M. Type - Set of String.
+                
+* `relation_fv_rs_fc_path_att` - (Optional) Relation to class fabricPathEp. Cardinality - N_TO_M. Type - Set of String.
+                
+* `relation_fv_rs_prov` - (Optional) Relation to class vzBrCP. Cardinality - N_TO_M. Type - Set of String.
+                
+* `relation_fv_rs_graph_def` - (Optional) Relation to class vzGraphCont. Cardinality - N_TO_M. Type - Set of String.
+                
+* `relation_fv_rs_cons_if` - (Optional) Relation to class vzCPIf. Cardinality - N_TO_M. Type - Set of String.
+                
+* `relation_fv_rs_sec_inherited` - (Optional) Relation to class fvEPg. Cardinality - N_TO_M. Type - Set of String.
+                
+* `relation_fv_rs_node_att` - (Optional) Relation to class fabricNode. Cardinality - N_TO_M. Type - Set of String.
+                
+* `relation_fv_rs_dpp_pol` - (Optional) Relation to class qosDppPol. Cardinality - N_TO_ONE. Type - String.
+                
+* `relation_fv_rs_cons` - (Optional) Relation to class vzBrCP. Cardinality - N_TO_M. Type - Set of String.
+                
+* `relation_fv_rs_prov_def` - (Optional) Relation to class vzCtrctEPgCont. Cardinality - N_TO_M. Type - Set of String.
+                
+* `relation_fv_rs_trust_ctrl` - (Optional) Relation to class fhsTrustCtrlPol. Cardinality - N_TO_ONE. Type - String.
+                
+* `relation_fv_rs_path_att` - (Optional) Relation to class fabricPathEp. Cardinality - N_TO_M. Type - Set of String.
+                
+* `relation_fv_rs_prot_by` - (Optional) Relation to class vzTaboo. Cardinality - N_TO_M. Type - Set of String.
+                
+* `relation_fv_rs_ae_pg_mon_pol` - (Optional) Relation to class monEPGPol. Cardinality - N_TO_ONE. Type - String.
+                
+* `relation_fv_rs_intra_epg` - (Optional) Relation to class vzBrCP. Cardinality - N_TO_M. Type - Set of String.
+                
+
+

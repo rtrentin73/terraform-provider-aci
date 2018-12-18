@@ -33,3 +33,10 @@ resource "aci_contract_subject" "example" {
 * `prov_match_t` - (Optional) consumer subject match criteria
 * `rev_flt_ports` - (Optional) enables filter to apply on ingress and egress traffic
 * `target_dscp` - (Optional) target dscp
+
+* `relation_vz_rs_subj_graph_att` - (Optional) Relation to class vnsAbsGraph. Cardinality - N_TO_ONE. Type - String.
+                
+* `relation_vz_rs_subj_filt_att` - (Optional) Relation to class vzFilter. Cardinality - N_TO_M. Type - Set of String.
+                
+
+

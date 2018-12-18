@@ -21,3 +21,10 @@ resource "aci_tenant" "example" {
 ## Argument Reference ##
 * `name` - (Required) name of Object tenant.
 * `name_alias` - (Optional) name_alias for object tenant.
+
+* `relation_fv_rs_tn_deny_rule` - (Optional) Relation to class vzFilter. Cardinality - N_TO_M. Type - Set of String.
+                
+* `relation_fv_rs_tenant_mon_pol` - (Optional) Relation to class monEPGPol. Cardinality - N_TO_ONE. Type - String.
+                
+
+

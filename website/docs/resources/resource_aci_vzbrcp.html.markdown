@@ -29,3 +29,8 @@ resource "aci_contract" "example" {
 * `prio` - (Optional) priority level of the service contract
 * `scope` - (Optional) scope of contract
 * `target_dscp` - (Optional) target dscp
+
+* `relation_vz_rs_graph_att` - (Optional) Relation to class vnsAbsGraph. Cardinality - N_TO_ONE. Type - String.
+                
+
+

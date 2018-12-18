@@ -33,3 +33,12 @@ resource "aci_subnet" "example" {
 * `preferred` - (Optional) subnet preferred status
 * `scope` - (Optional) subnet visibility
 * `virtual` - (Optional) virtual for object subnet.
+
+* `relation_fv_rs_bd_subnet_to_profile` - (Optional) Relation to class rtctrlProfile. Cardinality - N_TO_ONE. Type - String.
+                
+* `relation_fv_rs_bd_subnet_to_out` - (Optional) Relation to class l3extOut. Cardinality - N_TO_M. Type - Set of String.
+                
+* `relation_fv_rs_nd_pfx_pol` - (Optional) Relation to class ndPfxPol. Cardinality - N_TO_ONE. Type - String.
+                
+
+
