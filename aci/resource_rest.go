@@ -2,6 +2,9 @@ package aci
 
 import (
 	"errors"
+	"fmt"
+
+	"github.com/ciscoecosystem/aci-go-client/models"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/container"
@@ -36,16 +39,6 @@ func resourceAciRest() *schema.Resource {
 			"content": &schema.Schema{
 				Type:     schema.TypeMap,
 				Required: true,
-				ValidateFunc: func(i interface{}, k string) (e []string, es []error) {
-					cMap := i.(map[string]interface{})
-					// make sure that dn is part of the content
-					_, ok := cMap["dn"]
-					if !ok {
-						es = append(es, errors.New(ErrDistinguishedNameNotFound))
-					}
-
-					return
-				},
 			},
 			"dn": &schema.Schema{
 				Type:     schema.TypeString,
@@ -63,8 +56,14 @@ func resourceAciRestCreate(d *schema.ResourceData, m interface{}) error {
 	classNameIntf := d.Get("class_name")
 	className := classNameIntf.(string)
 	dn := cont.Search(className, "attributes", "dn").String()
-	d.SetId(dn)
 
+	if dn == "{}" {
+		d.SetId(GetDN(d, m))
+
+	} else {
+
+		d.SetId(dn)
+	}
 	return resourceAciRestRead(d, m)
 
 }
@@ -77,7 +76,13 @@ func resourceAciRestUpdate(d *schema.ResourceData, m interface{}) error {
 	classNameIntf := d.Get("class_name")
 	className := classNameIntf.(string)
 	dn := cont.Search(className, "attributes", "dn").String()
-	d.SetId(dn)
+	if dn == "{}" {
+		d.SetId(GetDN(d, m))
+
+	} else {
+
+		d.SetId(dn)
+	}
 
 	return resourceAciRestRead(d, m)
 }
@@ -93,6 +98,15 @@ func resourceAciRestDelete(d *schema.ResourceData, m interface{}) error {
 	}
 	d.SetId("")
 	return nil
+}
+
+func GetDN(d *schema.ResourceData, m interface{}) string {
+	aciClient := m.(*client.Client)
+	path := d.Get("path").(string)
+	className := d.Get("class_name").(string)
+	cont, _ := aciClient.GetViaURL(path)
+	dn := models.StripQuotes(models.StripSquareBrackets(cont.Search("imdata", className, "attributes", "dn").String()))
+	return fmt.Sprintf("%s", dn)
 }
 
 // PostAndSetStatus is used to post schema and set the status
