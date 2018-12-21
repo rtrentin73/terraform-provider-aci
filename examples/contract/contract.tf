@@ -10,5 +10,5 @@ resource "aci_contract" "democontract" {
   scope                    = "context"
   target_dscp              = "VA"
   prio                     = "unspecified"
-  relation_vz_rs_graph_att = "test3" # Relation to vnsAbsGraph class. Cardinality - N_TO_ONE
+  relation_vz_rs_graph_att = "${aci_rest.rest_abs_graph.id}" # Relation to vnsAbsGraph class. Cardinality - N_TO_ONE
 }

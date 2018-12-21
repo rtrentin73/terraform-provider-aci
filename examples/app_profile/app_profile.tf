@@ -8,5 +8,5 @@ resource "aci_application_profile" "demo_app_profile" {
   name                      = "test_tf_ap"
   description               = "This app profile is created by terraform ACI provider"
   prio                      = "unspecified"
-  relation_fv_rs_ap_mon_pol = "test1mon" # Relation to class monEPGPol. Cardinality - N_TO_ONE
+  relation_fv_rs_ap_mon_pol = "${aci_rest.rest_mon_epg_pol.id}" # Relation to class monEPGPol. Cardinality - N_TO_ONE
 }
