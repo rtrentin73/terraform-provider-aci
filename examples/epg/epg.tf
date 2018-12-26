@@ -35,11 +35,11 @@ resource "aci_application_epg" "demoepg" {
   relation_fv_rs_cons_if       = ["${aci_rest.rest_vz_cons_if.id}"]        # Relation to vzCPIf class. Cardinality - N_TO_M.
   relation_fv_rs_sec_inherited = ["${aci_application_epg.inherit_epg.id}"] # Relation to fvEPg class. Cardinality - N_TO_M.
   relation_fv_rs_node_att      = ["testnodeatt"]                           # Relation to fabricNode class. Cardinality - N_TO_M.
-  relation_fv_rs_dpp_pol       = "${aci_rest.rest_qos_dpp_pol.id}"                              # Relation to qosDppPol class. Cardinality - N_TO_ONE.
+  relation_fv_rs_dpp_pol       = "${aci_rest.rest_qos_dpp_pol.id}"         # Relation to qosDppPol class. Cardinality - N_TO_ONE.
   relation_fv_rs_cons          = ["${aci_contract.rs_cons_contract.id}"]   # Relation to vzBrCP class. Cardinality - N_TO_M.
-  relation_fv_rs_trust_ctrl    = "${aci_rest.rest_trust_ctrl_pol.id}"                           # Relation to fhsTrustCtrlPol class. Cardinality - N_TO_ONE.
+  relation_fv_rs_trust_ctrl    = "${aci_rest.rest_trust_ctrl_pol.id}"      # Relation to fhsTrustCtrlPol class. Cardinality - N_TO_ONE.
   relation_fv_rs_path_att      = ["testpathatt"]                           # Relation to fabricPathEp class. Cardinality - N_TO_M.
-  relation_fv_rs_prot_by       = ["${aci_rest.rest_taboo_con.id}"]                              # Relation to vzTaboo class. Cardinality - N_TO_M.
+  relation_fv_rs_prot_by       = ["${aci_rest.rest_taboo_con.id}"]         # Relation to vzTaboo class. Cardinality - N_TO_M.
   relation_fv_rs_ae_pg_mon_pol = "${aci_rest.rest_mon_epg_pol.id}"         # Relation to monEPGPol class. Cardinality - N_TO_ONE.
   relation_fv_rs_intra_epg     = ["${aci_contract.intra_epg_contract.id}"] # Relation to vzBrCP class. Cardinality - N_TO_M.
 }

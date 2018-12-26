@@ -1,5 +1,5 @@
 resource "aci_rest" "rest_abs_graph" {
-  path       = "api/node/mo/${aci_tenant.tenant_for_contract.id}/AbsGraph-testgraph.json"
+  path       = "api/node/mo/${aci_tenant.tenant_for_subject.id}/AbsGraph-testgraph.json"
   class_name = "vnsAbsGraph"
 
   content = {

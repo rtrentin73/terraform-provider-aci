@@ -18,9 +18,8 @@ resource "aci_subnet" "demosubnet" {
   description                         = "This subject is created by terraform"
   ctrl                                = "unspecified"
   preferred                           = "no"
-  scope                               = "private"
   virtual                             = "yes"
-  relation_fv_rs_bd_subnet_to_profile = "testprofle"  # Relation to rtctrlProfile class. Cardinality - N_TO_ONE.
-  relation_fv_rs_bd_subnet_to_out     = ["testtoout"] # Relation to l3extOut class. Cardinality - N_TO_M.
-  relation_fv_rs_nd_pfx_pol           = "testpxfpol"  # Relation to ndPfxPol class. Cardinality - N_TO_ONE.
+  relation_fv_rs_bd_subnet_to_profile = "${aci_rest.rest_rt_ctrl_profile.id}" # Relation to rtctrlProfile class. Cardinality - N_TO_ONE.
+  relation_fv_rs_bd_subnet_to_out     = ["${aci_rest.rest_l3_ext_out.id}"]    # Relation to l3extOut class. Cardinality - N_TO_M.
+  relation_fv_rs_nd_pfx_pol           = "${aci_rest.rest_nd_pfx_pol.id}"      # Relation to ndPfxPol class. Cardinality - N_TO_ONE.
 }

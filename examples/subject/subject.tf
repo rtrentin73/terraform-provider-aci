@@ -20,6 +20,6 @@ resource "aci_contract_subject" "demosubject" {
   prov_match_t                  = "None"
   rev_flt_ports                 = "no"
   target_dscp                   = "unspecified"
-  relation_vz_rs_subj_graph_att = "test"                           # Relation to vnsAbsGraph class. Cardinality - N_TO_ONE.
+  relation_vz_rs_subj_graph_att = "${aci_rest.rest_abs_graph.id}"  # Relation to vnsAbsGraph class. Cardinality - N_TO_ONE.
   relation_vz_rs_subj_filt_att  = ["${aci_filter.subj_filter.id}"] # Relation to vzFilter class. Cardinality - N_TO_M.
 }
