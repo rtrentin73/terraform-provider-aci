@@ -59,6 +59,8 @@ func Provider() terraform.ResourceProvider {
 			"aci_subnet":              resourceAciSubnet(),
 			"aci_filter":              resourceAciFilter(),
 			"aci_filter_entry":        resourceAciFilterEntry(),
+			"aci_vmm_domain":          resourceAciVMMDomain(),
+			"aci_vrf":                 resourceAciVRF(),
 			"aci_rest":                resourceAciRest(),
 		},
 
