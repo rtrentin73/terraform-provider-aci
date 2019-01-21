@@ -31,6 +31,13 @@ func resourceAciFilter() *schema.Resource {
 				Required: true,
 			},
 
+			"annotation": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: "Mo doc not defined in techpub!!!",
+			},
+
 			"name_alias": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -81,6 +88,7 @@ func setFilterAttributes(vzFilter *models.Filter, d *schema.ResourceData) *schem
 	d.Set("tenant_dn", GetParentDn(vzFilter.DistinguishedName))
 	vzFilterMap, _ := vzFilter.ToMap()
 
+	d.Set("annotation", vzFilterMap["annotation"])
 	d.Set("name_alias", vzFilterMap["nameAlias"])
 	return d
 }
@@ -103,10 +111,15 @@ func resourceAciFilterImport(d *schema.ResourceData, m interface{}) ([]*schema.R
 func resourceAciFilterCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
+
 	name := d.Get("name").(string)
+
 	TenantDn := d.Get("tenant_dn").(string)
 
 	vzFilterAttr := models.FilterAttributes{}
+	if Annotation, ok := d.GetOk("annotation"); ok {
+		vzFilterAttr.Annotation = Annotation.(string)
+	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		vzFilterAttr.NameAlias = NameAlias.(string)
 	}
@@ -151,9 +164,13 @@ func resourceAciFilterUpdate(d *schema.ResourceData, m interface{}) error {
 	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
+
 	TenantDn := d.Get("tenant_dn").(string)
 
 	vzFilterAttr := models.FilterAttributes{}
+	if Annotation, ok := d.GetOk("annotation"); ok {
+		vzFilterAttr.Annotation = Annotation.(string)
+	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		vzFilterAttr.NameAlias = NameAlias.(string)
 	}

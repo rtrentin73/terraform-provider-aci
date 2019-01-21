@@ -15,7 +15,10 @@ Manages ACI Contract
 resource "aci_contract" "example" {
 
   tenant_dn  = "${aci_tenant.example.id}"
-  name  = "example"
+
+    name  = "example"
+
+  annotation  = "example"
   name_alias  = "example"
   prio  = "example"
   scope  = "example"
@@ -25,6 +28,7 @@ resource "aci_contract" "example" {
 ## Argument Reference ##
 * `tenant_dn` - (Required) Distinguished name of parent Tenant object.
 * `name` - (Required) name of Object contract.
+* `annotation` - (Optional) annotation for object contract.
 * `name_alias` - (Optional) name_alias for object contract.
 * `prio` - (Optional) priority level of the service contract
 * `scope` - (Optional) scope of contract

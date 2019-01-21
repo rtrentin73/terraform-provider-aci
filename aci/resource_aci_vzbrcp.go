@@ -31,6 +31,13 @@ func resourceAciContract() *schema.Resource {
 				Required: true,
 			},
 
+			"annotation": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: "Mo doc not defined in techpub!!!",
+			},
+
 			"name_alias": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -90,6 +97,7 @@ func setContractAttributes(vzBrCP *models.Contract, d *schema.ResourceData) *sch
 	d.Set("tenant_dn", GetParentDn(vzBrCP.DistinguishedName))
 	vzBrCPMap, _ := vzBrCP.ToMap()
 
+	d.Set("annotation", vzBrCPMap["annotation"])
 	d.Set("name_alias", vzBrCPMap["nameAlias"])
 	d.Set("prio", vzBrCPMap["prio"])
 	d.Set("scope", vzBrCPMap["scope"])
@@ -115,10 +123,15 @@ func resourceAciContractImport(d *schema.ResourceData, m interface{}) ([]*schema
 func resourceAciContractCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
+
 	name := d.Get("name").(string)
+
 	TenantDn := d.Get("tenant_dn").(string)
 
 	vzBrCPAttr := models.ContractAttributes{}
+	if Annotation, ok := d.GetOk("annotation"); ok {
+		vzBrCPAttr.Annotation = Annotation.(string)
+	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		vzBrCPAttr.NameAlias = NameAlias.(string)
 	}
@@ -156,9 +169,13 @@ func resourceAciContractUpdate(d *schema.ResourceData, m interface{}) error {
 	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
+
 	TenantDn := d.Get("tenant_dn").(string)
 
 	vzBrCPAttr := models.ContractAttributes{}
+	if Annotation, ok := d.GetOk("annotation"); ok {
+		vzBrCPAttr.Annotation = Annotation.(string)
+	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		vzBrCPAttr.NameAlias = NameAlias.(string)
 	}

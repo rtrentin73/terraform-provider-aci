@@ -16,7 +16,7 @@ func TestAccAciApplicationEPG_Basic(t *testing.T) {
 	fv_tenant_name := acctest.RandString(5)
 	fv_ap_name := acctest.RandString(5)
 	fv_ae_pg_name := acctest.RandString(5)
-	description := "application_epg created while acceptance testing"
+	description := "applicationepg created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -26,7 +26,7 @@ func TestAccAciApplicationEPG_Basic(t *testing.T) {
 			{
 				Config: testAccCheckAciApplicationEPGConfig_basic(fv_tenant_name, fv_ap_name, fv_ae_pg_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciApplicationEPGExists("aci_application_epg.fooapplication_epg", &application_epg),
+					testAccCheckAciApplicationEPGExists("aci_applicationepg.fooapplicationepg", &application_epg),
 					testAccCheckAciApplicationEPGAttributes(fv_tenant_name, fv_ap_name, fv_ae_pg_name, description, &application_epg),
 				),
 			},
@@ -43,16 +43,16 @@ func testAccCheckAciApplicationEPGConfig_basic(fv_tenant_name, fv_ap_name, fv_ae
 
 	}
 
-	resource "aci_application_profile" "fooapplication_profile" {
+	resource "aci_applicationprofile" "fooapplicationprofile" {
 		name 		= "%s"
-		description = "application_profile created while acceptance testing"
+		description = "applicationprofile created while acceptance testing"
 		tenant_dn = "${aci_tenant.footenant.id}"
 	}
 
-	resource "aci_application_epg" "fooapplication_epg" {
+	resource "aci_applicationepg" "fooapplicationepg" {
 		name 		= "%s"
-		description = "application_epg created while acceptance testing"
-		application_profile_dn = "${aci_application_profile.fooapplication_profile.id}"
+		description = "applicationepg created while acceptance testing"
+		applicationprofile_dn = "${aci_applicationprofile.fooapplicationprofile.id}"
 	}
 
 	`, fv_tenant_name, fv_ap_name, fv_ae_pg_name)
@@ -91,7 +91,7 @@ func testAccCheckAciApplicationEPGDestroy(s *terraform.State) error {
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_application_epg" {
+		if rs.Type == "aci_applicationepg" {
 			cont, err := client.Get(rs.Primary.ID)
 			application_epg := models.ApplicationEPGFromContainer(cont)
 			if err == nil {

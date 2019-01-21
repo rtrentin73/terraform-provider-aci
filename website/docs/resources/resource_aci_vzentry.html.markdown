@@ -15,7 +15,10 @@ Manages ACI Filter Entry
 resource "aci_filter_entry" "example" {
 
   filter_dn  = "${aci_filter.example.id}"
-  name  = "example"
+
+    name  = "example"
+
+  annotation  = "example"
   apply_to_frag  = "example"
   arp_opc  = "example"
   d_from_port  = "example"
@@ -35,6 +38,7 @@ resource "aci_filter_entry" "example" {
 ## Argument Reference ##
 * `filter_dn` - (Required) Distinguished name of parent Filter object.
 * `name` - (Required) name of Object filter_entry.
+* `annotation` - (Optional) annotation for object filter_entry.
 * `apply_to_frag` - (Optional) fragment
 * `arp_opc` - (Optional) open peripheral codes
 * `d_from_port` - (Optional) end of the destination port range

@@ -15,7 +15,10 @@ Manages ACI Application Profile
 resource "aci_application_profile" "example" {
 
   tenant_dn  = "${aci_tenant.example.id}"
-  name  = "example"
+
+    name  = "example"
+
+  annotation  = "example"
   name_alias  = "example"
   prio  = "example"
 }
@@ -23,6 +26,7 @@ resource "aci_application_profile" "example" {
 ## Argument Reference ##
 * `tenant_dn` - (Required) Distinguished name of parent Tenant object.
 * `name` - (Required) name of Object application_profile.
+* `annotation` - (Optional) annotation for object application_profile.
 * `name_alias` - (Optional) name_alias for object application_profile.
 * `prio` - (Optional) priority class id
 

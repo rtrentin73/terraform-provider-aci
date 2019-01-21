@@ -16,7 +16,7 @@ func TestAccAciContractSubject_Basic(t *testing.T) {
 	fv_tenant_name := acctest.RandString(5)
 	vz_br_cp_name := acctest.RandString(5)
 	vz_subj_name := acctest.RandString(5)
-	description := "contract_subject created while acceptance testing"
+	description := "contractsubject created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -26,7 +26,7 @@ func TestAccAciContractSubject_Basic(t *testing.T) {
 			{
 				Config: testAccCheckAciContractSubjectConfig_basic(fv_tenant_name, vz_br_cp_name, vz_subj_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciContractSubjectExists("aci_contract_subject.foocontract_subject", &contract_subject),
+					testAccCheckAciContractSubjectExists("aci_contractsubject.foocontractsubject", &contract_subject),
 					testAccCheckAciContractSubjectAttributes(fv_tenant_name, vz_br_cp_name, vz_subj_name, description, &contract_subject),
 				),
 			},
@@ -49,9 +49,9 @@ func testAccCheckAciContractSubjectConfig_basic(fv_tenant_name, vz_br_cp_name, v
 		tenant_dn = "${aci_tenant.footenant.id}"
 	}
 
-	resource "aci_contract_subject" "foocontract_subject" {
+	resource "aci_contractsubject" "foocontractsubject" {
 		name 		= "%s"
-		description = "contract_subject created while acceptance testing"
+		description = "contractsubject created while acceptance testing"
 		contract_dn = "${aci_contract.foocontract.id}"
 	}
 
@@ -91,7 +91,7 @@ func testAccCheckAciContractSubjectDestroy(s *terraform.State) error {
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_contract_subject" {
+		if rs.Type == "aci_contractsubject" {
 			cont, err := client.Get(rs.Primary.ID)
 			contract_subject := models.ContractSubjectFromContainer(cont)
 			if err == nil {

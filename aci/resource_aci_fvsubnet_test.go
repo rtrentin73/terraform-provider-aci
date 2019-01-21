@@ -15,7 +15,7 @@ func TestAccAciSubnet_Basic(t *testing.T) {
 	var subnet models.Subnet
 	fv_tenant_name := acctest.RandString(5)
 	fv_bd_name := acctest.RandString(5)
-	fv_subnet_name := "10.0.3.28/27"
+	fv_subnet_name := acctest.RandString(5)
 	description := "subnet created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
@@ -43,20 +43,19 @@ func testAccCheckAciSubnetConfig_basic(fv_tenant_name, fv_bd_name, fv_subnet_nam
 
 	}
 
-	resource "aci_bridge_domain" "foobridge_domain" {
+	resource "aci_bridgedomain" "foobridgedomain" {
 		name 		= "%s"
-		description = "bridge_domain created while acceptance testing"
+		description = "bridgedomain created while acceptance testing"
 		tenant_dn = "${aci_tenant.footenant.id}"
 	}
 
 	resource "aci_subnet" "foosubnet" {
 		name 		= "%s"
 		description = "subnet created while acceptance testing"
-		bridge_domain_dn = "${aci_bridge_domain.foobridge_domain.id}"
-		ip = "%s"
+		bridgedomain_dn = "${aci_bridgedomain.foobridgedomain.id}"
 	}
 
-	`, fv_tenant_name, fv_bd_name, fv_subnet_name, fv_subnet_name)
+	`, fv_tenant_name, fv_bd_name, fv_subnet_name)
 }
 
 func testAccCheckAciSubnetExists(name string, subnet *models.Subnet) resource.TestCheckFunc {

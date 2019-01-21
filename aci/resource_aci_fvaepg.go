@@ -21,7 +21,7 @@ func resourceAciApplicationEPG() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"application_profile_dn": &schema.Schema{
+			"applicationprofile_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -29,6 +29,20 @@ func resourceAciApplicationEPG() *schema.Resource {
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+			},
+
+			"annotation": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: "Mo doc not defined in techpub!!!",
+			},
+
+			"exception_tag": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: "Mo doc not defined in techpub!!!",
 			},
 
 			"flood_on_encap": &schema.Schema{
@@ -39,6 +53,13 @@ func resourceAciApplicationEPG() *schema.Resource {
 			},
 
 			"fwd_ctrl": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: "Mo doc not defined in techpub!!!",
+			},
+
+			"has_mcast_source": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
 				Computed:    true,
@@ -85,6 +106,13 @@ func resourceAciApplicationEPG() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "qos priority class id",
+			},
+
+			"shutdown": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: "Mo doc not defined in techpub!!!",
 			},
 
 			"relation_fv_rs_bd": &schema.Schema{
@@ -223,17 +251,21 @@ func getRemoteApplicationEPG(client *client.Client, dn string) (*models.Applicat
 func setApplicationEPGAttributes(fvAEPg *models.ApplicationEPG, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(fvAEPg.DistinguishedName)
 	d.Set("description", fvAEPg.Description)
-	d.Set("application_profile_dn", GetParentDn(fvAEPg.DistinguishedName))
+	d.Set("applicationprofile_dn", GetParentDn(fvAEPg.DistinguishedName))
 	fvAEPgMap, _ := fvAEPg.ToMap()
 
+	d.Set("annotation", fvAEPgMap["annotation"])
+	d.Set("exception_tag", fvAEPgMap["exceptionTag"])
 	d.Set("flood_on_encap", fvAEPgMap["floodOnEncap"])
 	d.Set("fwd_ctrl", fvAEPgMap["fwdCtrl"])
+	d.Set("has_mcast_source", fvAEPgMap["hasMcastSource"])
 	d.Set("is_attr_based_e_pg", fvAEPgMap["isAttrBasedEPg"])
 	d.Set("match_t", fvAEPgMap["matchT"])
 	d.Set("name_alias", fvAEPgMap["nameAlias"])
 	d.Set("pc_enf_pref", fvAEPgMap["pcEnfPref"])
 	d.Set("pref_gr_memb", fvAEPgMap["prefGrMemb"])
 	d.Set("prio", fvAEPgMap["prio"])
+	d.Set("shutdown", fvAEPgMap["shutdown"])
 	return d
 }
 
@@ -255,15 +287,26 @@ func resourceAciApplicationEPGImport(d *schema.ResourceData, m interface{}) ([]*
 func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
+
 	name := d.Get("name").(string)
-	ApplicationProfileDn := d.Get("application_profile_dn").(string)
+
+	ApplicationprofileDn := d.Get("applicationprofile_dn").(string)
 
 	fvAEPgAttr := models.ApplicationEPGAttributes{}
+	if Annotation, ok := d.GetOk("annotation"); ok {
+		fvAEPgAttr.Annotation = Annotation.(string)
+	}
+	if ExceptionTag, ok := d.GetOk("exception_tag"); ok {
+		fvAEPgAttr.ExceptionTag = ExceptionTag.(string)
+	}
 	if FloodOnEncap, ok := d.GetOk("flood_on_encap"); ok {
 		fvAEPgAttr.FloodOnEncap = FloodOnEncap.(string)
 	}
 	if FwdCtrl, ok := d.GetOk("fwd_ctrl"); ok {
 		fvAEPgAttr.FwdCtrl = FwdCtrl.(string)
+	}
+	if HasMcastSource, ok := d.GetOk("has_mcast_source"); ok {
+		fvAEPgAttr.HasMcastSource = HasMcastSource.(string)
 	}
 	if IsAttrBasedEPg, ok := d.GetOk("is_attr_based_e_pg"); ok {
 		fvAEPgAttr.IsAttrBasedEPg = IsAttrBasedEPg.(string)
@@ -283,7 +326,10 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 	if Prio, ok := d.GetOk("prio"); ok {
 		fvAEPgAttr.Prio = Prio.(string)
 	}
-	fvAEPg := models.NewApplicationEPG(fmt.Sprintf("epg-%s", name), ApplicationProfileDn, desc, fvAEPgAttr)
+	if Shutdown, ok := d.GetOk("shutdown"); ok {
+		fvAEPgAttr.Shutdown = Shutdown.(string)
+	}
+	fvAEPg := models.NewApplicationEPG(fmt.Sprintf("epg-%s", name), ApplicationprofileDn, desc, fvAEPgAttr)
 
 	err := aciClient.Save(fvAEPg)
 	if err != nil {
@@ -460,14 +506,24 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
-	ApplicationProfileDn := d.Get("application_profile_dn").(string)
+
+	ApplicationprofileDn := d.Get("applicationprofile_dn").(string)
 
 	fvAEPgAttr := models.ApplicationEPGAttributes{}
+	if Annotation, ok := d.GetOk("annotation"); ok {
+		fvAEPgAttr.Annotation = Annotation.(string)
+	}
+	if ExceptionTag, ok := d.GetOk("exception_tag"); ok {
+		fvAEPgAttr.ExceptionTag = ExceptionTag.(string)
+	}
 	if FloodOnEncap, ok := d.GetOk("flood_on_encap"); ok {
 		fvAEPgAttr.FloodOnEncap = FloodOnEncap.(string)
 	}
 	if FwdCtrl, ok := d.GetOk("fwd_ctrl"); ok {
 		fvAEPgAttr.FwdCtrl = FwdCtrl.(string)
+	}
+	if HasMcastSource, ok := d.GetOk("has_mcast_source"); ok {
+		fvAEPgAttr.HasMcastSource = HasMcastSource.(string)
 	}
 	if IsAttrBasedEPg, ok := d.GetOk("is_attr_based_e_pg"); ok {
 		fvAEPgAttr.IsAttrBasedEPg = IsAttrBasedEPg.(string)
@@ -487,7 +543,10 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 	if Prio, ok := d.GetOk("prio"); ok {
 		fvAEPgAttr.Prio = Prio.(string)
 	}
-	fvAEPg := models.NewApplicationEPG(fmt.Sprintf("epg-%s", name), ApplicationProfileDn, desc, fvAEPgAttr)
+	if Shutdown, ok := d.GetOk("shutdown"); ok {
+		fvAEPgAttr.Shutdown = Shutdown.(string)
+	}
+	fvAEPg := models.NewApplicationEPG(fmt.Sprintf("epg-%s", name), ApplicationprofileDn, desc, fvAEPgAttr)
 
 	fvAEPg.Status = "modified"
 

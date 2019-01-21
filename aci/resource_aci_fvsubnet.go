@@ -22,7 +22,7 @@ func resourceAciSubnet() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"bridge_domain_dn": &schema.Schema{
+			"bridgedomain_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -30,6 +30,13 @@ func resourceAciSubnet() *schema.Resource {
 			"ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+			},
+
+			"annotation": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: "Mo doc not defined in techpub!!!",
 			},
 
 			"ctrl": &schema.Schema{
@@ -67,12 +74,6 @@ func resourceAciSubnet() *schema.Resource {
 				Description: "Mo doc not defined in techpub!!!",
 			},
 
-			"relation_fv_rs_bd_subnet_to_profile": &schema.Schema{
-				Type: schema.TypeString,
-
-				Optional:    true,
-				Description: "Create relation to rtctrlProfile",
-			},
 			"relation_fv_rs_bd_subnet_to_out": &schema.Schema{
 				Type:        schema.TypeSet,
 				Elem:        &schema.Schema{Type: schema.TypeString},
@@ -85,6 +86,12 @@ func resourceAciSubnet() *schema.Resource {
 
 				Optional:    true,
 				Description: "Create relation to ndPfxPol",
+			},
+			"relation_fv_rs_bd_subnet_to_profile": &schema.Schema{
+				Type: schema.TypeString,
+
+				Optional:    true,
+				Description: "Create relation to rtctrlProfile",
 			},
 		}),
 	}
@@ -108,9 +115,10 @@ func getRemoteSubnet(client *client.Client, dn string) (*models.Subnet, error) {
 func setSubnetAttributes(fvSubnet *models.Subnet, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(fvSubnet.DistinguishedName)
 	d.Set("description", fvSubnet.Description)
-	d.Set("bridge_domain_dn", GetParentDn(fvSubnet.DistinguishedName))
+	d.Set("bridgedomain_dn", GetParentDn(fvSubnet.DistinguishedName))
 	fvSubnetMap, _ := fvSubnet.ToMap()
 
+	d.Set("annotation", fvSubnetMap["annotation"])
 	d.Set("ctrl", fvSubnetMap["ctrl"])
 	d.Set("ip", fvSubnetMap["ip"])
 	d.Set("name_alias", fvSubnetMap["nameAlias"])
@@ -138,10 +146,15 @@ func resourceAciSubnetImport(d *schema.ResourceData, m interface{}) ([]*schema.R
 func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
+
 	ip := d.Get("ip").(string)
-	BridgeDomainDn := d.Get("bridge_domain_dn").(string)
+
+	BridgedomainDn := d.Get("bridgedomain_dn").(string)
 
 	fvSubnetAttr := models.SubnetAttributes{}
+	if Annotation, ok := d.GetOk("annotation"); ok {
+		fvSubnetAttr.Annotation = Annotation.(string)
+	}
 	if Ctrl, ok := d.GetOk("ctrl"); ok {
 		fvSubnetAttr.Ctrl = Ctrl.(string)
 	}
@@ -160,21 +173,13 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	if Virtual, ok := d.GetOk("virtual"); ok {
 		fvSubnetAttr.Virtual = Virtual.(string)
 	}
-	fvSubnet := models.NewSubnet(fmt.Sprintf("subnet-[%s]", ip), BridgeDomainDn, desc, fvSubnetAttr)
+	fvSubnet := models.NewSubnet(fmt.Sprintf("subnet-[%s]", ip), BridgedomainDn, desc, fvSubnetAttr)
 
 	err := aciClient.Save(fvSubnet)
 	if err != nil {
 		return err
 	}
 
-	if relationTofvRsBDSubnetToProfile, ok := d.GetOk("relation_fv_rs_bd_subnet_to_profile"); ok {
-		relationParam := relationTofvRsBDSubnetToProfile.(string)
-		err = aciClient.CreateRelationfvRsBDSubnetToProfileFromSubnet(fvSubnet.DistinguishedName, relationParam)
-		if err != nil {
-			return err
-		}
-
-	}
 	if relationTofvRsBDSubnetToOut, ok := d.GetOk("relation_fv_rs_bd_subnet_to_out"); ok {
 		relationParamList := toStringList(relationTofvRsBDSubnetToOut.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
@@ -193,6 +198,14 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 		}
 
 	}
+	if relationTofvRsBDSubnetToProfile, ok := d.GetOk("relation_fv_rs_bd_subnet_to_profile"); ok {
+		relationParam := relationTofvRsBDSubnetToProfile.(string)
+		err = aciClient.CreateRelationfvRsBDSubnetToProfileFromSubnet(fvSubnet.DistinguishedName, relationParam)
+		if err != nil {
+			return err
+		}
+
+	}
 
 	d.SetId(fvSubnet.DistinguishedName)
 	return resourceAciSubnetRead(d, m)
@@ -203,9 +216,13 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	desc := d.Get("description").(string)
 
 	ip := d.Get("ip").(string)
-	BridgeDomainDn := d.Get("bridge_domain_dn").(string)
+
+	BridgedomainDn := d.Get("bridgedomain_dn").(string)
 
 	fvSubnetAttr := models.SubnetAttributes{}
+	if Annotation, ok := d.GetOk("annotation"); ok {
+		fvSubnetAttr.Annotation = Annotation.(string)
+	}
 	if Ctrl, ok := d.GetOk("ctrl"); ok {
 		fvSubnetAttr.Ctrl = Ctrl.(string)
 	}
@@ -224,7 +241,7 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	if Virtual, ok := d.GetOk("virtual"); ok {
 		fvSubnetAttr.Virtual = Virtual.(string)
 	}
-	fvSubnet := models.NewSubnet(fmt.Sprintf("subnet-[%s]", ip), BridgeDomainDn, desc, fvSubnetAttr)
+	fvSubnet := models.NewSubnet(fmt.Sprintf("subnet-[%s]", ip), BridgedomainDn, desc, fvSubnetAttr)
 
 	fvSubnet.Status = "modified"
 
@@ -234,18 +251,6 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	if d.HasChange("relation_fv_rs_bd_subnet_to_profile") {
-		_, newRelParam := d.GetChange("relation_fv_rs_bd_subnet_to_profile")
-		err = aciClient.DeleteRelationfvRsBDSubnetToProfileFromSubnet(fvSubnet.DistinguishedName)
-		if err != nil {
-			return err
-		}
-		err = aciClient.CreateRelationfvRsBDSubnetToProfileFromSubnet(fvSubnet.DistinguishedName, newRelParam.(string))
-		if err != nil {
-			return err
-		}
-
-	}
 	if d.HasChange("relation_fv_rs_bd_subnet_to_out") {
 		oldRel, newRel := d.GetChange("relation_fv_rs_bd_subnet_to_out")
 		oldRelSet := oldRel.(*schema.Set)
@@ -277,6 +282,18 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		err = aciClient.CreateRelationfvRsNdPfxPolFromSubnet(fvSubnet.DistinguishedName, newRelParam.(string))
+		if err != nil {
+			return err
+		}
+
+	}
+	if d.HasChange("relation_fv_rs_bd_subnet_to_profile") {
+		_, newRelParam := d.GetChange("relation_fv_rs_bd_subnet_to_profile")
+		err = aciClient.DeleteRelationfvRsBDSubnetToProfileFromSubnet(fvSubnet.DistinguishedName)
+		if err != nil {
+			return err
+		}
+		err = aciClient.CreateRelationfvRsBDSubnetToProfileFromSubnet(fvSubnet.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}

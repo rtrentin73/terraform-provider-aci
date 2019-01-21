@@ -15,7 +15,7 @@ func TestAccAciBridgeDomain_Basic(t *testing.T) {
 	var bridge_domain models.BridgeDomain
 	fv_tenant_name := acctest.RandString(5)
 	fv_bd_name := acctest.RandString(5)
-	description := "bridge_domain created while acceptance testing"
+	description := "bridgedomain created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -25,7 +25,7 @@ func TestAccAciBridgeDomain_Basic(t *testing.T) {
 			{
 				Config: testAccCheckAciBridgeDomainConfig_basic(fv_tenant_name, fv_bd_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciBridgeDomainExists("aci_bridge_domain.foobridge_domain", &bridge_domain),
+					testAccCheckAciBridgeDomainExists("aci_bridgedomain.foobridgedomain", &bridge_domain),
 					testAccCheckAciBridgeDomainAttributes(fv_tenant_name, fv_bd_name, description, &bridge_domain),
 				),
 			},
@@ -42,9 +42,9 @@ func testAccCheckAciBridgeDomainConfig_basic(fv_tenant_name, fv_bd_name string) 
 
 	}
 
-	resource "aci_bridge_domain" "foobridge_domain" {
+	resource "aci_bridgedomain" "foobridgedomain" {
 		name 		= "%s"
-		description = "bridge_domain created while acceptance testing"
+		description = "bridgedomain created while acceptance testing"
 		tenant_dn = "${aci_tenant.footenant.id}"
 	}
 
@@ -84,7 +84,7 @@ func testAccCheckAciBridgeDomainDestroy(s *terraform.State) error {
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_bridge_domain" {
+		if rs.Type == "aci_bridgedomain" {
 			cont, err := client.Get(rs.Primary.ID)
 			bridge_domain := models.BridgeDomainFromContainer(cont)
 			if err == nil {

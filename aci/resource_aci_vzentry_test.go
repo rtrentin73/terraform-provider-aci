@@ -16,7 +16,7 @@ func TestAccAciFilterEntry_Basic(t *testing.T) {
 	fv_tenant_name := acctest.RandString(5)
 	vz_filter_name := acctest.RandString(5)
 	vz_entry_name := acctest.RandString(5)
-	description := "filter_entry created while acceptance testing"
+	description := "filterentry created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -26,7 +26,7 @@ func TestAccAciFilterEntry_Basic(t *testing.T) {
 			{
 				Config: testAccCheckAciFilterEntryConfig_basic(fv_tenant_name, vz_filter_name, vz_entry_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciFilterEntryExists("aci_filter_entry.foofilter_entry", &filter_entry),
+					testAccCheckAciFilterEntryExists("aci_filterentry.foofilterentry", &filter_entry),
 					testAccCheckAciFilterEntryAttributes(fv_tenant_name, vz_filter_name, vz_entry_name, description, &filter_entry),
 				),
 			},
@@ -49,9 +49,9 @@ func testAccCheckAciFilterEntryConfig_basic(fv_tenant_name, vz_filter_name, vz_e
 		tenant_dn = "${aci_tenant.footenant.id}"
 	}
 
-	resource "aci_filter_entry" "foofilter_entry" {
+	resource "aci_filterentry" "foofilterentry" {
 		name 		= "%s"
-		description = "filter_entry created while acceptance testing"
+		description = "filterentry created while acceptance testing"
 		filter_dn = "${aci_filter.foofilter.id}"
 	}
 
@@ -91,7 +91,7 @@ func testAccCheckAciFilterEntryDestroy(s *terraform.State) error {
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_filter_entry" {
+		if rs.Type == "aci_filterentry" {
 			cont, err := client.Get(rs.Primary.ID)
 			filter_entry := models.FilterEntryFromContainer(cont)
 			if err == nil {

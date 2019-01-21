@@ -14,8 +14,11 @@ Manages ACI Subnet
 ```hcl
 resource "aci_subnet" "example" {
 
-  bridge_domain_dn  = "${aci_bridge_domain.example.id}"
-  ip  = "example"
+  bridgedomain_dn  = "${aci_bridgedomain.example.id}"
+
+    ip  = "example"
+
+  annotation  = "example"
   ctrl  = "example"
   ip  = "example"
   name_alias  = "example"
@@ -25,8 +28,9 @@ resource "aci_subnet" "example" {
 }
 ```
 ## Argument Reference ##
-* `bridge_domain_dn` - (Required) Distinguished name of parent BridgeDomain object.
+* `bridgedomain_dn` - (Required) Distinguished name of parent Bridgedomain object.
 * `ip` - (Required) ip of Object subnet.
+* `annotation` - (Optional) annotation for object subnet.
 * `ctrl` - (Optional) subnet control state
 * `ip` - (Optional) default gateway IP address and mask
 * `name_alias` - (Optional) name_alias for object subnet.
@@ -34,11 +38,11 @@ resource "aci_subnet" "example" {
 * `scope` - (Optional) subnet visibility
 * `virtual` - (Optional) virtual for object subnet.
 
-* `relation_fv_rs_bd_subnet_to_profile` - (Optional) Relation to class rtctrlProfile. Cardinality - N_TO_ONE. Type - String.
-                
 * `relation_fv_rs_bd_subnet_to_out` - (Optional) Relation to class l3extOut. Cardinality - N_TO_M. Type - Set of String.
                 
 * `relation_fv_rs_nd_pfx_pol` - (Optional) Relation to class ndPfxPol. Cardinality - N_TO_ONE. Type - String.
+                
+* `relation_fv_rs_bd_subnet_to_profile` - (Optional) Relation to class rtctrlProfile. Cardinality - N_TO_ONE. Type - String.
                 
 
 
