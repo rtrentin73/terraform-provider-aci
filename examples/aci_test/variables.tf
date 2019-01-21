@@ -52,7 +52,7 @@ variable "domain_name" {
 }
 
 variable "vsphere_template" {
-  default = "ubuntu-1404-template"
+  default = "test-vm-ubuntu"
 }
 
 variable "folder" {
