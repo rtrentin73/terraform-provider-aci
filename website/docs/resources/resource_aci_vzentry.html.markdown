@@ -1,18 +1,18 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_filter_entry"
-sidebar_current: "docs-aci-resource-filter_entry"
+page_title: "ACI: aci_filterentry"
+sidebar_current: "docs-aci-resource-filterentry"
 description: |-
-  Manages ACI Filter Entry
+  Manages ACI Filter entry
 ---
 
-# aci_filter_entry #
-Manages ACI Filter Entry
+# aci_filterentry #
+Manages ACI Filter entry
 
 ## Example Usage ##
 
 ```hcl
-resource "aci_filter_entry" "example" {
+resource "aci_filterentry" "example" {
 
   filter_dn  = "${aci_filter.example.id}"
 
@@ -37,8 +37,8 @@ resource "aci_filter_entry" "example" {
 ```
 ## Argument Reference ##
 * `filter_dn` - (Required) Distinguished name of parent Filter object.
-* `name` - (Required) name of Object filter_entry.
-* `annotation` - (Optional) annotation for object filter_entry.
+* `name` - (Required) name of Object filterentry.
+* `annotation` - (Optional) annotation for object filterentry.
 * `apply_to_frag` - (Optional) fragment
 * `arp_opc` - (Optional) open peripheral codes
 * `d_from_port` - (Optional) end of the destination port range
@@ -46,8 +46,8 @@ resource "aci_filter_entry" "example" {
 * `ether_t` - (Optional) ethertype
 * `icmpv4_t` - (Optional) 
 * `icmpv6_t` - (Optional) 
-* `match_dscp` - (Optional) match_dscp for object filter_entry.
-* `name_alias` - (Optional) name_alias for object filter_entry.
+* `match_dscp` - (Optional) match_dscp for object filterentry.
+* `name_alias` - (Optional) name_alias for object filterentry.
 * `prot` - (Optional) level 3 ip protocol
 * `s_from_port` - (Optional) start of the source port range
 * `s_to_port` - (Optional) end of the source port range

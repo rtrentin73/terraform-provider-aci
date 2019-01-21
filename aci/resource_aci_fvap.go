@@ -7,15 +7,15 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func resourceAciApplicationProfile() *schema.Resource {
+func resourceAciApplicationprofile() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciApplicationProfileCreate,
-		Update: resourceAciApplicationProfileUpdate,
-		Read:   resourceAciApplicationProfileRead,
-		Delete: resourceAciApplicationProfileDelete,
+		Create: resourceAciApplicationprofileCreate,
+		Update: resourceAciApplicationprofileUpdate,
+		Read:   resourceAciApplicationprofileRead,
+		Delete: resourceAciApplicationprofileDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: resourceAciApplicationProfileImport,
+			State: resourceAciApplicationprofileImport,
 		},
 
 		SchemaVersion: 1,
@@ -62,13 +62,13 @@ func resourceAciApplicationProfile() *schema.Resource {
 	}
 }
 
-func getRemoteApplicationProfile(client *client.Client, dn string) (*models.ApplicationProfile, error) {
+func getRemoteApplicationprofile(client *client.Client, dn string) (*models.Applicationprofile, error) {
 	fvApCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
 	}
 
-	fvAp := models.ApplicationProfileFromContainer(fvApCont)
+	fvAp := models.ApplicationprofileFromContainer(fvApCont)
 
 	if fvAp.DistinguishedName == "" {
 		return nil, fmt.Errorf("Bridge Domain %s not found", fvAp.DistinguishedName)
@@ -77,7 +77,7 @@ func getRemoteApplicationProfile(client *client.Client, dn string) (*models.Appl
 	return fvAp, nil
 }
 
-func setApplicationProfileAttributes(fvAp *models.ApplicationProfile, d *schema.ResourceData) *schema.ResourceData {
+func setApplicationprofileAttributes(fvAp *models.Applicationprofile, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(fvAp.DistinguishedName)
 	d.Set("description", fvAp.Description)
 	d.Set("tenant_dn", GetParentDn(fvAp.DistinguishedName))
@@ -89,22 +89,22 @@ func setApplicationProfileAttributes(fvAp *models.ApplicationProfile, d *schema.
 	return d
 }
 
-func resourceAciApplicationProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+func resourceAciApplicationprofileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
 
-	fvAp, err := getRemoteApplicationProfile(aciClient, dn)
+	fvAp, err := getRemoteApplicationprofile(aciClient, dn)
 
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setApplicationProfileAttributes(fvAp, d)
+	schemaFilled := setApplicationprofileAttributes(fvAp, d)
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciApplicationProfileCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciApplicationprofileCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
@@ -112,7 +112,7 @@ func resourceAciApplicationProfileCreate(d *schema.ResourceData, m interface{}) 
 
 	TenantDn := d.Get("tenant_dn").(string)
 
-	fvApAttr := models.ApplicationProfileAttributes{}
+	fvApAttr := models.ApplicationprofileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fvApAttr.Annotation = Annotation.(string)
 	}
@@ -122,7 +122,7 @@ func resourceAciApplicationProfileCreate(d *schema.ResourceData, m interface{}) 
 	if Prio, ok := d.GetOk("prio"); ok {
 		fvApAttr.Prio = Prio.(string)
 	}
-	fvAp := models.NewApplicationProfile(fmt.Sprintf("ap-%s", name), TenantDn, desc, fvApAttr)
+	fvAp := models.NewApplicationprofile(fmt.Sprintf("ap-%s", name), TenantDn, desc, fvApAttr)
 
 	err := aciClient.Save(fvAp)
 	if err != nil {
@@ -131,7 +131,7 @@ func resourceAciApplicationProfileCreate(d *schema.ResourceData, m interface{}) 
 
 	if relationTofvRsApMonPol, ok := d.GetOk("relation_fv_rs_ap_mon_pol"); ok {
 		relationParam := relationTofvRsApMonPol.(string)
-		err = aciClient.CreateRelationfvRsApMonPolFromApplicationProfile(fvAp.DistinguishedName, relationParam)
+		err = aciClient.CreateRelationfvRsApMonPolFromApplicationprofile(fvAp.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -139,10 +139,10 @@ func resourceAciApplicationProfileCreate(d *schema.ResourceData, m interface{}) 
 	}
 
 	d.SetId(fvAp.DistinguishedName)
-	return resourceAciApplicationProfileRead(d, m)
+	return resourceAciApplicationprofileRead(d, m)
 }
 
-func resourceAciApplicationProfileUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciApplicationprofileUpdate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
@@ -150,7 +150,7 @@ func resourceAciApplicationProfileUpdate(d *schema.ResourceData, m interface{}) 
 
 	TenantDn := d.Get("tenant_dn").(string)
 
-	fvApAttr := models.ApplicationProfileAttributes{}
+	fvApAttr := models.ApplicationprofileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fvApAttr.Annotation = Annotation.(string)
 	}
@@ -160,7 +160,7 @@ func resourceAciApplicationProfileUpdate(d *schema.ResourceData, m interface{}) 
 	if Prio, ok := d.GetOk("prio"); ok {
 		fvApAttr.Prio = Prio.(string)
 	}
-	fvAp := models.NewApplicationProfile(fmt.Sprintf("ap-%s", name), TenantDn, desc, fvApAttr)
+	fvAp := models.NewApplicationprofile(fmt.Sprintf("ap-%s", name), TenantDn, desc, fvApAttr)
 
 	fvAp.Status = "modified"
 
@@ -172,11 +172,11 @@ func resourceAciApplicationProfileUpdate(d *schema.ResourceData, m interface{}) 
 
 	if d.HasChange("relation_fv_rs_ap_mon_pol") {
 		_, newRelParam := d.GetChange("relation_fv_rs_ap_mon_pol")
-		err = aciClient.DeleteRelationfvRsApMonPolFromApplicationProfile(fvAp.DistinguishedName)
+		err = aciClient.DeleteRelationfvRsApMonPolFromApplicationprofile(fvAp.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationfvRsApMonPolFromApplicationProfile(fvAp.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationfvRsApMonPolFromApplicationprofile(fvAp.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -184,24 +184,24 @@ func resourceAciApplicationProfileUpdate(d *schema.ResourceData, m interface{}) 
 	}
 
 	d.SetId(fvAp.DistinguishedName)
-	return resourceAciApplicationProfileRead(d, m)
+	return resourceAciApplicationprofileRead(d, m)
 
 }
 
-func resourceAciApplicationProfileRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciApplicationprofileRead(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
-	fvAp, err := getRemoteApplicationProfile(aciClient, dn)
+	fvAp, err := getRemoteApplicationprofile(aciClient, dn)
 
 	if err != nil {
 		return err
 	}
-	setApplicationProfileAttributes(fvAp, d)
+	setApplicationprofileAttributes(fvAp, d)
 	return nil
 }
 
-func resourceAciApplicationProfileDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciApplicationprofileDelete(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "fvAp")

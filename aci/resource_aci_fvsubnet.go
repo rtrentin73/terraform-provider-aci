@@ -2,7 +2,6 @@ package aci
 
 import (
 	"fmt"
-
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform/helper/schema"

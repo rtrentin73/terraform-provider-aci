@@ -1,18 +1,18 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_contract_subject"
-sidebar_current: "docs-aci-resource-contract_subject"
+page_title: "ACI: aci_contractsubject"
+sidebar_current: "docs-aci-resource-contractsubject"
 description: |-
-  Manages ACI Contract Subject
+  Manages ACI Contract subject
 ---
 
-# aci_contract_subject #
-Manages ACI Contract Subject
+# aci_contractsubject #
+Manages ACI Contract subject
 
 ## Example Usage ##
 
 ```hcl
-resource "aci_contract_subject" "example" {
+resource "aci_contractsubject" "example" {
 
   contract_dn  = "${aci_contract.example.id}"
 
@@ -29,10 +29,10 @@ resource "aci_contract_subject" "example" {
 ```
 ## Argument Reference ##
 * `contract_dn` - (Required) Distinguished name of parent Contract object.
-* `name` - (Required) name of Object contract_subject.
-* `annotation` - (Optional) annotation for object contract_subject.
+* `name` - (Required) name of Object contractsubject.
+* `annotation` - (Optional) annotation for object contractsubject.
 * `cons_match_t` - (Optional) consumer subject match criteria
-* `name_alias` - (Optional) name_alias for object contract_subject.
+* `name_alias` - (Optional) name_alias for object contractsubject.
 * `prio` - (Optional) priority level specifier
 * `prov_match_t` - (Optional) consumer subject match criteria
 * `rev_flt_ports` - (Optional) enables filter to apply on ingress and egress traffic

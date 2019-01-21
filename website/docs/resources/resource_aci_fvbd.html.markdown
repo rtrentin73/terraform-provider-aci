@@ -1,18 +1,18 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_bridge_domain"
-sidebar_current: "docs-aci-resource-bridge_domain"
+page_title: "ACI: aci_bridgedomain"
+sidebar_current: "docs-aci-resource-bridgedomain"
 description: |-
-  Manages ACI Bridge Domain
+  Manages ACI Bridge domain
 ---
 
-# aci_bridge_domain #
-Manages ACI Bridge Domain
+# aci_bridgedomain #
+Manages ACI Bridge domain
 
 ## Example Usage ##
 
 ```hcl
-resource "aci_bridge_domain" "example" {
+resource "aci_bridgedomain" "example" {
 
   tenant_dn  = "${aci_tenant.example.id}"
 
@@ -44,29 +44,29 @@ resource "aci_bridge_domain" "example" {
 ```
 ## Argument Reference ##
 * `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-* `name` - (Required) name of Object bridge_domain.
-* `optimize_wan_bandwidth` - (Optional) optimize_wan_bandwidth for object bridge_domain.
-* `annotation` - (Optional) annotation for object bridge_domain.
+* `name` - (Required) name of Object bridgedomain.
+* `optimize_wan_bandwidth` - (Optional) optimize_wan_bandwidth for object bridgedomain.
+* `annotation` - (Optional) annotation for object bridgedomain.
 * `arp_flood` - (Optional) arp flood enable
-* `ep_clear` - (Optional) ep_clear for object bridge_domain.
+* `ep_clear` - (Optional) ep_clear for object bridgedomain.
 * `ep_move_detect_mode` - (Optional) ep move detection garp based mode
 * `host_based_routing` - (Optional) enables advertising host routes out of l3outs of this BD
 * `intersite_bum_traffic_allow` - (Optional) 
 * `intersite_l2_stretch` - (Optional) 
 * `ip_learning` - (Optional) Endpoint Dataplane Learning
-* `ipv6_mcast_allow` - (Optional) ipv6_mcast_allow for object bridge_domain.
+* `ipv6_mcast_allow` - (Optional) ipv6_mcast_allow for object bridgedomain.
 * `limit_ip_learn_to_subnets` - (Optional) limits ip learning to bd subnets only
 * `ll_addr` - (Optional) override of system generated ipv6 link-local address
 * `mac` - (Optional) mac address
-* `mcast_allow` - (Optional) mcast_allow for object bridge_domain.
+* `mcast_allow` - (Optional) mcast_allow for object bridgedomain.
 * `multi_dst_pkt_act` - (Optional) forwarding method for multi destinations
-* `name_alias` - (Optional) name_alias for object bridge_domain.
+* `name_alias` - (Optional) name_alias for object bridgedomain.
 * `type` - (Optional) component type
 * `unicast_route` - (Optional) Unicast routing
 * `unk_mac_ucast_act` - (Optional) forwarding method for l2 destinations
 * `unk_mcast_act` - (Optional) parameter used by node to forward data
-* `v6unk_mcast_act` - (Optional) v6unk_mcast_act for object bridge_domain.
-* `vmac` - (Optional) vmac for object bridge_domain.
+* `v6unk_mcast_act` - (Optional) v6unk_mcast_act for object bridgedomain.
+* `vmac` - (Optional) vmac for object bridgedomain.
 
 * `relation_fv_rs_bd_to_profile` - (Optional) Relation to class rtctrlProfile. Cardinality - N_TO_ONE. Type - String.
                 

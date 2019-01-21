@@ -11,8 +11,8 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
-func TestAccAciFilterEntry_Basic(t *testing.T) {
-	var filter_entry models.FilterEntry
+func TestAccAciFilterentry_Basic(t *testing.T) {
+	var filterentry models.Filterentry
 	fv_tenant_name := acctest.RandString(5)
 	vz_filter_name := acctest.RandString(5)
 	vz_entry_name := acctest.RandString(5)
@@ -21,20 +21,20 @@ func TestAccAciFilterEntry_Basic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciFilterEntryDestroy,
+		CheckDestroy: testAccCheckAciFilterentryDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciFilterEntryConfig_basic(fv_tenant_name, vz_filter_name, vz_entry_name),
+				Config: testAccCheckAciFilterentryConfig_basic(fv_tenant_name, vz_filter_name, vz_entry_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciFilterEntryExists("aci_filterentry.foofilterentry", &filter_entry),
-					testAccCheckAciFilterEntryAttributes(fv_tenant_name, vz_filter_name, vz_entry_name, description, &filter_entry),
+					testAccCheckAciFilterentryExists("aci_filterentry.foofilterentry", &filterentry),
+					testAccCheckAciFilterentryAttributes(fv_tenant_name, vz_filter_name, vz_entry_name, description, &filterentry),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckAciFilterEntryConfig_basic(fv_tenant_name, vz_filter_name, vz_entry_name string) string {
+func testAccCheckAciFilterentryConfig_basic(fv_tenant_name, vz_filter_name, vz_entry_name string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_tenant" "footenant" {
@@ -58,16 +58,16 @@ func testAccCheckAciFilterEntryConfig_basic(fv_tenant_name, vz_filter_name, vz_e
 	`, fv_tenant_name, vz_filter_name, vz_entry_name)
 }
 
-func testAccCheckAciFilterEntryExists(name string, filter_entry *models.FilterEntry) resource.TestCheckFunc {
+func testAccCheckAciFilterentryExists(name string, filterentry *models.Filterentry) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[name]
 
 		if !ok {
-			return fmt.Errorf("Filter Entry %s not found", name)
+			return fmt.Errorf("Filter entry %s not found", name)
 		}
 
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("No Filter Entry dn was set")
+			return fmt.Errorf("No Filter entry dn was set")
 		}
 
 		client := testAccProvider.Meta().(*client.Client)
@@ -77,25 +77,25 @@ func testAccCheckAciFilterEntryExists(name string, filter_entry *models.FilterEn
 			return err
 		}
 
-		filter_entryFound := models.FilterEntryFromContainer(cont)
-		if filter_entryFound.DistinguishedName != rs.Primary.ID {
-			return fmt.Errorf("Filter Entry %s not found", rs.Primary.ID)
+		filterentryFound := models.FilterentryFromContainer(cont)
+		if filterentryFound.DistinguishedName != rs.Primary.ID {
+			return fmt.Errorf("Filter entry %s not found", rs.Primary.ID)
 		}
-		*filter_entry = *filter_entryFound
+		*filterentry = *filterentryFound
 		return nil
 	}
 }
 
-func testAccCheckAciFilterEntryDestroy(s *terraform.State) error {
+func testAccCheckAciFilterentryDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 
 	for _, rs := range s.RootModule().Resources {
 
 		if rs.Type == "aci_filterentry" {
 			cont, err := client.Get(rs.Primary.ID)
-			filter_entry := models.FilterEntryFromContainer(cont)
+			filterentry := models.FilterentryFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("Filter Entry %s Still exists", filter_entry.DistinguishedName)
+				return fmt.Errorf("Filter entry %s Still exists", filterentry.DistinguishedName)
 			}
 
 		} else {
@@ -106,18 +106,18 @@ func testAccCheckAciFilterEntryDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciFilterEntryAttributes(fv_tenant_name, vz_filter_name, vz_entry_name, description string, filter_entry *models.FilterEntry) resource.TestCheckFunc {
+func testAccCheckAciFilterentryAttributes(fv_tenant_name, vz_filter_name, vz_entry_name, description string, filterentry *models.Filterentry) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
-		if vz_entry_name != GetMOName(filter_entry.DistinguishedName) {
-			return fmt.Errorf("Bad vz_entry %s", GetMOName(filter_entry.DistinguishedName))
+		if vz_entry_name != GetMOName(filterentry.DistinguishedName) {
+			return fmt.Errorf("Bad vz_entry %s", GetMOName(filterentry.DistinguishedName))
 		}
 
-		if vz_filter_name != GetMOName(GetParentDn(filter_entry.DistinguishedName)) {
-			return fmt.Errorf(" Bad vz_filter %s", GetMOName(GetParentDn(filter_entry.DistinguishedName)))
+		if vz_filter_name != GetMOName(GetParentDn(filterentry.DistinguishedName)) {
+			return fmt.Errorf(" Bad vz_filter %s", GetMOName(GetParentDn(filterentry.DistinguishedName)))
 		}
-		if description != filter_entry.Description {
-			return fmt.Errorf("Bad filter_entry Description %s", filter_entry.Description)
+		if description != filterentry.Description {
+			return fmt.Errorf("Bad filterentry Description %s", filterentry.Description)
 		}
 
 		return nil

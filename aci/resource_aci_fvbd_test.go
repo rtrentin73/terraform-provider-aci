@@ -11,8 +11,8 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
-func TestAccAciBridgeDomain_Basic(t *testing.T) {
-	var bridge_domain models.BridgeDomain
+func TestAccAciBridgedomain_Basic(t *testing.T) {
+	var bridgedomain models.Bridgedomain
 	fv_tenant_name := acctest.RandString(5)
 	fv_bd_name := acctest.RandString(5)
 	description := "bridgedomain created while acceptance testing"
@@ -20,20 +20,20 @@ func TestAccAciBridgeDomain_Basic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciBridgeDomainDestroy,
+		CheckDestroy: testAccCheckAciBridgedomainDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciBridgeDomainConfig_basic(fv_tenant_name, fv_bd_name),
+				Config: testAccCheckAciBridgedomainConfig_basic(fv_tenant_name, fv_bd_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciBridgeDomainExists("aci_bridgedomain.foobridgedomain", &bridge_domain),
-					testAccCheckAciBridgeDomainAttributes(fv_tenant_name, fv_bd_name, description, &bridge_domain),
+					testAccCheckAciBridgedomainExists("aci_bridgedomain.foobridgedomain", &bridgedomain),
+					testAccCheckAciBridgedomainAttributes(fv_tenant_name, fv_bd_name, description, &bridgedomain),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckAciBridgeDomainConfig_basic(fv_tenant_name, fv_bd_name string) string {
+func testAccCheckAciBridgedomainConfig_basic(fv_tenant_name, fv_bd_name string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_tenant" "footenant" {
@@ -51,16 +51,16 @@ func testAccCheckAciBridgeDomainConfig_basic(fv_tenant_name, fv_bd_name string) 
 	`, fv_tenant_name, fv_bd_name)
 }
 
-func testAccCheckAciBridgeDomainExists(name string, bridge_domain *models.BridgeDomain) resource.TestCheckFunc {
+func testAccCheckAciBridgedomainExists(name string, bridgedomain *models.Bridgedomain) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[name]
 
 		if !ok {
-			return fmt.Errorf("Bridge Domain %s not found", name)
+			return fmt.Errorf("Bridge domain %s not found", name)
 		}
 
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("No Bridge Domain dn was set")
+			return fmt.Errorf("No Bridge domain dn was set")
 		}
 
 		client := testAccProvider.Meta().(*client.Client)
@@ -70,25 +70,25 @@ func testAccCheckAciBridgeDomainExists(name string, bridge_domain *models.Bridge
 			return err
 		}
 
-		bridge_domainFound := models.BridgeDomainFromContainer(cont)
-		if bridge_domainFound.DistinguishedName != rs.Primary.ID {
-			return fmt.Errorf("Bridge Domain %s not found", rs.Primary.ID)
+		bridgedomainFound := models.BridgedomainFromContainer(cont)
+		if bridgedomainFound.DistinguishedName != rs.Primary.ID {
+			return fmt.Errorf("Bridge domain %s not found", rs.Primary.ID)
 		}
-		*bridge_domain = *bridge_domainFound
+		*bridgedomain = *bridgedomainFound
 		return nil
 	}
 }
 
-func testAccCheckAciBridgeDomainDestroy(s *terraform.State) error {
+func testAccCheckAciBridgedomainDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 
 	for _, rs := range s.RootModule().Resources {
 
 		if rs.Type == "aci_bridgedomain" {
 			cont, err := client.Get(rs.Primary.ID)
-			bridge_domain := models.BridgeDomainFromContainer(cont)
+			bridgedomain := models.BridgedomainFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("Bridge Domain %s Still exists", bridge_domain.DistinguishedName)
+				return fmt.Errorf("Bridge domain %s Still exists", bridgedomain.DistinguishedName)
 			}
 
 		} else {
@@ -99,18 +99,18 @@ func testAccCheckAciBridgeDomainDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciBridgeDomainAttributes(fv_tenant_name, fv_bd_name, description string, bridge_domain *models.BridgeDomain) resource.TestCheckFunc {
+func testAccCheckAciBridgedomainAttributes(fv_tenant_name, fv_bd_name, description string, bridgedomain *models.Bridgedomain) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
-		if fv_bd_name != GetMOName(bridge_domain.DistinguishedName) {
-			return fmt.Errorf("Bad fv_bd %s", GetMOName(bridge_domain.DistinguishedName))
+		if fv_bd_name != GetMOName(bridgedomain.DistinguishedName) {
+			return fmt.Errorf("Bad fv_bd %s", GetMOName(bridgedomain.DistinguishedName))
 		}
 
-		if fv_tenant_name != GetMOName(GetParentDn(bridge_domain.DistinguishedName)) {
-			return fmt.Errorf(" Bad fv_tenant %s", GetMOName(GetParentDn(bridge_domain.DistinguishedName)))
+		if fv_tenant_name != GetMOName(GetParentDn(bridgedomain.DistinguishedName)) {
+			return fmt.Errorf(" Bad fv_tenant %s", GetMOName(GetParentDn(bridgedomain.DistinguishedName)))
 		}
-		if description != bridge_domain.Description {
-			return fmt.Errorf("Bad bridge_domain Description %s", bridge_domain.Description)
+		if description != bridgedomain.Description {
+			return fmt.Errorf("Bad bridgedomain Description %s", bridgedomain.Description)
 		}
 
 		return nil
