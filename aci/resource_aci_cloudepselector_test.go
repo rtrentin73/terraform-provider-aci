@@ -11,31 +11,31 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
-func TestAccAciCloudendpointselector_Basic(t *testing.T) {
-	var cloudendpointselector models.Cloudendpointselector
+func TestAccAciCloudEndpointSelector_Basic(t *testing.T) {
+	var cloud_endpoint_selector models.CloudEndpointSelector
 	fv_tenant_name := acctest.RandString(5)
 	cloud_app_name := acctest.RandString(5)
 	cloud_e_pg_name := acctest.RandString(5)
 	cloud_ep_selector_name := acctest.RandString(5)
-	description := "cloudendpointselector created while acceptance testing"
+	description := "cloud_endpoint_selector created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciCloudendpointselectorDestroy,
+		CheckDestroy: testAccCheckAciCloudEndpointSelectorDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciCloudendpointselectorConfig_basic(fv_tenant_name, cloud_app_name, cloud_e_pg_name, cloud_ep_selector_name),
+				Config: testAccCheckAciCloudEndpointSelectorConfig_basic(fv_tenant_name, cloud_app_name, cloud_e_pg_name, cloud_ep_selector_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciCloudendpointselectorExists("aci_cloudendpointselector.foocloudendpointselector", &cloudendpointselector),
-					testAccCheckAciCloudendpointselectorAttributes(fv_tenant_name, cloud_app_name, cloud_e_pg_name, cloud_ep_selector_name, description, &cloudendpointselector),
+					testAccCheckAciCloudEndpointSelectorExists("aci_cloud_endpoint_selector.foocloud_endpoint_selector", &cloud_endpoint_selector),
+					testAccCheckAciCloudEndpointSelectorAttributes(fv_tenant_name, cloud_app_name, cloud_e_pg_name, cloud_ep_selector_name, description, &cloud_endpoint_selector),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckAciCloudendpointselectorConfig_basic(fv_tenant_name, cloud_app_name, cloud_e_pg_name, cloud_ep_selector_name string) string {
+func testAccCheckAciCloudEndpointSelectorConfig_basic(fv_tenant_name, cloud_app_name, cloud_e_pg_name, cloud_ep_selector_name string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_tenant" "footenant" {
@@ -44,37 +44,37 @@ func testAccCheckAciCloudendpointselectorConfig_basic(fv_tenant_name, cloud_app_
 
 	}
 
-	resource "aci_cloudapplicationcontainer" "foocloudapplicationcontainer" {
+	resource "aci_cloud_applicationcontainer" "foocloud_applicationcontainer" {
 		name 		= "%s"
-		description = "cloudapplicationcontainer created while acceptance testing"
+		description = "cloud_applicationcontainer created while acceptance testing"
 		tenant_dn = "${aci_tenant.footenant.id}"
 	}
 
-	resource "aci_cloudepg" "foocloudepg" {
+	resource "aci_cloud_e_pg" "foocloud_e_pg" {
 		name 		= "%s"
-		description = "cloudepg created while acceptance testing"
-		cloudapplicationcontainer_dn = "${aci_cloudapplicationcontainer.foocloudapplicationcontainer.id}"
+		description = "cloud_e_pg created while acceptance testing"
+		cloud_applicationcontainer_dn = "${aci_cloud_applicationcontainer.foocloud_applicationcontainer.id}"
 	}
 
-	resource "aci_cloudendpointselector" "foocloudendpointselector" {
+	resource "aci_cloud_endpoint_selector" "foocloud_endpoint_selector" {
 		name 		= "%s"
-		description = "cloudendpointselector created while acceptance testing"
-		cloudepg_dn = "${aci_cloudepg.foocloudepg.id}"
+		description = "cloud_endpoint_selector created while acceptance testing"
+		cloud_e_pg_dn = "${aci_cloud_e_pg.foocloud_e_pg.id}"
 	}
 
 	`, fv_tenant_name, cloud_app_name, cloud_e_pg_name, cloud_ep_selector_name)
 }
 
-func testAccCheckAciCloudendpointselectorExists(name string, cloudendpointselector *models.Cloudendpointselector) resource.TestCheckFunc {
+func testAccCheckAciCloudEndpointSelectorExists(name string, cloud_endpoint_selector *models.CloudEndpointSelector) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[name]
 
 		if !ok {
-			return fmt.Errorf("Cloud endpoint selector %s not found", name)
+			return fmt.Errorf("Cloud Endpoint Selector %s not found", name)
 		}
 
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("No Cloud endpoint selector dn was set")
+			return fmt.Errorf("No Cloud Endpoint Selector dn was set")
 		}
 
 		client := testAccProvider.Meta().(*client.Client)
@@ -84,25 +84,25 @@ func testAccCheckAciCloudendpointselectorExists(name string, cloudendpointselect
 			return err
 		}
 
-		cloudendpointselectorFound := models.CloudendpointselectorFromContainer(cont)
-		if cloudendpointselectorFound.DistinguishedName != rs.Primary.ID {
-			return fmt.Errorf("Cloud endpoint selector %s not found", rs.Primary.ID)
+		cloud_endpoint_selectorFound := models.CloudEndpointSelectorFromContainer(cont)
+		if cloud_endpoint_selectorFound.DistinguishedName != rs.Primary.ID {
+			return fmt.Errorf("Cloud Endpoint Selector %s not found", rs.Primary.ID)
 		}
-		*cloudendpointselector = *cloudendpointselectorFound
+		*cloud_endpoint_selector = *cloud_endpoint_selectorFound
 		return nil
 	}
 }
 
-func testAccCheckAciCloudendpointselectorDestroy(s *terraform.State) error {
+func testAccCheckAciCloudEndpointSelectorDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_cloudendpointselector" {
+		if rs.Type == "aci_cloud_endpoint_selector" {
 			cont, err := client.Get(rs.Primary.ID)
-			cloudendpointselector := models.CloudendpointselectorFromContainer(cont)
+			cloud_endpoint_selector := models.CloudEndpointSelectorFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("Cloud endpoint selector %s Still exists", cloudendpointselector.DistinguishedName)
+				return fmt.Errorf("Cloud Endpoint Selector %s Still exists", cloud_endpoint_selector.DistinguishedName)
 			}
 
 		} else {
@@ -113,18 +113,18 @@ func testAccCheckAciCloudendpointselectorDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciCloudendpointselectorAttributes(fv_tenant_name, cloud_app_name, cloud_e_pg_name, cloud_ep_selector_name, description string, cloudendpointselector *models.Cloudendpointselector) resource.TestCheckFunc {
+func testAccCheckAciCloudEndpointSelectorAttributes(fv_tenant_name, cloud_app_name, cloud_e_pg_name, cloud_ep_selector_name, description string, cloud_endpoint_selector *models.CloudEndpointSelector) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
-		if cloud_ep_selector_name != GetMOName(cloudendpointselector.DistinguishedName) {
-			return fmt.Errorf("Bad cloud_ep_selector %s", GetMOName(cloudendpointselector.DistinguishedName))
+		if cloud_ep_selector_name != GetMOName(cloud_endpoint_selector.DistinguishedName) {
+			return fmt.Errorf("Bad cloud_ep_selector %s", GetMOName(cloud_endpoint_selector.DistinguishedName))
 		}
 
-		if cloud_e_pg_name != GetMOName(GetParentDn(cloudendpointselector.DistinguishedName)) {
-			return fmt.Errorf(" Bad cloud_e_pg %s", GetMOName(GetParentDn(cloudendpointselector.DistinguishedName)))
+		if cloud_e_pg_name != GetMOName(GetParentDn(cloud_endpoint_selector.DistinguishedName)) {
+			return fmt.Errorf(" Bad cloud_e_pg %s", GetMOName(GetParentDn(cloud_endpoint_selector.DistinguishedName)))
 		}
-		if description != cloudendpointselector.Description {
-			return fmt.Errorf("Bad cloudendpointselector Description %s", cloudendpointselector.Description)
+		if description != cloud_endpoint_selector.Description {
+			return fmt.Errorf("Bad cloud_endpoint_selector Description %s", cloud_endpoint_selector.Description)
 		}
 
 		return nil

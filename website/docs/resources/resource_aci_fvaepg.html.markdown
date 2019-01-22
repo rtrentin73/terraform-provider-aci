@@ -1,20 +1,20 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_applicationepg"
-sidebar_current: "docs-aci-resource-applicationepg"
+page_title: "ACI: aci_application_epg"
+sidebar_current: "docs-aci-resource-application_epg"
 description: |-
-  Manages ACI Application epg
+  Manages ACI Application EPG
 ---
 
-# aci_applicationepg #
-Manages ACI Application epg
+# aci_application_epg #
+Manages ACI Application EPG
 
 ## Example Usage ##
 
 ```hcl
-resource "aci_applicationepg" "example" {
+resource "aci_application_epg" "example" {
 
-  applicationprofile_dn  = "${aci_applicationprofile.example.id}"
+  application_profile_dn  = "${aci_application_profile.example.id}"
 
     name  = "example"
 
@@ -33,20 +33,20 @@ resource "aci_applicationepg" "example" {
 }
 ```
 ## Argument Reference ##
-* `applicationprofile_dn` - (Required) Distinguished name of parent Applicationprofile object.
-* `name` - (Required) name of Object applicationepg.
-* `annotation` - (Optional) annotation for object applicationepg.
-* `exception_tag` - (Optional) exception_tag for object applicationepg.
-* `flood_on_encap` - (Optional) flood_on_encap for object applicationepg.
-* `fwd_ctrl` - (Optional) fwd_ctrl for object applicationepg.
-* `has_mcast_source` - (Optional) has_mcast_source for object applicationepg.
-* `is_attr_based_e_pg` - (Optional) is_attr_based_e_pg for object applicationepg.
+* `application_profile_dn` - (Required) Distinguished name of parent ApplicationProfile object.
+* `name` - (Required) name of Object application_epg.
+* `annotation` - (Optional) annotation for object application_epg.
+* `exception_tag` - (Optional) exception_tag for object application_epg.
+* `flood_on_encap` - (Optional) flood_on_encap for object application_epg.
+* `fwd_ctrl` - (Optional) fwd_ctrl for object application_epg.
+* `has_mcast_source` - (Optional) has_mcast_source for object application_epg.
+* `is_attr_based_e_pg` - (Optional) is_attr_based_e_pg for object application_epg.
 * `match_t` - (Optional) match criteria
-* `name_alias` - (Optional) name_alias for object applicationepg.
+* `name_alias` - (Optional) name_alias for object application_epg.
 * `pc_enf_pref` - (Optional) enforcement preference
-* `pref_gr_memb` - (Optional) pref_gr_memb for object applicationepg.
+* `pref_gr_memb` - (Optional) pref_gr_memb for object application_epg.
 * `prio` - (Optional) qos priority class id
-* `shutdown` - (Optional) shutdown for object applicationepg.
+* `shutdown` - (Optional) shutdown for object application_epg.
 
 * `relation_fv_rs_bd` - (Optional) Relation to class fvBD. Cardinality - N_TO_ONE. Type - String.
                 

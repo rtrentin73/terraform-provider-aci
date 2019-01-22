@@ -1,20 +1,20 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_cloudsubnet"
-sidebar_current: "docs-aci-resource-cloudsubnet"
+page_title: "ACI: aci_cloud_subnet"
+sidebar_current: "docs-aci-resource-cloud_subnet"
 description: |-
-  Manages ACI Cloud subnet
+  Manages ACI Cloud Subnet
 ---
 
-# aci_cloudsubnet #
-Manages ACI Cloud subnet
+# aci_cloud_subnet #
+Manages ACI Cloud Subnet
 
 ## Example Usage ##
 
 ```hcl
-resource "aci_cloudsubnet" "example" {
+resource "aci_cloud_subnet" "example" {
 
-  cloudcidrpool_dn  = "${aci_cloudcidrpool.example.id}"
+  cloud_cidr_pool_dn  = "${aci_cloud_cidr_pool.example.id}"
 
     ip  = "example"
 
@@ -26,11 +26,11 @@ resource "aci_cloudsubnet" "example" {
 }
 ```
 ## Argument Reference ##
-* `cloudcidrpool_dn` - (Required) Distinguished name of parent Cloudcidrpool object.
-* `ip` - (Required) ip of Object cloudsubnet.
-* `annotation` - (Optional) annotation for object cloudsubnet.
+* `cloud_cidr_pool_dn` - (Required) Distinguished name of parent CloudCIDRPool object.
+* `ip` - (Required) ip of Object cloud_subnet.
+* `annotation` - (Optional) annotation for object cloud_subnet.
 * `ip` - (Optional) ip address
-* `name_alias` - (Optional) name_alias for object cloudsubnet.
+* `name_alias` - (Optional) name_alias for object cloud_subnet.
 * `scope` - (Optional) capability domain
 * `usage` - (Optional) usage of the port
 

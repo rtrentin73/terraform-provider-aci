@@ -11,63 +11,63 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
-func TestAccAciCloudavailabilityzone_Basic(t *testing.T) {
-	var cloudavailabilityzone models.Cloudavailabilityzone
+func TestAccAciCloudAvailabilityZone_Basic(t *testing.T) {
+	var cloud_availability_zone models.CloudAvailabilityZone
 	cloud_prov_p_name := acctest.RandString(5)
 	cloud_region_name := acctest.RandString(5)
 	cloud_zone_name := acctest.RandString(5)
-	description := "cloudavailabilityzone created while acceptance testing"
+	description := "cloud_availability_zone created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciCloudavailabilityzoneDestroy,
+		CheckDestroy: testAccCheckAciCloudAvailabilityZoneDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciCloudavailabilityzoneConfig_basic(cloud_prov_p_name, cloud_region_name, cloud_zone_name),
+				Config: testAccCheckAciCloudAvailabilityZoneConfig_basic(cloud_prov_p_name, cloud_region_name, cloud_zone_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciCloudavailabilityzoneExists("aci_cloudavailabilityzone.foocloudavailabilityzone", &cloudavailabilityzone),
-					testAccCheckAciCloudavailabilityzoneAttributes(cloud_prov_p_name, cloud_region_name, cloud_zone_name, description, &cloudavailabilityzone),
+					testAccCheckAciCloudAvailabilityZoneExists("aci_cloud_availability_zone.foocloud_availability_zone", &cloud_availability_zone),
+					testAccCheckAciCloudAvailabilityZoneAttributes(cloud_prov_p_name, cloud_region_name, cloud_zone_name, description, &cloud_availability_zone),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckAciCloudavailabilityzoneConfig_basic(cloud_prov_p_name, cloud_region_name, cloud_zone_name string) string {
+func testAccCheckAciCloudAvailabilityZoneConfig_basic(cloud_prov_p_name, cloud_region_name, cloud_zone_name string) string {
 	return fmt.Sprintf(`
 
-	resource "aci_cloudproviderprofile" "foocloudproviderprofile" {
+	resource "aci_cloud_provider_profile" "foocloud_provider_profile" {
 		name 		= "%s"
-		description = "cloudproviderprofile created while acceptance testing"
+		description = "cloud_provider_profile created while acceptance testing"
 
 	}
 
-	resource "aci_cloudprovidersregion" "foocloudprovidersregion" {
+	resource "aci_cloud_providers_region" "foocloud_providers_region" {
 		name 		= "%s"
-		description = "cloudprovidersregion created while acceptance testing"
-		cloudproviderprofile_dn = "${aci_cloudproviderprofile.foocloudproviderprofile.id}"
+		description = "cloud_providers_region created while acceptance testing"
+		cloud_provider_profile_dn = "${aci_cloud_provider_profile.foocloud_provider_profile.id}"
 	}
 
-	resource "aci_cloudavailabilityzone" "foocloudavailabilityzone" {
+	resource "aci_cloud_availability_zone" "foocloud_availability_zone" {
 		name 		= "%s"
-		description = "cloudavailabilityzone created while acceptance testing"
-		cloudprovidersregion_dn = "${aci_cloudprovidersregion.foocloudprovidersregion.id}"
+		description = "cloud_availability_zone created while acceptance testing"
+		cloud_providers_region_dn = "${aci_cloud_providers_region.foocloud_providers_region.id}"
 	}
 
 	`, cloud_prov_p_name, cloud_region_name, cloud_zone_name)
 }
 
-func testAccCheckAciCloudavailabilityzoneExists(name string, cloudavailabilityzone *models.Cloudavailabilityzone) resource.TestCheckFunc {
+func testAccCheckAciCloudAvailabilityZoneExists(name string, cloud_availability_zone *models.CloudAvailabilityZone) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[name]
 
 		if !ok {
-			return fmt.Errorf("Cloud availability zone %s not found", name)
+			return fmt.Errorf("Cloud Availability Zone %s not found", name)
 		}
 
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("No Cloud availability zone dn was set")
+			return fmt.Errorf("No Cloud Availability Zone dn was set")
 		}
 
 		client := testAccProvider.Meta().(*client.Client)
@@ -77,25 +77,25 @@ func testAccCheckAciCloudavailabilityzoneExists(name string, cloudavailabilityzo
 			return err
 		}
 
-		cloudavailabilityzoneFound := models.CloudavailabilityzoneFromContainer(cont)
-		if cloudavailabilityzoneFound.DistinguishedName != rs.Primary.ID {
-			return fmt.Errorf("Cloud availability zone %s not found", rs.Primary.ID)
+		cloud_availability_zoneFound := models.CloudAvailabilityZoneFromContainer(cont)
+		if cloud_availability_zoneFound.DistinguishedName != rs.Primary.ID {
+			return fmt.Errorf("Cloud Availability Zone %s not found", rs.Primary.ID)
 		}
-		*cloudavailabilityzone = *cloudavailabilityzoneFound
+		*cloud_availability_zone = *cloud_availability_zoneFound
 		return nil
 	}
 }
 
-func testAccCheckAciCloudavailabilityzoneDestroy(s *terraform.State) error {
+func testAccCheckAciCloudAvailabilityZoneDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_cloudavailabilityzone" {
+		if rs.Type == "aci_cloud_availability_zone" {
 			cont, err := client.Get(rs.Primary.ID)
-			cloudavailabilityzone := models.CloudavailabilityzoneFromContainer(cont)
+			cloud_availability_zone := models.CloudAvailabilityZoneFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("Cloud availability zone %s Still exists", cloudavailabilityzone.DistinguishedName)
+				return fmt.Errorf("Cloud Availability Zone %s Still exists", cloud_availability_zone.DistinguishedName)
 			}
 
 		} else {
@@ -106,18 +106,18 @@ func testAccCheckAciCloudavailabilityzoneDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciCloudavailabilityzoneAttributes(cloud_prov_p_name, cloud_region_name, cloud_zone_name, description string, cloudavailabilityzone *models.Cloudavailabilityzone) resource.TestCheckFunc {
+func testAccCheckAciCloudAvailabilityZoneAttributes(cloud_prov_p_name, cloud_region_name, cloud_zone_name, description string, cloud_availability_zone *models.CloudAvailabilityZone) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
-		if cloud_zone_name != GetMOName(cloudavailabilityzone.DistinguishedName) {
-			return fmt.Errorf("Bad cloud_zone %s", GetMOName(cloudavailabilityzone.DistinguishedName))
+		if cloud_zone_name != GetMOName(cloud_availability_zone.DistinguishedName) {
+			return fmt.Errorf("Bad cloud_zone %s", GetMOName(cloud_availability_zone.DistinguishedName))
 		}
 
-		if cloud_region_name != GetMOName(GetParentDn(cloudavailabilityzone.DistinguishedName)) {
-			return fmt.Errorf(" Bad cloud_region %s", GetMOName(GetParentDn(cloudavailabilityzone.DistinguishedName)))
+		if cloud_region_name != GetMOName(GetParentDn(cloud_availability_zone.DistinguishedName)) {
+			return fmt.Errorf(" Bad cloud_region %s", GetMOName(GetParentDn(cloud_availability_zone.DistinguishedName)))
 		}
-		if description != cloudavailabilityzone.Description {
-			return fmt.Errorf("Bad cloudavailabilityzone Description %s", cloudavailabilityzone.Description)
+		if description != cloud_availability_zone.Description {
+			return fmt.Errorf("Bad cloud_availability_zone Description %s", cloud_availability_zone.Description)
 		}
 
 		return nil

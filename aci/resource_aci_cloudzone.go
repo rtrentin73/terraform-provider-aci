@@ -7,21 +7,21 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func resourceAciCloudavailabilityzone() *schema.Resource {
+func resourceAciCloudAvailabilityZone() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciCloudavailabilityzoneCreate,
-		Update: resourceAciCloudavailabilityzoneUpdate,
-		Read:   resourceAciCloudavailabilityzoneRead,
-		Delete: resourceAciCloudavailabilityzoneDelete,
+		Create: resourceAciCloudAvailabilityZoneCreate,
+		Update: resourceAciCloudAvailabilityZoneUpdate,
+		Read:   resourceAciCloudAvailabilityZoneRead,
+		Delete: resourceAciCloudAvailabilityZoneDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: resourceAciCloudavailabilityzoneImport,
+			State: resourceAciCloudAvailabilityZoneImport,
 		},
 
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"cloudprovidersregion_dn": &schema.Schema{
+			"cloud_providers_region_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -48,13 +48,13 @@ func resourceAciCloudavailabilityzone() *schema.Resource {
 	}
 }
 
-func getRemoteCloudavailabilityzone(client *client.Client, dn string) (*models.Cloudavailabilityzone, error) {
+func getRemoteCloudAvailabilityZone(client *client.Client, dn string) (*models.CloudAvailabilityZone, error) {
 	cloudZoneCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
 	}
 
-	cloudZone := models.CloudavailabilityzoneFromContainer(cloudZoneCont)
+	cloudZone := models.CloudAvailabilityZoneFromContainer(cloudZoneCont)
 
 	if cloudZone.DistinguishedName == "" {
 		return nil, fmt.Errorf("Bridge Domain %s not found", cloudZone.DistinguishedName)
@@ -63,10 +63,10 @@ func getRemoteCloudavailabilityzone(client *client.Client, dn string) (*models.C
 	return cloudZone, nil
 }
 
-func setCloudavailabilityzoneAttributes(cloudZone *models.Cloudavailabilityzone, d *schema.ResourceData) *schema.ResourceData {
+func setCloudAvailabilityZoneAttributes(cloudZone *models.CloudAvailabilityZone, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(cloudZone.DistinguishedName)
 	d.Set("description", cloudZone.Description)
-	d.Set("cloudprovidersregion_dn", GetParentDn(cloudZone.DistinguishedName))
+	d.Set("cloud_providers_region_dn", GetParentDn(cloudZone.DistinguishedName))
 	cloudZoneMap, _ := cloudZone.ToMap()
 
 	d.Set("annotation", cloudZoneMap["annotation"])
@@ -74,37 +74,37 @@ func setCloudavailabilityzoneAttributes(cloudZone *models.Cloudavailabilityzone,
 	return d
 }
 
-func resourceAciCloudavailabilityzoneImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+func resourceAciCloudAvailabilityZoneImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
 
-	cloudZone, err := getRemoteCloudavailabilityzone(aciClient, dn)
+	cloudZone, err := getRemoteCloudAvailabilityZone(aciClient, dn)
 
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setCloudavailabilityzoneAttributes(cloudZone, d)
+	schemaFilled := setCloudAvailabilityZoneAttributes(cloudZone, d)
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciCloudavailabilityzoneCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudAvailabilityZoneCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
 
-	CloudprovidersregionDn := d.Get("cloudprovidersregion_dn").(string)
+	CloudProvidersRegionDn := d.Get("cloud_providers_region_dn").(string)
 
-	cloudZoneAttr := models.CloudavailabilityzoneAttributes{}
+	cloudZoneAttr := models.CloudAvailabilityZoneAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudZoneAttr.Annotation = Annotation.(string)
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cloudZoneAttr.NameAlias = NameAlias.(string)
 	}
-	cloudZone := models.NewCloudavailabilityzone(fmt.Sprintf("zone-%s", name), CloudprovidersregionDn, desc, cloudZoneAttr)
+	cloudZone := models.NewCloudAvailabilityZone(fmt.Sprintf("zone-%s", name), CloudProvidersRegionDn, desc, cloudZoneAttr)
 
 	err := aciClient.Save(cloudZone)
 	if err != nil {
@@ -112,25 +112,25 @@ func resourceAciCloudavailabilityzoneCreate(d *schema.ResourceData, m interface{
 	}
 
 	d.SetId(cloudZone.DistinguishedName)
-	return resourceAciCloudavailabilityzoneRead(d, m)
+	return resourceAciCloudAvailabilityZoneRead(d, m)
 }
 
-func resourceAciCloudavailabilityzoneUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudAvailabilityZoneUpdate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
 
-	CloudprovidersregionDn := d.Get("cloudprovidersregion_dn").(string)
+	CloudProvidersRegionDn := d.Get("cloud_providers_region_dn").(string)
 
-	cloudZoneAttr := models.CloudavailabilityzoneAttributes{}
+	cloudZoneAttr := models.CloudAvailabilityZoneAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudZoneAttr.Annotation = Annotation.(string)
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cloudZoneAttr.NameAlias = NameAlias.(string)
 	}
-	cloudZone := models.NewCloudavailabilityzone(fmt.Sprintf("zone-%s", name), CloudprovidersregionDn, desc, cloudZoneAttr)
+	cloudZone := models.NewCloudAvailabilityZone(fmt.Sprintf("zone-%s", name), CloudProvidersRegionDn, desc, cloudZoneAttr)
 
 	cloudZone.Status = "modified"
 
@@ -141,24 +141,24 @@ func resourceAciCloudavailabilityzoneUpdate(d *schema.ResourceData, m interface{
 	}
 
 	d.SetId(cloudZone.DistinguishedName)
-	return resourceAciCloudavailabilityzoneRead(d, m)
+	return resourceAciCloudAvailabilityZoneRead(d, m)
 
 }
 
-func resourceAciCloudavailabilityzoneRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudAvailabilityZoneRead(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
-	cloudZone, err := getRemoteCloudavailabilityzone(aciClient, dn)
+	cloudZone, err := getRemoteCloudAvailabilityZone(aciClient, dn)
 
 	if err != nil {
 		return err
 	}
-	setCloudavailabilityzoneAttributes(cloudZone, d)
+	setCloudAvailabilityZoneAttributes(cloudZone, d)
 	return nil
 }
 
-func resourceAciCloudavailabilityzoneDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudAvailabilityZoneDelete(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "cloudZone")

@@ -1,20 +1,20 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_cloudcidrpool"
-sidebar_current: "docs-aci-resource-cloudcidrpool"
+page_title: "ACI: aci_cloud_cidr_pool"
+sidebar_current: "docs-aci-resource-cloud_cidr_pool"
 description: |-
-  Manages ACI Cloud cidr pool
+  Manages ACI Cloud CIDR Pool
 ---
 
-# aci_cloudcidrpool #
-Manages ACI Cloud cidr pool
+# aci_cloud_cidr_pool #
+Manages ACI Cloud CIDR Pool
 
 ## Example Usage ##
 
 ```hcl
-resource "aci_cloudcidrpool" "example" {
+resource "aci_cloud_cidr_pool" "example" {
 
-  cloudcontextprofile_dn  = "${aci_cloudcontextprofile.example.id}"
+  cloud_context_profile_dn  = "${aci_cloud_context_profile.example.id}"
 
     addr  = "example"
 
@@ -25,12 +25,12 @@ resource "aci_cloudcidrpool" "example" {
 }
 ```
 ## Argument Reference ##
-* `cloudcontextprofile_dn` - (Required) Distinguished name of parent Cloudcontextprofile object.
-* `addr` - (Required) addr of Object cloudcidrpool.
+* `cloud_context_profile_dn` - (Required) Distinguished name of parent CloudContextProfile object.
+* `addr` - (Required) addr of Object cloud_cidr_pool.
 * `addr` - (Optional) peer address
-* `annotation` - (Optional) annotation for object cloudcidrpool.
-* `name_alias` - (Optional) name_alias for object cloudcidrpool.
-* `primary` - (Optional) primary for object cloudcidrpool.
+* `annotation` - (Optional) annotation for object cloud_cidr_pool.
+* `name_alias` - (Optional) name_alias for object cloud_cidr_pool.
+* `primary` - (Optional) primary for object cloud_cidr_pool.
 
 
 

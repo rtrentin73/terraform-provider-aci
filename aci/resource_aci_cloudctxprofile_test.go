@@ -11,29 +11,29 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
-func TestAccAciCloudcontextprofile_Basic(t *testing.T) {
-	var cloudcontextprofile models.Cloudcontextprofile
+func TestAccAciCloudContextProfile_Basic(t *testing.T) {
+	var cloud_context_profile models.CloudContextProfile
 	fv_tenant_name := acctest.RandString(5)
 	cloud_ctx_profile_name := acctest.RandString(5)
-	description := "cloudcontextprofile created while acceptance testing"
+	description := "cloud_context_profile created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciCloudcontextprofileDestroy,
+		CheckDestroy: testAccCheckAciCloudContextProfileDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciCloudcontextprofileConfig_basic(fv_tenant_name, cloud_ctx_profile_name),
+				Config: testAccCheckAciCloudContextProfileConfig_basic(fv_tenant_name, cloud_ctx_profile_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciCloudcontextprofileExists("aci_cloudcontextprofile.foocloudcontextprofile", &cloudcontextprofile),
-					testAccCheckAciCloudcontextprofileAttributes(fv_tenant_name, cloud_ctx_profile_name, description, &cloudcontextprofile),
+					testAccCheckAciCloudContextProfileExists("aci_cloud_context_profile.foocloud_context_profile", &cloud_context_profile),
+					testAccCheckAciCloudContextProfileAttributes(fv_tenant_name, cloud_ctx_profile_name, description, &cloud_context_profile),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckAciCloudcontextprofileConfig_basic(fv_tenant_name, cloud_ctx_profile_name string) string {
+func testAccCheckAciCloudContextProfileConfig_basic(fv_tenant_name, cloud_ctx_profile_name string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_tenant" "footenant" {
@@ -42,25 +42,25 @@ func testAccCheckAciCloudcontextprofileConfig_basic(fv_tenant_name, cloud_ctx_pr
 
 	}
 
-	resource "aci_cloudcontextprofile" "foocloudcontextprofile" {
+	resource "aci_cloud_context_profile" "foocloud_context_profile" {
 		name 		= "%s"
-		description = "cloudcontextprofile created while acceptance testing"
+		description = "cloud_context_profile created while acceptance testing"
 		tenant_dn = "${aci_tenant.footenant.id}"
 	}
 
 	`, fv_tenant_name, cloud_ctx_profile_name)
 }
 
-func testAccCheckAciCloudcontextprofileExists(name string, cloudcontextprofile *models.Cloudcontextprofile) resource.TestCheckFunc {
+func testAccCheckAciCloudContextProfileExists(name string, cloud_context_profile *models.CloudContextProfile) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[name]
 
 		if !ok {
-			return fmt.Errorf("Cloud context profile %s not found", name)
+			return fmt.Errorf("Cloud Context Profile %s not found", name)
 		}
 
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("No Cloud context profile dn was set")
+			return fmt.Errorf("No Cloud Context Profile dn was set")
 		}
 
 		client := testAccProvider.Meta().(*client.Client)
@@ -70,25 +70,25 @@ func testAccCheckAciCloudcontextprofileExists(name string, cloudcontextprofile *
 			return err
 		}
 
-		cloudcontextprofileFound := models.CloudcontextprofileFromContainer(cont)
-		if cloudcontextprofileFound.DistinguishedName != rs.Primary.ID {
-			return fmt.Errorf("Cloud context profile %s not found", rs.Primary.ID)
+		cloud_context_profileFound := models.CloudContextProfileFromContainer(cont)
+		if cloud_context_profileFound.DistinguishedName != rs.Primary.ID {
+			return fmt.Errorf("Cloud Context Profile %s not found", rs.Primary.ID)
 		}
-		*cloudcontextprofile = *cloudcontextprofileFound
+		*cloud_context_profile = *cloud_context_profileFound
 		return nil
 	}
 }
 
-func testAccCheckAciCloudcontextprofileDestroy(s *terraform.State) error {
+func testAccCheckAciCloudContextProfileDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_cloudcontextprofile" {
+		if rs.Type == "aci_cloud_context_profile" {
 			cont, err := client.Get(rs.Primary.ID)
-			cloudcontextprofile := models.CloudcontextprofileFromContainer(cont)
+			cloud_context_profile := models.CloudContextProfileFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("Cloud context profile %s Still exists", cloudcontextprofile.DistinguishedName)
+				return fmt.Errorf("Cloud Context Profile %s Still exists", cloud_context_profile.DistinguishedName)
 			}
 
 		} else {
@@ -99,18 +99,18 @@ func testAccCheckAciCloudcontextprofileDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciCloudcontextprofileAttributes(fv_tenant_name, cloud_ctx_profile_name, description string, cloudcontextprofile *models.Cloudcontextprofile) resource.TestCheckFunc {
+func testAccCheckAciCloudContextProfileAttributes(fv_tenant_name, cloud_ctx_profile_name, description string, cloud_context_profile *models.CloudContextProfile) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
-		if cloud_ctx_profile_name != GetMOName(cloudcontextprofile.DistinguishedName) {
-			return fmt.Errorf("Bad cloud_ctx_profile %s", GetMOName(cloudcontextprofile.DistinguishedName))
+		if cloud_ctx_profile_name != GetMOName(cloud_context_profile.DistinguishedName) {
+			return fmt.Errorf("Bad cloud_ctx_profile %s", GetMOName(cloud_context_profile.DistinguishedName))
 		}
 
-		if fv_tenant_name != GetMOName(GetParentDn(cloudcontextprofile.DistinguishedName)) {
-			return fmt.Errorf(" Bad fv_tenant %s", GetMOName(GetParentDn(cloudcontextprofile.DistinguishedName)))
+		if fv_tenant_name != GetMOName(GetParentDn(cloud_context_profile.DistinguishedName)) {
+			return fmt.Errorf(" Bad fv_tenant %s", GetMOName(GetParentDn(cloud_context_profile.DistinguishedName)))
 		}
-		if description != cloudcontextprofile.Description {
-			return fmt.Errorf("Bad cloudcontextprofile Description %s", cloudcontextprofile.Description)
+		if description != cloud_context_profile.Description {
+			return fmt.Errorf("Bad cloud_context_profile Description %s", cloud_context_profile.Description)
 		}
 
 		return nil

@@ -7,15 +7,15 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func resourceAciClouddomainprofile() *schema.Resource {
+func resourceAciCloudDomainProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciClouddomainprofileCreate,
-		Update: resourceAciClouddomainprofileUpdate,
-		Read:   resourceAciClouddomainprofileRead,
-		Delete: resourceAciClouddomainprofileDelete,
+		Create: resourceAciCloudDomainProfileCreate,
+		Update: resourceAciCloudDomainProfileUpdate,
+		Read:   resourceAciCloudDomainProfileRead,
+		Delete: resourceAciCloudDomainProfileDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: resourceAciClouddomainprofileImport,
+			State: resourceAciCloudDomainProfileImport,
 		},
 
 		SchemaVersion: 1,
@@ -46,13 +46,13 @@ func resourceAciClouddomainprofile() *schema.Resource {
 	}
 }
 
-func getRemoteClouddomainprofile(client *client.Client, dn string) (*models.Clouddomainprofile, error) {
+func getRemoteCloudDomainProfile(client *client.Client, dn string) (*models.CloudDomainProfile, error) {
 	cloudDomPCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
 	}
 
-	cloudDomP := models.ClouddomainprofileFromContainer(cloudDomPCont)
+	cloudDomP := models.CloudDomainProfileFromContainer(cloudDomPCont)
 
 	if cloudDomP.DistinguishedName == "" {
 		return nil, fmt.Errorf("Bridge Domain %s not found", cloudDomP.DistinguishedName)
@@ -61,7 +61,7 @@ func getRemoteClouddomainprofile(client *client.Client, dn string) (*models.Clou
 	return cloudDomP, nil
 }
 
-func setClouddomainprofileAttributes(cloudDomP *models.Clouddomainprofile, d *schema.ResourceData) *schema.ResourceData {
+func setCloudDomainProfileAttributes(cloudDomP *models.CloudDomainProfile, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(cloudDomP.DistinguishedName)
 	d.Set("description", cloudDomP.Description)
 	cloudDomPMap, _ := cloudDomP.ToMap()
@@ -72,25 +72,25 @@ func setClouddomainprofileAttributes(cloudDomP *models.Clouddomainprofile, d *sc
 	return d
 }
 
-func resourceAciClouddomainprofileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+func resourceAciCloudDomainProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
 
-	cloudDomP, err := getRemoteClouddomainprofile(aciClient, dn)
+	cloudDomP, err := getRemoteCloudDomainProfile(aciClient, dn)
 
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setClouddomainprofileAttributes(cloudDomP, d)
+	schemaFilled := setCloudDomainProfileAttributes(cloudDomP, d)
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciClouddomainprofileCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudDomainProfileCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
-	cloudDomPAttr := models.ClouddomainprofileAttributes{}
+	cloudDomPAttr := models.CloudDomainProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudDomPAttr.Annotation = Annotation.(string)
 	}
@@ -100,7 +100,7 @@ func resourceAciClouddomainprofileCreate(d *schema.ResourceData, m interface{}) 
 	if SiteId, ok := d.GetOk("site_id"); ok {
 		cloudDomPAttr.SiteId = SiteId.(string)
 	}
-	cloudDomP := models.NewClouddomainprofile(fmt.Sprintf("clouddomp"), "uni", desc, cloudDomPAttr)
+	cloudDomP := models.NewCloudDomainProfile(fmt.Sprintf("clouddomp"), "uni", desc, cloudDomPAttr)
 
 	err := aciClient.Save(cloudDomP)
 	if err != nil {
@@ -108,14 +108,14 @@ func resourceAciClouddomainprofileCreate(d *schema.ResourceData, m interface{}) 
 	}
 
 	d.SetId(cloudDomP.DistinguishedName)
-	return resourceAciClouddomainprofileRead(d, m)
+	return resourceAciCloudDomainProfileRead(d, m)
 }
 
-func resourceAciClouddomainprofileUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudDomainProfileUpdate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
-	cloudDomPAttr := models.ClouddomainprofileAttributes{}
+	cloudDomPAttr := models.CloudDomainProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudDomPAttr.Annotation = Annotation.(string)
 	}
@@ -125,7 +125,7 @@ func resourceAciClouddomainprofileUpdate(d *schema.ResourceData, m interface{}) 
 	if SiteId, ok := d.GetOk("site_id"); ok {
 		cloudDomPAttr.SiteId = SiteId.(string)
 	}
-	cloudDomP := models.NewClouddomainprofile(fmt.Sprintf("clouddomp"), "uni", desc, cloudDomPAttr)
+	cloudDomP := models.NewCloudDomainProfile(fmt.Sprintf("clouddomp"), "uni", desc, cloudDomPAttr)
 
 	cloudDomP.Status = "modified"
 
@@ -136,24 +136,24 @@ func resourceAciClouddomainprofileUpdate(d *schema.ResourceData, m interface{}) 
 	}
 
 	d.SetId(cloudDomP.DistinguishedName)
-	return resourceAciClouddomainprofileRead(d, m)
+	return resourceAciCloudDomainProfileRead(d, m)
 
 }
 
-func resourceAciClouddomainprofileRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudDomainProfileRead(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
-	cloudDomP, err := getRemoteClouddomainprofile(aciClient, dn)
+	cloudDomP, err := getRemoteCloudDomainProfile(aciClient, dn)
 
 	if err != nil {
 		return err
 	}
-	setClouddomainprofileAttributes(cloudDomP, d)
+	setCloudDomainProfileAttributes(cloudDomP, d)
 	return nil
 }
 
-func resourceAciClouddomainprofileDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudDomainProfileDelete(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "cloudDomP")

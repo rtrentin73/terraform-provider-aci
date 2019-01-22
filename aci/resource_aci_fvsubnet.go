@@ -21,7 +21,7 @@ func resourceAciSubnet() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"bridgedomain_dn": &schema.Schema{
+			"bridge_domain_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -114,7 +114,7 @@ func getRemoteSubnet(client *client.Client, dn string) (*models.Subnet, error) {
 func setSubnetAttributes(fvSubnet *models.Subnet, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(fvSubnet.DistinguishedName)
 	d.Set("description", fvSubnet.Description)
-	d.Set("bridgedomain_dn", GetParentDn(fvSubnet.DistinguishedName))
+	d.Set("bridge_domain_dn", GetParentDn(fvSubnet.DistinguishedName))
 	fvSubnetMap, _ := fvSubnet.ToMap()
 
 	d.Set("annotation", fvSubnetMap["annotation"])
@@ -148,7 +148,7 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 
 	ip := d.Get("ip").(string)
 
-	BridgedomainDn := d.Get("bridgedomain_dn").(string)
+	BridgeDomainDn := d.Get("bridge_domain_dn").(string)
 
 	fvSubnetAttr := models.SubnetAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
@@ -172,7 +172,7 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	if Virtual, ok := d.GetOk("virtual"); ok {
 		fvSubnetAttr.Virtual = Virtual.(string)
 	}
-	fvSubnet := models.NewSubnet(fmt.Sprintf("subnet-[%s]", ip), BridgedomainDn, desc, fvSubnetAttr)
+	fvSubnet := models.NewSubnet(fmt.Sprintf("subnet-[%s]", ip), BridgeDomainDn, desc, fvSubnetAttr)
 
 	err := aciClient.Save(fvSubnet)
 	if err != nil {
@@ -216,7 +216,7 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 
 	ip := d.Get("ip").(string)
 
-	BridgedomainDn := d.Get("bridgedomain_dn").(string)
+	BridgeDomainDn := d.Get("bridge_domain_dn").(string)
 
 	fvSubnetAttr := models.SubnetAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
@@ -240,7 +240,7 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	if Virtual, ok := d.GetOk("virtual"); ok {
 		fvSubnetAttr.Virtual = Virtual.(string)
 	}
-	fvSubnet := models.NewSubnet(fmt.Sprintf("subnet-[%s]", ip), BridgedomainDn, desc, fvSubnetAttr)
+	fvSubnet := models.NewSubnet(fmt.Sprintf("subnet-[%s]", ip), BridgeDomainDn, desc, fvSubnetAttr)
 
 	fvSubnet.Status = "modified"
 

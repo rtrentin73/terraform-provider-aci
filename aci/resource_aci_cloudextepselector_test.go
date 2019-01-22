@@ -11,31 +11,31 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
-func TestAccAciCloudendpointselectorforexternalepgs_Basic(t *testing.T) {
-	var cloudendpointselectorforexternalepgs models.Cloudendpointselectorforexternalepgs
+func TestAccAciCloudEndpointSelectorforExternalEPgs_Basic(t *testing.T) {
+	var cloud_endpoint_selectorfor_external_e_pgs models.CloudEndpointSelectorforExternalEPgs
 	fv_tenant_name := acctest.RandString(5)
 	cloud_app_name := acctest.RandString(5)
 	cloud_ext_e_pg_name := acctest.RandString(5)
 	cloud_ext_ep_selector_name := acctest.RandString(5)
-	description := "cloudendpointselectorforexternalepgs created while acceptance testing"
+	description := "cloud_endpoint_selectorfor_external_e_pgs created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciCloudendpointselectorforexternalepgsDestroy,
+		CheckDestroy: testAccCheckAciCloudEndpointSelectorforExternalEPgsDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciCloudendpointselectorforexternalepgsConfig_basic(fv_tenant_name, cloud_app_name, cloud_ext_e_pg_name, cloud_ext_ep_selector_name),
+				Config: testAccCheckAciCloudEndpointSelectorforExternalEPgsConfig_basic(fv_tenant_name, cloud_app_name, cloud_ext_e_pg_name, cloud_ext_ep_selector_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciCloudendpointselectorforexternalepgsExists("aci_cloudendpointselectorforexternalepgs.foocloudendpointselectorforexternalepgs", &cloudendpointselectorforexternalepgs),
-					testAccCheckAciCloudendpointselectorforexternalepgsAttributes(fv_tenant_name, cloud_app_name, cloud_ext_e_pg_name, cloud_ext_ep_selector_name, description, &cloudendpointselectorforexternalepgs),
+					testAccCheckAciCloudEndpointSelectorforExternalEPgsExists("aci_cloud_endpoint_selectorfor_external_e_pgs.foocloud_endpoint_selectorfor_external_e_pgs", &cloud_endpoint_selectorfor_external_e_pgs),
+					testAccCheckAciCloudEndpointSelectorforExternalEPgsAttributes(fv_tenant_name, cloud_app_name, cloud_ext_e_pg_name, cloud_ext_ep_selector_name, description, &cloud_endpoint_selectorfor_external_e_pgs),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckAciCloudendpointselectorforexternalepgsConfig_basic(fv_tenant_name, cloud_app_name, cloud_ext_e_pg_name, cloud_ext_ep_selector_name string) string {
+func testAccCheckAciCloudEndpointSelectorforExternalEPgsConfig_basic(fv_tenant_name, cloud_app_name, cloud_ext_e_pg_name, cloud_ext_ep_selector_name string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_tenant" "footenant" {
@@ -44,37 +44,37 @@ func testAccCheckAciCloudendpointselectorforexternalepgsConfig_basic(fv_tenant_n
 
 	}
 
-	resource "aci_cloudapplicationcontainer" "foocloudapplicationcontainer" {
+	resource "aci_cloud_applicationcontainer" "foocloud_applicationcontainer" {
 		name 		= "%s"
-		description = "cloudapplicationcontainer created while acceptance testing"
+		description = "cloud_applicationcontainer created while acceptance testing"
 		tenant_dn = "${aci_tenant.footenant.id}"
 	}
 
-	resource "aci_cloudexternalepg" "foocloudexternalepg" {
+	resource "aci_cloud_external_e_pg" "foocloud_external_e_pg" {
 		name 		= "%s"
-		description = "cloudexternalepg created while acceptance testing"
-		cloudapplicationcontainer_dn = "${aci_cloudapplicationcontainer.foocloudapplicationcontainer.id}"
+		description = "cloud_external_e_pg created while acceptance testing"
+		cloud_applicationcontainer_dn = "${aci_cloud_applicationcontainer.foocloud_applicationcontainer.id}"
 	}
 
-	resource "aci_cloudendpointselectorforexternalepgs" "foocloudendpointselectorforexternalepgs" {
+	resource "aci_cloud_endpoint_selectorfor_external_e_pgs" "foocloud_endpoint_selectorfor_external_e_pgs" {
 		name 		= "%s"
-		description = "cloudendpointselectorforexternalepgs created while acceptance testing"
-		cloudexternalepg_dn = "${aci_cloudexternalepg.foocloudexternalepg.id}"
+		description = "cloud_endpoint_selectorfor_external_e_pgs created while acceptance testing"
+		cloud_external_e_pg_dn = "${aci_cloud_external_e_pg.foocloud_external_e_pg.id}"
 	}
 
 	`, fv_tenant_name, cloud_app_name, cloud_ext_e_pg_name, cloud_ext_ep_selector_name)
 }
 
-func testAccCheckAciCloudendpointselectorforexternalepgsExists(name string, cloudendpointselectorforexternalepgs *models.Cloudendpointselectorforexternalepgs) resource.TestCheckFunc {
+func testAccCheckAciCloudEndpointSelectorforExternalEPgsExists(name string, cloud_endpoint_selectorfor_external_e_pgs *models.CloudEndpointSelectorforExternalEPgs) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[name]
 
 		if !ok {
-			return fmt.Errorf("Cloud endpoint selector for external epgs %s not found", name)
+			return fmt.Errorf("Cloud Endpoint Selector for External EPgs %s not found", name)
 		}
 
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("No Cloud endpoint selector for external epgs dn was set")
+			return fmt.Errorf("No Cloud Endpoint Selector for External EPgs dn was set")
 		}
 
 		client := testAccProvider.Meta().(*client.Client)
@@ -84,25 +84,25 @@ func testAccCheckAciCloudendpointselectorforexternalepgsExists(name string, clou
 			return err
 		}
 
-		cloudendpointselectorforexternalepgsFound := models.CloudendpointselectorforexternalepgsFromContainer(cont)
-		if cloudendpointselectorforexternalepgsFound.DistinguishedName != rs.Primary.ID {
-			return fmt.Errorf("Cloud endpoint selector for external epgs %s not found", rs.Primary.ID)
+		cloud_endpoint_selectorfor_external_e_pgsFound := models.CloudEndpointSelectorforExternalEPgsFromContainer(cont)
+		if cloud_endpoint_selectorfor_external_e_pgsFound.DistinguishedName != rs.Primary.ID {
+			return fmt.Errorf("Cloud Endpoint Selector for External EPgs %s not found", rs.Primary.ID)
 		}
-		*cloudendpointselectorforexternalepgs = *cloudendpointselectorforexternalepgsFound
+		*cloud_endpoint_selectorfor_external_e_pgs = *cloud_endpoint_selectorfor_external_e_pgsFound
 		return nil
 	}
 }
 
-func testAccCheckAciCloudendpointselectorforexternalepgsDestroy(s *terraform.State) error {
+func testAccCheckAciCloudEndpointSelectorforExternalEPgsDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_cloudendpointselectorforexternalepgs" {
+		if rs.Type == "aci_cloud_endpoint_selectorfor_external_e_pgs" {
 			cont, err := client.Get(rs.Primary.ID)
-			cloudendpointselectorforexternalepgs := models.CloudendpointselectorforexternalepgsFromContainer(cont)
+			cloud_endpoint_selectorfor_external_e_pgs := models.CloudEndpointSelectorforExternalEPgsFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("Cloud endpoint selector for external epgs %s Still exists", cloudendpointselectorforexternalepgs.DistinguishedName)
+				return fmt.Errorf("Cloud Endpoint Selector for External EPgs %s Still exists", cloud_endpoint_selectorfor_external_e_pgs.DistinguishedName)
 			}
 
 		} else {
@@ -113,18 +113,18 @@ func testAccCheckAciCloudendpointselectorforexternalepgsDestroy(s *terraform.Sta
 	return nil
 }
 
-func testAccCheckAciCloudendpointselectorforexternalepgsAttributes(fv_tenant_name, cloud_app_name, cloud_ext_e_pg_name, cloud_ext_ep_selector_name, description string, cloudendpointselectorforexternalepgs *models.Cloudendpointselectorforexternalepgs) resource.TestCheckFunc {
+func testAccCheckAciCloudEndpointSelectorforExternalEPgsAttributes(fv_tenant_name, cloud_app_name, cloud_ext_e_pg_name, cloud_ext_ep_selector_name, description string, cloud_endpoint_selectorfor_external_e_pgs *models.CloudEndpointSelectorforExternalEPgs) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
-		if cloud_ext_ep_selector_name != GetMOName(cloudendpointselectorforexternalepgs.DistinguishedName) {
-			return fmt.Errorf("Bad cloud_ext_ep_selector %s", GetMOName(cloudendpointselectorforexternalepgs.DistinguishedName))
+		if cloud_ext_ep_selector_name != GetMOName(cloud_endpoint_selectorfor_external_e_pgs.DistinguishedName) {
+			return fmt.Errorf("Bad cloud_ext_ep_selector %s", GetMOName(cloud_endpoint_selectorfor_external_e_pgs.DistinguishedName))
 		}
 
-		if cloud_ext_e_pg_name != GetMOName(GetParentDn(cloudendpointselectorforexternalepgs.DistinguishedName)) {
-			return fmt.Errorf(" Bad cloud_ext_e_pg %s", GetMOName(GetParentDn(cloudendpointselectorforexternalepgs.DistinguishedName)))
+		if cloud_ext_e_pg_name != GetMOName(GetParentDn(cloud_endpoint_selectorfor_external_e_pgs.DistinguishedName)) {
+			return fmt.Errorf(" Bad cloud_ext_e_pg %s", GetMOName(GetParentDn(cloud_endpoint_selectorfor_external_e_pgs.DistinguishedName)))
 		}
-		if description != cloudendpointselectorforexternalepgs.Description {
-			return fmt.Errorf("Bad cloudendpointselectorforexternalepgs Description %s", cloudendpointselectorforexternalepgs.Description)
+		if description != cloud_endpoint_selectorfor_external_e_pgs.Description {
+			return fmt.Errorf("Bad cloud_endpoint_selectorfor_external_e_pgs Description %s", cloud_endpoint_selectorfor_external_e_pgs.Description)
 		}
 
 		return nil

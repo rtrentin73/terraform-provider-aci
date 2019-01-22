@@ -43,16 +43,16 @@ func testAccCheckAciSubnetConfig_basic(fv_tenant_name, fv_bd_name, fv_subnet_nam
 
 	}
 
-	resource "aci_bridgedomain" "foobridgedomain" {
+	resource "aci_bridge_domain" "foobridge_domain" {
 		name 		= "%s"
-		description = "bridgedomain created while acceptance testing"
+		description = "bridge_domain created while acceptance testing"
 		tenant_dn = "${aci_tenant.footenant.id}"
 	}
 
 	resource "aci_subnet" "foosubnet" {
 		name 		= "%s"
 		description = "subnet created while acceptance testing"
-		bridgedomain_dn = "${aci_bridgedomain.foobridgedomain.id}"
+		bridge_domain_dn = "${aci_bridge_domain.foobridge_domain.id}"
 	}
 
 	`, fv_tenant_name, fv_bd_name, fv_subnet_name)

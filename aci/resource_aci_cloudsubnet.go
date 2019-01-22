@@ -7,21 +7,21 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func resourceAciCloudsubnet() *schema.Resource {
+func resourceAciCloudSubnet() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciCloudsubnetCreate,
-		Update: resourceAciCloudsubnetUpdate,
-		Read:   resourceAciCloudsubnetRead,
-		Delete: resourceAciCloudsubnetDelete,
+		Create: resourceAciCloudSubnetCreate,
+		Update: resourceAciCloudSubnetUpdate,
+		Read:   resourceAciCloudSubnetRead,
+		Delete: resourceAciCloudSubnetDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: resourceAciCloudsubnetImport,
+			State: resourceAciCloudSubnetImport,
 		},
 
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"cloudcidrpool_dn": &schema.Schema{
+			"cloud_cidr_pool_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -75,13 +75,13 @@ func resourceAciCloudsubnet() *schema.Resource {
 	}
 }
 
-func getRemoteCloudsubnet(client *client.Client, dn string) (*models.Cloudsubnet, error) {
+func getRemoteCloudSubnet(client *client.Client, dn string) (*models.CloudSubnet, error) {
 	cloudSubnetCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
 	}
 
-	cloudSubnet := models.CloudsubnetFromContainer(cloudSubnetCont)
+	cloudSubnet := models.CloudSubnetFromContainer(cloudSubnetCont)
 
 	if cloudSubnet.DistinguishedName == "" {
 		return nil, fmt.Errorf("Bridge Domain %s not found", cloudSubnet.DistinguishedName)
@@ -90,10 +90,10 @@ func getRemoteCloudsubnet(client *client.Client, dn string) (*models.Cloudsubnet
 	return cloudSubnet, nil
 }
 
-func setCloudsubnetAttributes(cloudSubnet *models.Cloudsubnet, d *schema.ResourceData) *schema.ResourceData {
+func setCloudSubnetAttributes(cloudSubnet *models.CloudSubnet, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(cloudSubnet.DistinguishedName)
 	d.Set("description", cloudSubnet.Description)
-	d.Set("cloudcidrpool_dn", GetParentDn(cloudSubnet.DistinguishedName))
+	d.Set("cloud_cidr_pool_dn", GetParentDn(cloudSubnet.DistinguishedName))
 	cloudSubnetMap, _ := cloudSubnet.ToMap()
 
 	d.Set("annotation", cloudSubnetMap["annotation"])
@@ -104,30 +104,30 @@ func setCloudsubnetAttributes(cloudSubnet *models.Cloudsubnet, d *schema.Resourc
 	return d
 }
 
-func resourceAciCloudsubnetImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+func resourceAciCloudSubnetImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
 
-	cloudSubnet, err := getRemoteCloudsubnet(aciClient, dn)
+	cloudSubnet, err := getRemoteCloudSubnet(aciClient, dn)
 
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setCloudsubnetAttributes(cloudSubnet, d)
+	schemaFilled := setCloudSubnetAttributes(cloudSubnet, d)
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciCloudsubnetCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
 	ip := d.Get("ip").(string)
 
-	CloudcidrpoolDn := d.Get("cloudcidrpool_dn").(string)
+	CloudCIDRPoolDn := d.Get("cloud_cidr_pool_dn").(string)
 
-	cloudSubnetAttr := models.CloudsubnetAttributes{}
+	cloudSubnetAttr := models.CloudSubnetAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudSubnetAttr.Annotation = Annotation.(string)
 	}
@@ -143,7 +143,7 @@ func resourceAciCloudsubnetCreate(d *schema.ResourceData, m interface{}) error {
 	if Usage, ok := d.GetOk("usage"); ok {
 		cloudSubnetAttr.Usage = Usage.(string)
 	}
-	cloudSubnet := models.NewCloudsubnet(fmt.Sprintf("subnet-[%s]", ip), CloudcidrpoolDn, desc, cloudSubnetAttr)
+	cloudSubnet := models.NewCloudSubnet(fmt.Sprintf("subnet-[%s]", ip), CloudCIDRPoolDn, desc, cloudSubnetAttr)
 
 	err := aciClient.Save(cloudSubnet)
 	if err != nil {
@@ -152,7 +152,7 @@ func resourceAciCloudsubnetCreate(d *schema.ResourceData, m interface{}) error {
 
 	if relationTocloudRsZoneAttach, ok := d.GetOk("relation_cloud_rs_zone_attach"); ok {
 		relationParam := relationTocloudRsZoneAttach.(string)
-		err = aciClient.CreateRelationcloudRsZoneAttachFromCloudsubnet(cloudSubnet.DistinguishedName, relationParam)
+		err = aciClient.CreateRelationcloudRsZoneAttachFromCloudSubnet(cloudSubnet.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -160,7 +160,7 @@ func resourceAciCloudsubnetCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if relationTocloudRsSubnetToFlowLog, ok := d.GetOk("relation_cloud_rs_subnet_to_flow_log"); ok {
 		relationParam := relationTocloudRsSubnetToFlowLog.(string)
-		err = aciClient.CreateRelationcloudRsSubnetToFlowLogFromCloudsubnet(cloudSubnet.DistinguishedName, relationParam)
+		err = aciClient.CreateRelationcloudRsSubnetToFlowLogFromCloudSubnet(cloudSubnet.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -168,18 +168,18 @@ func resourceAciCloudsubnetCreate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.SetId(cloudSubnet.DistinguishedName)
-	return resourceAciCloudsubnetRead(d, m)
+	return resourceAciCloudSubnetRead(d, m)
 }
 
-func resourceAciCloudsubnetUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
 	ip := d.Get("ip").(string)
 
-	CloudcidrpoolDn := d.Get("cloudcidrpool_dn").(string)
+	CloudCIDRPoolDn := d.Get("cloud_cidr_pool_dn").(string)
 
-	cloudSubnetAttr := models.CloudsubnetAttributes{}
+	cloudSubnetAttr := models.CloudSubnetAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudSubnetAttr.Annotation = Annotation.(string)
 	}
@@ -195,7 +195,7 @@ func resourceAciCloudsubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	if Usage, ok := d.GetOk("usage"); ok {
 		cloudSubnetAttr.Usage = Usage.(string)
 	}
-	cloudSubnet := models.NewCloudsubnet(fmt.Sprintf("subnet-[%s]", ip), CloudcidrpoolDn, desc, cloudSubnetAttr)
+	cloudSubnet := models.NewCloudSubnet(fmt.Sprintf("subnet-[%s]", ip), CloudCIDRPoolDn, desc, cloudSubnetAttr)
 
 	cloudSubnet.Status = "modified"
 
@@ -207,11 +207,11 @@ func resourceAciCloudsubnetUpdate(d *schema.ResourceData, m interface{}) error {
 
 	if d.HasChange("relation_cloud_rs_zone_attach") {
 		_, newRelParam := d.GetChange("relation_cloud_rs_zone_attach")
-		err = aciClient.DeleteRelationcloudRsZoneAttachFromCloudsubnet(cloudSubnet.DistinguishedName)
+		err = aciClient.DeleteRelationcloudRsZoneAttachFromCloudSubnet(cloudSubnet.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationcloudRsZoneAttachFromCloudsubnet(cloudSubnet.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationcloudRsZoneAttachFromCloudSubnet(cloudSubnet.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -219,11 +219,11 @@ func resourceAciCloudsubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if d.HasChange("relation_cloud_rs_subnet_to_flow_log") {
 		_, newRelParam := d.GetChange("relation_cloud_rs_subnet_to_flow_log")
-		err = aciClient.DeleteRelationcloudRsSubnetToFlowLogFromCloudsubnet(cloudSubnet.DistinguishedName)
+		err = aciClient.DeleteRelationcloudRsSubnetToFlowLogFromCloudSubnet(cloudSubnet.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationcloudRsSubnetToFlowLogFromCloudsubnet(cloudSubnet.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationcloudRsSubnetToFlowLogFromCloudSubnet(cloudSubnet.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -231,24 +231,24 @@ func resourceAciCloudsubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.SetId(cloudSubnet.DistinguishedName)
-	return resourceAciCloudsubnetRead(d, m)
+	return resourceAciCloudSubnetRead(d, m)
 
 }
 
-func resourceAciCloudsubnetRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudSubnetRead(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
-	cloudSubnet, err := getRemoteCloudsubnet(aciClient, dn)
+	cloudSubnet, err := getRemoteCloudSubnet(aciClient, dn)
 
 	if err != nil {
 		return err
 	}
-	setCloudsubnetAttributes(cloudSubnet, d)
+	setCloudSubnetAttributes(cloudSubnet, d)
 	return nil
 }
 
-func resourceAciCloudsubnetDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudSubnetDelete(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "cloudSubnet")

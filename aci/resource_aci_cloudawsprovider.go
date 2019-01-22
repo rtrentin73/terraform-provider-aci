@@ -7,15 +7,15 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func resourceAciCloudawsprovider() *schema.Resource {
+func resourceAciCloudAWSProvider() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciCloudawsproviderCreate,
-		Update: resourceAciCloudawsproviderUpdate,
-		Read:   resourceAciCloudawsproviderRead,
-		Delete: resourceAciCloudawsproviderDelete,
+		Create: resourceAciCloudAWSProviderCreate,
+		Update: resourceAciCloudAWSProviderUpdate,
+		Read:   resourceAciCloudAWSProviderRead,
+		Delete: resourceAciCloudAWSProviderDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: resourceAciCloudawsproviderImport,
+			State: resourceAciCloudAWSProviderImport,
 		},
 
 		SchemaVersion: 1,
@@ -106,13 +106,13 @@ func resourceAciCloudawsprovider() *schema.Resource {
 	}
 }
 
-func getRemoteCloudawsprovider(client *client.Client, dn string) (*models.Cloudawsprovider, error) {
+func getRemoteCloudAWSProvider(client *client.Client, dn string) (*models.CloudAWSProvider, error) {
 	cloudAwsProviderCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
 	}
 
-	cloudAwsProvider := models.CloudawsproviderFromContainer(cloudAwsProviderCont)
+	cloudAwsProvider := models.CloudAWSProviderFromContainer(cloudAwsProviderCont)
 
 	if cloudAwsProvider.DistinguishedName == "" {
 		return nil, fmt.Errorf("Bridge Domain %s not found", cloudAwsProvider.DistinguishedName)
@@ -121,7 +121,7 @@ func getRemoteCloudawsprovider(client *client.Client, dn string) (*models.Clouda
 	return cloudAwsProvider, nil
 }
 
-func setCloudawsproviderAttributes(cloudAwsProvider *models.Cloudawsprovider, d *schema.ResourceData) *schema.ResourceData {
+func setCloudAWSProviderAttributes(cloudAwsProvider *models.CloudAWSProvider, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(cloudAwsProvider.DistinguishedName)
 	d.Set("description", cloudAwsProvider.Description)
 	d.Set("tenant_dn", GetParentDn(cloudAwsProvider.DistinguishedName))
@@ -141,27 +141,27 @@ func setCloudawsproviderAttributes(cloudAwsProvider *models.Cloudawsprovider, d 
 	return d
 }
 
-func resourceAciCloudawsproviderImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+func resourceAciCloudAWSProviderImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
 
-	cloudAwsProvider, err := getRemoteCloudawsprovider(aciClient, dn)
+	cloudAwsProvider, err := getRemoteCloudAWSProvider(aciClient, dn)
 
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setCloudawsproviderAttributes(cloudAwsProvider, d)
+	schemaFilled := setCloudAWSProviderAttributes(cloudAwsProvider, d)
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciCloudawsproviderCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudAWSProviderCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	TenantDn := d.Get("tenant_dn").(string)
 
-	cloudAwsProviderAttr := models.CloudawsproviderAttributes{}
+	cloudAwsProviderAttr := models.CloudAWSProviderAttributes{}
 	if AccessKeyId, ok := d.GetOk("access_key_id"); ok {
 		cloudAwsProviderAttr.AccessKeyId = AccessKeyId.(string)
 	}
@@ -195,7 +195,7 @@ func resourceAciCloudawsproviderCreate(d *schema.ResourceData, m interface{}) er
 	if SecretAccessKey, ok := d.GetOk("secret_access_key"); ok {
 		cloudAwsProviderAttr.SecretAccessKey = SecretAccessKey.(string)
 	}
-	cloudAwsProvider := models.NewCloudawsprovider(fmt.Sprintf("awsprovider"), TenantDn, desc, cloudAwsProviderAttr)
+	cloudAwsProvider := models.NewCloudAWSProvider(fmt.Sprintf("awsprovider"), TenantDn, desc, cloudAwsProviderAttr)
 
 	err := aciClient.Save(cloudAwsProvider)
 	if err != nil {
@@ -203,16 +203,16 @@ func resourceAciCloudawsproviderCreate(d *schema.ResourceData, m interface{}) er
 	}
 
 	d.SetId(cloudAwsProvider.DistinguishedName)
-	return resourceAciCloudawsproviderRead(d, m)
+	return resourceAciCloudAWSProviderRead(d, m)
 }
 
-func resourceAciCloudawsproviderUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudAWSProviderUpdate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
 	TenantDn := d.Get("tenant_dn").(string)
 
-	cloudAwsProviderAttr := models.CloudawsproviderAttributes{}
+	cloudAwsProviderAttr := models.CloudAWSProviderAttributes{}
 	if AccessKeyId, ok := d.GetOk("access_key_id"); ok {
 		cloudAwsProviderAttr.AccessKeyId = AccessKeyId.(string)
 	}
@@ -246,7 +246,7 @@ func resourceAciCloudawsproviderUpdate(d *schema.ResourceData, m interface{}) er
 	if SecretAccessKey, ok := d.GetOk("secret_access_key"); ok {
 		cloudAwsProviderAttr.SecretAccessKey = SecretAccessKey.(string)
 	}
-	cloudAwsProvider := models.NewCloudawsprovider(fmt.Sprintf("awsprovider"), TenantDn, desc, cloudAwsProviderAttr)
+	cloudAwsProvider := models.NewCloudAWSProvider(fmt.Sprintf("awsprovider"), TenantDn, desc, cloudAwsProviderAttr)
 
 	cloudAwsProvider.Status = "modified"
 
@@ -257,24 +257,24 @@ func resourceAciCloudawsproviderUpdate(d *schema.ResourceData, m interface{}) er
 	}
 
 	d.SetId(cloudAwsProvider.DistinguishedName)
-	return resourceAciCloudawsproviderRead(d, m)
+	return resourceAciCloudAWSProviderRead(d, m)
 
 }
 
-func resourceAciCloudawsproviderRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudAWSProviderRead(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
-	cloudAwsProvider, err := getRemoteCloudawsprovider(aciClient, dn)
+	cloudAwsProvider, err := getRemoteCloudAWSProvider(aciClient, dn)
 
 	if err != nil {
 		return err
 	}
-	setCloudawsproviderAttributes(cloudAwsProvider, d)
+	setCloudAWSProviderAttributes(cloudAwsProvider, d)
 	return nil
 }
 
-func resourceAciCloudawsproviderDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudAWSProviderDelete(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "cloudAwsProvider")

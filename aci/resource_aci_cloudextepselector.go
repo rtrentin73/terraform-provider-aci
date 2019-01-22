@@ -7,21 +7,21 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func resourceAciCloudendpointselectorforexternalepgs() *schema.Resource {
+func resourceAciCloudEndpointSelectorforExternalEPgs() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciCloudendpointselectorforexternalepgsCreate,
-		Update: resourceAciCloudendpointselectorforexternalepgsUpdate,
-		Read:   resourceAciCloudendpointselectorforexternalepgsRead,
-		Delete: resourceAciCloudendpointselectorforexternalepgsDelete,
+		Create: resourceAciCloudEndpointSelectorforExternalEPgsCreate,
+		Update: resourceAciCloudEndpointSelectorforExternalEPgsUpdate,
+		Read:   resourceAciCloudEndpointSelectorforExternalEPgsRead,
+		Delete: resourceAciCloudEndpointSelectorforExternalEPgsDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: resourceAciCloudendpointselectorforexternalepgsImport,
+			State: resourceAciCloudEndpointSelectorforExternalEPgsImport,
 		},
 
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"cloudexternalepg_dn": &schema.Schema{
+			"cloud_external_e_pg_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -69,13 +69,13 @@ func resourceAciCloudendpointselectorforexternalepgs() *schema.Resource {
 	}
 }
 
-func getRemoteCloudendpointselectorforexternalepgs(client *client.Client, dn string) (*models.Cloudendpointselectorforexternalepgs, error) {
+func getRemoteCloudEndpointSelectorforExternalEPgs(client *client.Client, dn string) (*models.CloudEndpointSelectorforExternalEPgs, error) {
 	cloudExtEPSelectorCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
 	}
 
-	cloudExtEPSelector := models.CloudendpointselectorforexternalepgsFromContainer(cloudExtEPSelectorCont)
+	cloudExtEPSelector := models.CloudEndpointSelectorforExternalEPgsFromContainer(cloudExtEPSelectorCont)
 
 	if cloudExtEPSelector.DistinguishedName == "" {
 		return nil, fmt.Errorf("Bridge Domain %s not found", cloudExtEPSelector.DistinguishedName)
@@ -84,10 +84,10 @@ func getRemoteCloudendpointselectorforexternalepgs(client *client.Client, dn str
 	return cloudExtEPSelector, nil
 }
 
-func setCloudendpointselectorforexternalepgsAttributes(cloudExtEPSelector *models.Cloudendpointselectorforexternalepgs, d *schema.ResourceData) *schema.ResourceData {
+func setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector *models.CloudEndpointSelectorforExternalEPgs, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(cloudExtEPSelector.DistinguishedName)
 	d.Set("description", cloudExtEPSelector.Description)
-	d.Set("cloudexternalepg_dn", GetParentDn(cloudExtEPSelector.DistinguishedName))
+	d.Set("cloud_external_e_pg_dn", GetParentDn(cloudExtEPSelector.DistinguishedName))
 	cloudExtEPSelectorMap, _ := cloudExtEPSelector.ToMap()
 
 	d.Set("annotation", cloudExtEPSelectorMap["annotation"])
@@ -98,30 +98,30 @@ func setCloudendpointselectorforexternalepgsAttributes(cloudExtEPSelector *model
 	return d
 }
 
-func resourceAciCloudendpointselectorforexternalepgsImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+func resourceAciCloudEndpointSelectorforExternalEPgsImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
 
-	cloudExtEPSelector, err := getRemoteCloudendpointselectorforexternalepgs(aciClient, dn)
+	cloudExtEPSelector, err := getRemoteCloudEndpointSelectorforExternalEPgs(aciClient, dn)
 
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setCloudendpointselectorforexternalepgsAttributes(cloudExtEPSelector, d)
+	schemaFilled := setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector, d)
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciCloudendpointselectorforexternalepgsCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudEndpointSelectorforExternalEPgsCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
 
-	CloudexternalepgDn := d.Get("cloudexternalepg_dn").(string)
+	CloudExternalEPgDn := d.Get("cloud_external_e_pg_dn").(string)
 
-	cloudExtEPSelectorAttr := models.CloudendpointselectorforexternalepgsAttributes{}
+	cloudExtEPSelectorAttr := models.CloudEndpointSelectorforExternalEPgsAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudExtEPSelectorAttr.Annotation = Annotation.(string)
 	}
@@ -137,7 +137,7 @@ func resourceAciCloudendpointselectorforexternalepgsCreate(d *schema.ResourceDat
 	if Subnet, ok := d.GetOk("subnet"); ok {
 		cloudExtEPSelectorAttr.Subnet = Subnet.(string)
 	}
-	cloudExtEPSelector := models.NewCloudendpointselectorforexternalepgs(fmt.Sprintf("extepselector-%s", name), CloudexternalepgDn, desc, cloudExtEPSelectorAttr)
+	cloudExtEPSelector := models.NewCloudEndpointSelectorforExternalEPgs(fmt.Sprintf("extepselector-%s", name), CloudExternalEPgDn, desc, cloudExtEPSelectorAttr)
 
 	err := aciClient.Save(cloudExtEPSelector)
 	if err != nil {
@@ -145,18 +145,18 @@ func resourceAciCloudendpointselectorforexternalepgsCreate(d *schema.ResourceDat
 	}
 
 	d.SetId(cloudExtEPSelector.DistinguishedName)
-	return resourceAciCloudendpointselectorforexternalepgsRead(d, m)
+	return resourceAciCloudEndpointSelectorforExternalEPgsRead(d, m)
 }
 
-func resourceAciCloudendpointselectorforexternalepgsUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudEndpointSelectorforExternalEPgsUpdate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
 
-	CloudexternalepgDn := d.Get("cloudexternalepg_dn").(string)
+	CloudExternalEPgDn := d.Get("cloud_external_e_pg_dn").(string)
 
-	cloudExtEPSelectorAttr := models.CloudendpointselectorforexternalepgsAttributes{}
+	cloudExtEPSelectorAttr := models.CloudEndpointSelectorforExternalEPgsAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudExtEPSelectorAttr.Annotation = Annotation.(string)
 	}
@@ -172,7 +172,7 @@ func resourceAciCloudendpointselectorforexternalepgsUpdate(d *schema.ResourceDat
 	if Subnet, ok := d.GetOk("subnet"); ok {
 		cloudExtEPSelectorAttr.Subnet = Subnet.(string)
 	}
-	cloudExtEPSelector := models.NewCloudendpointselectorforexternalepgs(fmt.Sprintf("extepselector-%s", name), CloudexternalepgDn, desc, cloudExtEPSelectorAttr)
+	cloudExtEPSelector := models.NewCloudEndpointSelectorforExternalEPgs(fmt.Sprintf("extepselector-%s", name), CloudExternalEPgDn, desc, cloudExtEPSelectorAttr)
 
 	cloudExtEPSelector.Status = "modified"
 
@@ -183,24 +183,24 @@ func resourceAciCloudendpointselectorforexternalepgsUpdate(d *schema.ResourceDat
 	}
 
 	d.SetId(cloudExtEPSelector.DistinguishedName)
-	return resourceAciCloudendpointselectorforexternalepgsRead(d, m)
+	return resourceAciCloudEndpointSelectorforExternalEPgsRead(d, m)
 
 }
 
-func resourceAciCloudendpointselectorforexternalepgsRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudEndpointSelectorforExternalEPgsRead(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
-	cloudExtEPSelector, err := getRemoteCloudendpointselectorforexternalepgs(aciClient, dn)
+	cloudExtEPSelector, err := getRemoteCloudEndpointSelectorforExternalEPgs(aciClient, dn)
 
 	if err != nil {
 		return err
 	}
-	setCloudendpointselectorforexternalepgsAttributes(cloudExtEPSelector, d)
+	setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector, d)
 	return nil
 }
 
-func resourceAciCloudendpointselectorforexternalepgsDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudEndpointSelectorforExternalEPgsDelete(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "cloudExtEPSelector")

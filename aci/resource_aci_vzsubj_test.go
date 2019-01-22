@@ -11,30 +11,30 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
-func TestAccAciContractsubject_Basic(t *testing.T) {
-	var contractsubject models.Contractsubject
+func TestAccAciContractSubject_Basic(t *testing.T) {
+	var contract_subject models.ContractSubject
 	fv_tenant_name := acctest.RandString(5)
 	vz_br_cp_name := acctest.RandString(5)
 	vz_subj_name := acctest.RandString(5)
-	description := "contractsubject created while acceptance testing"
+	description := "contract_subject created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciContractsubjectDestroy,
+		CheckDestroy: testAccCheckAciContractSubjectDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciContractsubjectConfig_basic(fv_tenant_name, vz_br_cp_name, vz_subj_name),
+				Config: testAccCheckAciContractSubjectConfig_basic(fv_tenant_name, vz_br_cp_name, vz_subj_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciContractsubjectExists("aci_contractsubject.foocontractsubject", &contractsubject),
-					testAccCheckAciContractsubjectAttributes(fv_tenant_name, vz_br_cp_name, vz_subj_name, description, &contractsubject),
+					testAccCheckAciContractSubjectExists("aci_contract_subject.foocontract_subject", &contract_subject),
+					testAccCheckAciContractSubjectAttributes(fv_tenant_name, vz_br_cp_name, vz_subj_name, description, &contract_subject),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckAciContractsubjectConfig_basic(fv_tenant_name, vz_br_cp_name, vz_subj_name string) string {
+func testAccCheckAciContractSubjectConfig_basic(fv_tenant_name, vz_br_cp_name, vz_subj_name string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_tenant" "footenant" {
@@ -49,25 +49,25 @@ func testAccCheckAciContractsubjectConfig_basic(fv_tenant_name, vz_br_cp_name, v
 		tenant_dn = "${aci_tenant.footenant.id}"
 	}
 
-	resource "aci_contractsubject" "foocontractsubject" {
+	resource "aci_contract_subject" "foocontract_subject" {
 		name 		= "%s"
-		description = "contractsubject created while acceptance testing"
+		description = "contract_subject created while acceptance testing"
 		contract_dn = "${aci_contract.foocontract.id}"
 	}
 
 	`, fv_tenant_name, vz_br_cp_name, vz_subj_name)
 }
 
-func testAccCheckAciContractsubjectExists(name string, contractsubject *models.Contractsubject) resource.TestCheckFunc {
+func testAccCheckAciContractSubjectExists(name string, contract_subject *models.ContractSubject) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[name]
 
 		if !ok {
-			return fmt.Errorf("Contract subject %s not found", name)
+			return fmt.Errorf("Contract Subject %s not found", name)
 		}
 
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("No Contract subject dn was set")
+			return fmt.Errorf("No Contract Subject dn was set")
 		}
 
 		client := testAccProvider.Meta().(*client.Client)
@@ -77,25 +77,25 @@ func testAccCheckAciContractsubjectExists(name string, contractsubject *models.C
 			return err
 		}
 
-		contractsubjectFound := models.ContractsubjectFromContainer(cont)
-		if contractsubjectFound.DistinguishedName != rs.Primary.ID {
-			return fmt.Errorf("Contract subject %s not found", rs.Primary.ID)
+		contract_subjectFound := models.ContractSubjectFromContainer(cont)
+		if contract_subjectFound.DistinguishedName != rs.Primary.ID {
+			return fmt.Errorf("Contract Subject %s not found", rs.Primary.ID)
 		}
-		*contractsubject = *contractsubjectFound
+		*contract_subject = *contract_subjectFound
 		return nil
 	}
 }
 
-func testAccCheckAciContractsubjectDestroy(s *terraform.State) error {
+func testAccCheckAciContractSubjectDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_contractsubject" {
+		if rs.Type == "aci_contract_subject" {
 			cont, err := client.Get(rs.Primary.ID)
-			contractsubject := models.ContractsubjectFromContainer(cont)
+			contract_subject := models.ContractSubjectFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("Contract subject %s Still exists", contractsubject.DistinguishedName)
+				return fmt.Errorf("Contract Subject %s Still exists", contract_subject.DistinguishedName)
 			}
 
 		} else {
@@ -106,18 +106,18 @@ func testAccCheckAciContractsubjectDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciContractsubjectAttributes(fv_tenant_name, vz_br_cp_name, vz_subj_name, description string, contractsubject *models.Contractsubject) resource.TestCheckFunc {
+func testAccCheckAciContractSubjectAttributes(fv_tenant_name, vz_br_cp_name, vz_subj_name, description string, contract_subject *models.ContractSubject) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
-		if vz_subj_name != GetMOName(contractsubject.DistinguishedName) {
-			return fmt.Errorf("Bad vz_subj %s", GetMOName(contractsubject.DistinguishedName))
+		if vz_subj_name != GetMOName(contract_subject.DistinguishedName) {
+			return fmt.Errorf("Bad vz_subj %s", GetMOName(contract_subject.DistinguishedName))
 		}
 
-		if vz_br_cp_name != GetMOName(GetParentDn(contractsubject.DistinguishedName)) {
-			return fmt.Errorf(" Bad vz_br_cp %s", GetMOName(GetParentDn(contractsubject.DistinguishedName)))
+		if vz_br_cp_name != GetMOName(GetParentDn(contract_subject.DistinguishedName)) {
+			return fmt.Errorf(" Bad vz_br_cp %s", GetMOName(GetParentDn(contract_subject.DistinguishedName)))
 		}
-		if description != contractsubject.Description {
-			return fmt.Errorf("Bad contractsubject Description %s", contractsubject.Description)
+		if description != contract_subject.Description {
+			return fmt.Errorf("Bad contract_subject Description %s", contract_subject.Description)
 		}
 
 		return nil

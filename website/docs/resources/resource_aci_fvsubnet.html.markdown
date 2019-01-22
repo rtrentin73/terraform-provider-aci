@@ -14,7 +14,7 @@ Manages ACI Subnet
 ```hcl
 resource "aci_subnet" "example" {
 
-  bridgedomain_dn  = "${aci_bridgedomain.example.id}"
+  bridge_domain_dn  = "${aci_bridge_domain.example.id}"
 
     ip  = "example"
 
@@ -28,7 +28,7 @@ resource "aci_subnet" "example" {
 }
 ```
 ## Argument Reference ##
-* `bridgedomain_dn` - (Required) Distinguished name of parent Bridgedomain object.
+* `bridge_domain_dn` - (Required) Distinguished name of parent BridgeDomain object.
 * `ip` - (Required) ip of Object subnet.
 * `annotation` - (Optional) annotation for object subnet.
 * `ctrl` - (Optional) subnet control state

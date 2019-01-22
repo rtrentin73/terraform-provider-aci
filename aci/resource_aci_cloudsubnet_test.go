@@ -11,31 +11,31 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
-func TestAccAciCloudsubnet_Basic(t *testing.T) {
-	var cloudsubnet models.Cloudsubnet
+func TestAccAciCloudSubnet_Basic(t *testing.T) {
+	var cloud_subnet models.CloudSubnet
 	fv_tenant_name := acctest.RandString(5)
 	cloud_ctx_profile_name := acctest.RandString(5)
 	cloud_cidr_name := acctest.RandString(5)
 	cloud_subnet_name := acctest.RandString(5)
-	description := "cloudsubnet created while acceptance testing"
+	description := "cloud_subnet created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciCloudsubnetDestroy,
+		CheckDestroy: testAccCheckAciCloudSubnetDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciCloudsubnetConfig_basic(fv_tenant_name, cloud_ctx_profile_name, cloud_cidr_name, cloud_subnet_name),
+				Config: testAccCheckAciCloudSubnetConfig_basic(fv_tenant_name, cloud_ctx_profile_name, cloud_cidr_name, cloud_subnet_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciCloudsubnetExists("aci_cloudsubnet.foocloudsubnet", &cloudsubnet),
-					testAccCheckAciCloudsubnetAttributes(fv_tenant_name, cloud_ctx_profile_name, cloud_cidr_name, cloud_subnet_name, description, &cloudsubnet),
+					testAccCheckAciCloudSubnetExists("aci_cloud_subnet.foocloud_subnet", &cloud_subnet),
+					testAccCheckAciCloudSubnetAttributes(fv_tenant_name, cloud_ctx_profile_name, cloud_cidr_name, cloud_subnet_name, description, &cloud_subnet),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckAciCloudsubnetConfig_basic(fv_tenant_name, cloud_ctx_profile_name, cloud_cidr_name, cloud_subnet_name string) string {
+func testAccCheckAciCloudSubnetConfig_basic(fv_tenant_name, cloud_ctx_profile_name, cloud_cidr_name, cloud_subnet_name string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_tenant" "footenant" {
@@ -44,37 +44,37 @@ func testAccCheckAciCloudsubnetConfig_basic(fv_tenant_name, cloud_ctx_profile_na
 
 	}
 
-	resource "aci_cloudcontextprofile" "foocloudcontextprofile" {
+	resource "aci_cloud_context_profile" "foocloud_context_profile" {
 		name 		= "%s"
-		description = "cloudcontextprofile created while acceptance testing"
+		description = "cloud_context_profile created while acceptance testing"
 		tenant_dn = "${aci_tenant.footenant.id}"
 	}
 
-	resource "aci_cloudcidrpool" "foocloudcidrpool" {
+	resource "aci_cloud_cidr_pool" "foocloud_cidr_pool" {
 		name 		= "%s"
-		description = "cloudcidrpool created while acceptance testing"
-		cloudcontextprofile_dn = "${aci_cloudcontextprofile.foocloudcontextprofile.id}"
+		description = "cloud_cidr_pool created while acceptance testing"
+		cloud_context_profile_dn = "${aci_cloud_context_profile.foocloud_context_profile.id}"
 	}
 
-	resource "aci_cloudsubnet" "foocloudsubnet" {
+	resource "aci_cloud_subnet" "foocloud_subnet" {
 		name 		= "%s"
-		description = "cloudsubnet created while acceptance testing"
-		cloudcidrpool_dn = "${aci_cloudcidrpool.foocloudcidrpool.id}"
+		description = "cloud_subnet created while acceptance testing"
+		cloud_cidr_pool_dn = "${aci_cloud_cidr_pool.foocloud_cidr_pool.id}"
 	}
 
 	`, fv_tenant_name, cloud_ctx_profile_name, cloud_cidr_name, cloud_subnet_name)
 }
 
-func testAccCheckAciCloudsubnetExists(name string, cloudsubnet *models.Cloudsubnet) resource.TestCheckFunc {
+func testAccCheckAciCloudSubnetExists(name string, cloud_subnet *models.CloudSubnet) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[name]
 
 		if !ok {
-			return fmt.Errorf("Cloud subnet %s not found", name)
+			return fmt.Errorf("Cloud Subnet %s not found", name)
 		}
 
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("No Cloud subnet dn was set")
+			return fmt.Errorf("No Cloud Subnet dn was set")
 		}
 
 		client := testAccProvider.Meta().(*client.Client)
@@ -84,25 +84,25 @@ func testAccCheckAciCloudsubnetExists(name string, cloudsubnet *models.Cloudsubn
 			return err
 		}
 
-		cloudsubnetFound := models.CloudsubnetFromContainer(cont)
-		if cloudsubnetFound.DistinguishedName != rs.Primary.ID {
-			return fmt.Errorf("Cloud subnet %s not found", rs.Primary.ID)
+		cloud_subnetFound := models.CloudSubnetFromContainer(cont)
+		if cloud_subnetFound.DistinguishedName != rs.Primary.ID {
+			return fmt.Errorf("Cloud Subnet %s not found", rs.Primary.ID)
 		}
-		*cloudsubnet = *cloudsubnetFound
+		*cloud_subnet = *cloud_subnetFound
 		return nil
 	}
 }
 
-func testAccCheckAciCloudsubnetDestroy(s *terraform.State) error {
+func testAccCheckAciCloudSubnetDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_cloudsubnet" {
+		if rs.Type == "aci_cloud_subnet" {
 			cont, err := client.Get(rs.Primary.ID)
-			cloudsubnet := models.CloudsubnetFromContainer(cont)
+			cloud_subnet := models.CloudSubnetFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("Cloud subnet %s Still exists", cloudsubnet.DistinguishedName)
+				return fmt.Errorf("Cloud Subnet %s Still exists", cloud_subnet.DistinguishedName)
 			}
 
 		} else {
@@ -113,18 +113,18 @@ func testAccCheckAciCloudsubnetDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciCloudsubnetAttributes(fv_tenant_name, cloud_ctx_profile_name, cloud_cidr_name, cloud_subnet_name, description string, cloudsubnet *models.Cloudsubnet) resource.TestCheckFunc {
+func testAccCheckAciCloudSubnetAttributes(fv_tenant_name, cloud_ctx_profile_name, cloud_cidr_name, cloud_subnet_name, description string, cloud_subnet *models.CloudSubnet) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
-		if cloud_subnet_name != GetMOName(cloudsubnet.DistinguishedName) {
-			return fmt.Errorf("Bad cloud_subnet %s", GetMOName(cloudsubnet.DistinguishedName))
+		if cloud_subnet_name != GetMOName(cloud_subnet.DistinguishedName) {
+			return fmt.Errorf("Bad cloud_subnet %s", GetMOName(cloud_subnet.DistinguishedName))
 		}
 
-		if cloud_cidr_name != GetMOName(GetParentDn(cloudsubnet.DistinguishedName)) {
-			return fmt.Errorf(" Bad cloud_cidr %s", GetMOName(GetParentDn(cloudsubnet.DistinguishedName)))
+		if cloud_cidr_name != GetMOName(GetParentDn(cloud_subnet.DistinguishedName)) {
+			return fmt.Errorf(" Bad cloud_cidr %s", GetMOName(GetParentDn(cloud_subnet.DistinguishedName)))
 		}
-		if description != cloudsubnet.Description {
-			return fmt.Errorf("Bad cloudsubnet Description %s", cloudsubnet.Description)
+		if description != cloud_subnet.Description {
+			return fmt.Errorf("Bad cloud_subnet Description %s", cloud_subnet.Description)
 		}
 
 		return nil

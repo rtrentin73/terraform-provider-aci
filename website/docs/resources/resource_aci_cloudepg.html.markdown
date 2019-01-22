@@ -1,20 +1,20 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_cloudepg"
-sidebar_current: "docs-aci-resource-cloudepg"
+page_title: "ACI: aci_cloud_e_pg"
+sidebar_current: "docs-aci-resource-cloud_e_pg"
 description: |-
-  Manages ACI Cloud epg
+  Manages ACI Cloud EPg
 ---
 
-# aci_cloudepg #
-Manages ACI Cloud epg
+# aci_cloud_e_pg #
+Manages ACI Cloud EPg
 
 ## Example Usage ##
 
 ```hcl
-resource "aci_cloudepg" "example" {
+resource "aci_cloud_e_pg" "example" {
 
-  cloudapplicationcontainer_dn  = "${aci_cloudapplicationcontainer.example.id}"
+  cloud_applicationcontainer_dn  = "${aci_cloud_applicationcontainer.example.id}"
 
     name  = "example"
 
@@ -28,14 +28,14 @@ resource "aci_cloudepg" "example" {
 }
 ```
 ## Argument Reference ##
-* `cloudapplicationcontainer_dn` - (Required) Distinguished name of parent Cloudapplicationcontainer object.
-* `name` - (Required) name of Object cloudepg.
-* `annotation` - (Optional) annotation for object cloudepg.
-* `exception_tag` - (Optional) exception_tag for object cloudepg.
-* `flood_on_encap` - (Optional) flood_on_encap for object cloudepg.
+* `cloud_applicationcontainer_dn` - (Required) Distinguished name of parent CloudApplicationcontainer object.
+* `name` - (Required) name of Object cloud_e_pg.
+* `annotation` - (Optional) annotation for object cloud_e_pg.
+* `exception_tag` - (Optional) exception_tag for object cloud_e_pg.
+* `flood_on_encap` - (Optional) flood_on_encap for object cloud_e_pg.
 * `match_t` - (Optional) match criteria
-* `name_alias` - (Optional) name_alias for object cloudepg.
-* `pref_gr_memb` - (Optional) pref_gr_memb for object cloudepg.
+* `name_alias` - (Optional) name_alias for object cloud_e_pg.
+* `pref_gr_memb` - (Optional) pref_gr_memb for object cloud_e_pg.
 * `prio` - (Optional) qos priority class id
 
 * `relation_fv_rs_sec_inherited` - (Optional) Relation to class fvEPg. Cardinality - N_TO_M. Type - Set of String.

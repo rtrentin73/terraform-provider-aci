@@ -1,20 +1,20 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_cloudprovidersregion"
-sidebar_current: "docs-aci-resource-cloudprovidersregion"
+page_title: "ACI: aci_cloud_providers_region"
+sidebar_current: "docs-aci-resource-cloud_providers_region"
 description: |-
-  Manages ACI Cloud providers region
+  Manages ACI Cloud Providers Region
 ---
 
-# aci_cloudprovidersregion #
-Manages ACI Cloud providers region
+# aci_cloud_providers_region #
+Manages ACI Cloud Providers Region
 
 ## Example Usage ##
 
 ```hcl
-resource "aci_cloudprovidersregion" "example" {
+resource "aci_cloud_providers_region" "example" {
 
-  cloudproviderprofile_dn  = "${aci_cloudproviderprofile.example.id}"
+  cloud_provider_profile_dn  = "${aci_cloud_provider_profile.example.id}"
 
     name  = "example"
 
@@ -24,11 +24,11 @@ resource "aci_cloudprovidersregion" "example" {
 }
 ```
 ## Argument Reference ##
-* `cloudproviderprofile_dn` - (Required) Distinguished name of parent Cloudproviderprofile object.
-* `name` - (Required) name of Object cloudprovidersregion.
+* `cloud_provider_profile_dn` - (Required) Distinguished name of parent CloudProviderProfile object.
+* `name` - (Required) name of Object cloud_providers_region.
 * `admin_st` - (Optional) administrative state of the object or policy
-* `annotation` - (Optional) annotation for object cloudprovidersregion.
-* `name_alias` - (Optional) name_alias for object cloudprovidersregion.
+* `annotation` - (Optional) annotation for object cloud_providers_region.
+* `name_alias` - (Optional) name_alias for object cloud_providers_region.
 
 
 

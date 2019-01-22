@@ -11,30 +11,30 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
-func TestAccAciCloudcidrpool_Basic(t *testing.T) {
-	var cloudcidrpool models.Cloudcidrpool
+func TestAccAciCloudCIDRPool_Basic(t *testing.T) {
+	var cloud_cidr_pool models.CloudCIDRPool
 	fv_tenant_name := acctest.RandString(5)
 	cloud_ctx_profile_name := acctest.RandString(5)
 	cloud_cidr_name := acctest.RandString(5)
-	description := "cloudcidrpool created while acceptance testing"
+	description := "cloud_cidr_pool created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciCloudcidrpoolDestroy,
+		CheckDestroy: testAccCheckAciCloudCIDRPoolDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciCloudcidrpoolConfig_basic(fv_tenant_name, cloud_ctx_profile_name, cloud_cidr_name),
+				Config: testAccCheckAciCloudCIDRPoolConfig_basic(fv_tenant_name, cloud_ctx_profile_name, cloud_cidr_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciCloudcidrpoolExists("aci_cloudcidrpool.foocloudcidrpool", &cloudcidrpool),
-					testAccCheckAciCloudcidrpoolAttributes(fv_tenant_name, cloud_ctx_profile_name, cloud_cidr_name, description, &cloudcidrpool),
+					testAccCheckAciCloudCIDRPoolExists("aci_cloud_cidr_pool.foocloud_cidr_pool", &cloud_cidr_pool),
+					testAccCheckAciCloudCIDRPoolAttributes(fv_tenant_name, cloud_ctx_profile_name, cloud_cidr_name, description, &cloud_cidr_pool),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckAciCloudcidrpoolConfig_basic(fv_tenant_name, cloud_ctx_profile_name, cloud_cidr_name string) string {
+func testAccCheckAciCloudCIDRPoolConfig_basic(fv_tenant_name, cloud_ctx_profile_name, cloud_cidr_name string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_tenant" "footenant" {
@@ -43,31 +43,31 @@ func testAccCheckAciCloudcidrpoolConfig_basic(fv_tenant_name, cloud_ctx_profile_
 
 	}
 
-	resource "aci_cloudcontextprofile" "foocloudcontextprofile" {
+	resource "aci_cloud_context_profile" "foocloud_context_profile" {
 		name 		= "%s"
-		description = "cloudcontextprofile created while acceptance testing"
+		description = "cloud_context_profile created while acceptance testing"
 		tenant_dn = "${aci_tenant.footenant.id}"
 	}
 
-	resource "aci_cloudcidrpool" "foocloudcidrpool" {
+	resource "aci_cloud_cidr_pool" "foocloud_cidr_pool" {
 		name 		= "%s"
-		description = "cloudcidrpool created while acceptance testing"
-		cloudcontextprofile_dn = "${aci_cloudcontextprofile.foocloudcontextprofile.id}"
+		description = "cloud_cidr_pool created while acceptance testing"
+		cloud_context_profile_dn = "${aci_cloud_context_profile.foocloud_context_profile.id}"
 	}
 
 	`, fv_tenant_name, cloud_ctx_profile_name, cloud_cidr_name)
 }
 
-func testAccCheckAciCloudcidrpoolExists(name string, cloudcidrpool *models.Cloudcidrpool) resource.TestCheckFunc {
+func testAccCheckAciCloudCIDRPoolExists(name string, cloud_cidr_pool *models.CloudCIDRPool) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[name]
 
 		if !ok {
-			return fmt.Errorf("Cloud cidr pool %s not found", name)
+			return fmt.Errorf("Cloud CIDR Pool %s not found", name)
 		}
 
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("No Cloud cidr pool dn was set")
+			return fmt.Errorf("No Cloud CIDR Pool dn was set")
 		}
 
 		client := testAccProvider.Meta().(*client.Client)
@@ -77,25 +77,25 @@ func testAccCheckAciCloudcidrpoolExists(name string, cloudcidrpool *models.Cloud
 			return err
 		}
 
-		cloudcidrpoolFound := models.CloudcidrpoolFromContainer(cont)
-		if cloudcidrpoolFound.DistinguishedName != rs.Primary.ID {
-			return fmt.Errorf("Cloud cidr pool %s not found", rs.Primary.ID)
+		cloud_cidr_poolFound := models.CloudCIDRPoolFromContainer(cont)
+		if cloud_cidr_poolFound.DistinguishedName != rs.Primary.ID {
+			return fmt.Errorf("Cloud CIDR Pool %s not found", rs.Primary.ID)
 		}
-		*cloudcidrpool = *cloudcidrpoolFound
+		*cloud_cidr_pool = *cloud_cidr_poolFound
 		return nil
 	}
 }
 
-func testAccCheckAciCloudcidrpoolDestroy(s *terraform.State) error {
+func testAccCheckAciCloudCIDRPoolDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_cloudcidrpool" {
+		if rs.Type == "aci_cloud_cidr_pool" {
 			cont, err := client.Get(rs.Primary.ID)
-			cloudcidrpool := models.CloudcidrpoolFromContainer(cont)
+			cloud_cidr_pool := models.CloudCIDRPoolFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("Cloud cidr pool %s Still exists", cloudcidrpool.DistinguishedName)
+				return fmt.Errorf("Cloud CIDR Pool %s Still exists", cloud_cidr_pool.DistinguishedName)
 			}
 
 		} else {
@@ -106,18 +106,18 @@ func testAccCheckAciCloudcidrpoolDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciCloudcidrpoolAttributes(fv_tenant_name, cloud_ctx_profile_name, cloud_cidr_name, description string, cloudcidrpool *models.Cloudcidrpool) resource.TestCheckFunc {
+func testAccCheckAciCloudCIDRPoolAttributes(fv_tenant_name, cloud_ctx_profile_name, cloud_cidr_name, description string, cloud_cidr_pool *models.CloudCIDRPool) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
-		if cloud_cidr_name != GetMOName(cloudcidrpool.DistinguishedName) {
-			return fmt.Errorf("Bad cloud_cidr %s", GetMOName(cloudcidrpool.DistinguishedName))
+		if cloud_cidr_name != GetMOName(cloud_cidr_pool.DistinguishedName) {
+			return fmt.Errorf("Bad cloud_cidr %s", GetMOName(cloud_cidr_pool.DistinguishedName))
 		}
 
-		if cloud_ctx_profile_name != GetMOName(GetParentDn(cloudcidrpool.DistinguishedName)) {
-			return fmt.Errorf(" Bad cloud_ctx_profile %s", GetMOName(GetParentDn(cloudcidrpool.DistinguishedName)))
+		if cloud_ctx_profile_name != GetMOName(GetParentDn(cloud_cidr_pool.DistinguishedName)) {
+			return fmt.Errorf(" Bad cloud_ctx_profile %s", GetMOName(GetParentDn(cloud_cidr_pool.DistinguishedName)))
 		}
-		if description != cloudcidrpool.Description {
-			return fmt.Errorf("Bad cloudcidrpool Description %s", cloudcidrpool.Description)
+		if description != cloud_cidr_pool.Description {
+			return fmt.Errorf("Bad cloud_cidr_pool Description %s", cloud_cidr_pool.Description)
 		}
 
 		return nil

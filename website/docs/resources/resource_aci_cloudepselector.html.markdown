@@ -1,20 +1,20 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_cloudendpointselector"
-sidebar_current: "docs-aci-resource-cloudendpointselector"
+page_title: "ACI: aci_cloud_endpoint_selector"
+sidebar_current: "docs-aci-resource-cloud_endpoint_selector"
 description: |-
-  Manages ACI Cloud endpoint selector
+  Manages ACI Cloud Endpoint Selector
 ---
 
-# aci_cloudendpointselector #
-Manages ACI Cloud endpoint selector
+# aci_cloud_endpoint_selector #
+Manages ACI Cloud Endpoint Selector
 
 ## Example Usage ##
 
 ```hcl
-resource "aci_cloudendpointselector" "example" {
+resource "aci_cloud_endpoint_selector" "example" {
 
-  cloudepg_dn  = "${aci_cloudepg.example.id}"
+  cloud_e_pg_dn  = "${aci_cloud_e_pg.example.id}"
 
     name  = "example"
 
@@ -24,11 +24,11 @@ resource "aci_cloudendpointselector" "example" {
 }
 ```
 ## Argument Reference ##
-* `cloudepg_dn` - (Required) Distinguished name of parent Cloudepg object.
-* `name` - (Required) name of Object cloudendpointselector.
-* `annotation` - (Optional) annotation for object cloudendpointselector.
-* `match_expression` - (Optional) match_expression for object cloudendpointselector.
-* `name_alias` - (Optional) name_alias for object cloudendpointselector.
+* `cloud_e_pg_dn` - (Required) Distinguished name of parent CloudEPg object.
+* `name` - (Required) name of Object cloud_endpoint_selector.
+* `annotation` - (Optional) annotation for object cloud_endpoint_selector.
+* `match_expression` - (Optional) match_expression for object cloud_endpoint_selector.
+* `name_alias` - (Optional) name_alias for object cloud_endpoint_selector.
 
 
 

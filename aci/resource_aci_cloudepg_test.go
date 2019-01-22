@@ -11,30 +11,30 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
-func TestAccAciCloudepg_Basic(t *testing.T) {
-	var cloudepg models.Cloudepg
+func TestAccAciCloudEPg_Basic(t *testing.T) {
+	var cloud_e_pg models.CloudEPg
 	fv_tenant_name := acctest.RandString(5)
 	cloud_app_name := acctest.RandString(5)
 	cloud_e_pg_name := acctest.RandString(5)
-	description := "cloudepg created while acceptance testing"
+	description := "cloud_e_pg created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciCloudepgDestroy,
+		CheckDestroy: testAccCheckAciCloudEPgDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciCloudepgConfig_basic(fv_tenant_name, cloud_app_name, cloud_e_pg_name),
+				Config: testAccCheckAciCloudEPgConfig_basic(fv_tenant_name, cloud_app_name, cloud_e_pg_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciCloudepgExists("aci_cloudepg.foocloudepg", &cloudepg),
-					testAccCheckAciCloudepgAttributes(fv_tenant_name, cloud_app_name, cloud_e_pg_name, description, &cloudepg),
+					testAccCheckAciCloudEPgExists("aci_cloud_e_pg.foocloud_e_pg", &cloud_e_pg),
+					testAccCheckAciCloudEPgAttributes(fv_tenant_name, cloud_app_name, cloud_e_pg_name, description, &cloud_e_pg),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckAciCloudepgConfig_basic(fv_tenant_name, cloud_app_name, cloud_e_pg_name string) string {
+func testAccCheckAciCloudEPgConfig_basic(fv_tenant_name, cloud_app_name, cloud_e_pg_name string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_tenant" "footenant" {
@@ -43,31 +43,31 @@ func testAccCheckAciCloudepgConfig_basic(fv_tenant_name, cloud_app_name, cloud_e
 
 	}
 
-	resource "aci_cloudapplicationcontainer" "foocloudapplicationcontainer" {
+	resource "aci_cloud_applicationcontainer" "foocloud_applicationcontainer" {
 		name 		= "%s"
-		description = "cloudapplicationcontainer created while acceptance testing"
+		description = "cloud_applicationcontainer created while acceptance testing"
 		tenant_dn = "${aci_tenant.footenant.id}"
 	}
 
-	resource "aci_cloudepg" "foocloudepg" {
+	resource "aci_cloud_e_pg" "foocloud_e_pg" {
 		name 		= "%s"
-		description = "cloudepg created while acceptance testing"
-		cloudapplicationcontainer_dn = "${aci_cloudapplicationcontainer.foocloudapplicationcontainer.id}"
+		description = "cloud_e_pg created while acceptance testing"
+		cloud_applicationcontainer_dn = "${aci_cloud_applicationcontainer.foocloud_applicationcontainer.id}"
 	}
 
 	`, fv_tenant_name, cloud_app_name, cloud_e_pg_name)
 }
 
-func testAccCheckAciCloudepgExists(name string, cloudepg *models.Cloudepg) resource.TestCheckFunc {
+func testAccCheckAciCloudEPgExists(name string, cloud_e_pg *models.CloudEPg) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[name]
 
 		if !ok {
-			return fmt.Errorf("Cloud epg %s not found", name)
+			return fmt.Errorf("Cloud EPg %s not found", name)
 		}
 
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("No Cloud epg dn was set")
+			return fmt.Errorf("No Cloud EPg dn was set")
 		}
 
 		client := testAccProvider.Meta().(*client.Client)
@@ -77,25 +77,25 @@ func testAccCheckAciCloudepgExists(name string, cloudepg *models.Cloudepg) resou
 			return err
 		}
 
-		cloudepgFound := models.CloudepgFromContainer(cont)
-		if cloudepgFound.DistinguishedName != rs.Primary.ID {
-			return fmt.Errorf("Cloud epg %s not found", rs.Primary.ID)
+		cloud_e_pgFound := models.CloudEPgFromContainer(cont)
+		if cloud_e_pgFound.DistinguishedName != rs.Primary.ID {
+			return fmt.Errorf("Cloud EPg %s not found", rs.Primary.ID)
 		}
-		*cloudepg = *cloudepgFound
+		*cloud_e_pg = *cloud_e_pgFound
 		return nil
 	}
 }
 
-func testAccCheckAciCloudepgDestroy(s *terraform.State) error {
+func testAccCheckAciCloudEPgDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_cloudepg" {
+		if rs.Type == "aci_cloud_e_pg" {
 			cont, err := client.Get(rs.Primary.ID)
-			cloudepg := models.CloudepgFromContainer(cont)
+			cloud_e_pg := models.CloudEPgFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("Cloud epg %s Still exists", cloudepg.DistinguishedName)
+				return fmt.Errorf("Cloud EPg %s Still exists", cloud_e_pg.DistinguishedName)
 			}
 
 		} else {
@@ -106,18 +106,18 @@ func testAccCheckAciCloudepgDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciCloudepgAttributes(fv_tenant_name, cloud_app_name, cloud_e_pg_name, description string, cloudepg *models.Cloudepg) resource.TestCheckFunc {
+func testAccCheckAciCloudEPgAttributes(fv_tenant_name, cloud_app_name, cloud_e_pg_name, description string, cloud_e_pg *models.CloudEPg) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
-		if cloud_e_pg_name != GetMOName(cloudepg.DistinguishedName) {
-			return fmt.Errorf("Bad cloud_e_pg %s", GetMOName(cloudepg.DistinguishedName))
+		if cloud_e_pg_name != GetMOName(cloud_e_pg.DistinguishedName) {
+			return fmt.Errorf("Bad cloud_e_pg %s", GetMOName(cloud_e_pg.DistinguishedName))
 		}
 
-		if cloud_app_name != GetMOName(GetParentDn(cloudepg.DistinguishedName)) {
-			return fmt.Errorf(" Bad cloud_app %s", GetMOName(GetParentDn(cloudepg.DistinguishedName)))
+		if cloud_app_name != GetMOName(GetParentDn(cloud_e_pg.DistinguishedName)) {
+			return fmt.Errorf(" Bad cloud_app %s", GetMOName(GetParentDn(cloud_e_pg.DistinguishedName)))
 		}
-		if description != cloudepg.Description {
-			return fmt.Errorf("Bad cloudepg Description %s", cloudepg.Description)
+		if description != cloud_e_pg.Description {
+			return fmt.Errorf("Bad cloud_e_pg Description %s", cloud_e_pg.Description)
 		}
 
 		return nil

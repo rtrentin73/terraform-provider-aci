@@ -7,21 +7,21 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func resourceAciCloudendpointselector() *schema.Resource {
+func resourceAciCloudEndpointSelector() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciCloudendpointselectorCreate,
-		Update: resourceAciCloudendpointselectorUpdate,
-		Read:   resourceAciCloudendpointselectorRead,
-		Delete: resourceAciCloudendpointselectorDelete,
+		Create: resourceAciCloudEndpointSelectorCreate,
+		Update: resourceAciCloudEndpointSelectorUpdate,
+		Read:   resourceAciCloudEndpointSelectorRead,
+		Delete: resourceAciCloudEndpointSelectorDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: resourceAciCloudendpointselectorImport,
+			State: resourceAciCloudEndpointSelectorImport,
 		},
 
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"cloudepg_dn": &schema.Schema{
+			"cloud_e_pg_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -55,13 +55,13 @@ func resourceAciCloudendpointselector() *schema.Resource {
 	}
 }
 
-func getRemoteCloudendpointselector(client *client.Client, dn string) (*models.Cloudendpointselector, error) {
+func getRemoteCloudEndpointSelector(client *client.Client, dn string) (*models.CloudEndpointSelector, error) {
 	cloudEPSelectorCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
 	}
 
-	cloudEPSelector := models.CloudendpointselectorFromContainer(cloudEPSelectorCont)
+	cloudEPSelector := models.CloudEndpointSelectorFromContainer(cloudEPSelectorCont)
 
 	if cloudEPSelector.DistinguishedName == "" {
 		return nil, fmt.Errorf("Bridge Domain %s not found", cloudEPSelector.DistinguishedName)
@@ -70,10 +70,10 @@ func getRemoteCloudendpointselector(client *client.Client, dn string) (*models.C
 	return cloudEPSelector, nil
 }
 
-func setCloudendpointselectorAttributes(cloudEPSelector *models.Cloudendpointselector, d *schema.ResourceData) *schema.ResourceData {
+func setCloudEndpointSelectorAttributes(cloudEPSelector *models.CloudEndpointSelector, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(cloudEPSelector.DistinguishedName)
 	d.Set("description", cloudEPSelector.Description)
-	d.Set("cloudepg_dn", GetParentDn(cloudEPSelector.DistinguishedName))
+	d.Set("cloud_e_pg_dn", GetParentDn(cloudEPSelector.DistinguishedName))
 	cloudEPSelectorMap, _ := cloudEPSelector.ToMap()
 
 	d.Set("annotation", cloudEPSelectorMap["annotation"])
@@ -82,30 +82,30 @@ func setCloudendpointselectorAttributes(cloudEPSelector *models.Cloudendpointsel
 	return d
 }
 
-func resourceAciCloudendpointselectorImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+func resourceAciCloudEndpointSelectorImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
 
-	cloudEPSelector, err := getRemoteCloudendpointselector(aciClient, dn)
+	cloudEPSelector, err := getRemoteCloudEndpointSelector(aciClient, dn)
 
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setCloudendpointselectorAttributes(cloudEPSelector, d)
+	schemaFilled := setCloudEndpointSelectorAttributes(cloudEPSelector, d)
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciCloudendpointselectorCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudEndpointSelectorCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
 
-	CloudepgDn := d.Get("cloudepg_dn").(string)
+	CloudEPgDn := d.Get("cloud_e_pg_dn").(string)
 
-	cloudEPSelectorAttr := models.CloudendpointselectorAttributes{}
+	cloudEPSelectorAttr := models.CloudEndpointSelectorAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudEPSelectorAttr.Annotation = Annotation.(string)
 	}
@@ -115,7 +115,7 @@ func resourceAciCloudendpointselectorCreate(d *schema.ResourceData, m interface{
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cloudEPSelectorAttr.NameAlias = NameAlias.(string)
 	}
-	cloudEPSelector := models.NewCloudendpointselector(fmt.Sprintf("epselector-%s", name), CloudepgDn, desc, cloudEPSelectorAttr)
+	cloudEPSelector := models.NewCloudEndpointSelector(fmt.Sprintf("epselector-%s", name), CloudEPgDn, desc, cloudEPSelectorAttr)
 
 	err := aciClient.Save(cloudEPSelector)
 	if err != nil {
@@ -123,18 +123,18 @@ func resourceAciCloudendpointselectorCreate(d *schema.ResourceData, m interface{
 	}
 
 	d.SetId(cloudEPSelector.DistinguishedName)
-	return resourceAciCloudendpointselectorRead(d, m)
+	return resourceAciCloudEndpointSelectorRead(d, m)
 }
 
-func resourceAciCloudendpointselectorUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudEndpointSelectorUpdate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
 
-	CloudepgDn := d.Get("cloudepg_dn").(string)
+	CloudEPgDn := d.Get("cloud_e_pg_dn").(string)
 
-	cloudEPSelectorAttr := models.CloudendpointselectorAttributes{}
+	cloudEPSelectorAttr := models.CloudEndpointSelectorAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudEPSelectorAttr.Annotation = Annotation.(string)
 	}
@@ -144,7 +144,7 @@ func resourceAciCloudendpointselectorUpdate(d *schema.ResourceData, m interface{
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cloudEPSelectorAttr.NameAlias = NameAlias.(string)
 	}
-	cloudEPSelector := models.NewCloudendpointselector(fmt.Sprintf("epselector-%s", name), CloudepgDn, desc, cloudEPSelectorAttr)
+	cloudEPSelector := models.NewCloudEndpointSelector(fmt.Sprintf("epselector-%s", name), CloudEPgDn, desc, cloudEPSelectorAttr)
 
 	cloudEPSelector.Status = "modified"
 
@@ -155,24 +155,24 @@ func resourceAciCloudendpointselectorUpdate(d *schema.ResourceData, m interface{
 	}
 
 	d.SetId(cloudEPSelector.DistinguishedName)
-	return resourceAciCloudendpointselectorRead(d, m)
+	return resourceAciCloudEndpointSelectorRead(d, m)
 
 }
 
-func resourceAciCloudendpointselectorRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudEndpointSelectorRead(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
-	cloudEPSelector, err := getRemoteCloudendpointselector(aciClient, dn)
+	cloudEPSelector, err := getRemoteCloudEndpointSelector(aciClient, dn)
 
 	if err != nil {
 		return err
 	}
-	setCloudendpointselectorAttributes(cloudEPSelector, d)
+	setCloudEndpointSelectorAttributes(cloudEPSelector, d)
 	return nil
 }
 
-func resourceAciCloudendpointselectorDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudEndpointSelectorDelete(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "cloudEPSelector")

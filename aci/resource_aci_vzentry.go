@@ -7,15 +7,15 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func resourceAciFilterentry() *schema.Resource {
+func resourceAciFilterEntry() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciFilterentryCreate,
-		Update: resourceAciFilterentryUpdate,
-		Read:   resourceAciFilterentryRead,
-		Delete: resourceAciFilterentryDelete,
+		Create: resourceAciFilterEntryCreate,
+		Update: resourceAciFilterEntryUpdate,
+		Read:   resourceAciFilterEntryRead,
+		Delete: resourceAciFilterEntryDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: resourceAciFilterentryImport,
+			State: resourceAciFilterEntryImport,
 		},
 
 		SchemaVersion: 1,
@@ -139,13 +139,13 @@ func resourceAciFilterentry() *schema.Resource {
 	}
 }
 
-func getRemoteFilterentry(client *client.Client, dn string) (*models.Filterentry, error) {
+func getRemoteFilterEntry(client *client.Client, dn string) (*models.FilterEntry, error) {
 	vzEntryCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
 	}
 
-	vzEntry := models.FilterentryFromContainer(vzEntryCont)
+	vzEntry := models.FilterEntryFromContainer(vzEntryCont)
 
 	if vzEntry.DistinguishedName == "" {
 		return nil, fmt.Errorf("Bridge Domain %s not found", vzEntry.DistinguishedName)
@@ -154,7 +154,7 @@ func getRemoteFilterentry(client *client.Client, dn string) (*models.Filterentry
 	return vzEntry, nil
 }
 
-func setFilterentryAttributes(vzEntry *models.Filterentry, d *schema.ResourceData) *schema.ResourceData {
+func setFilterEntryAttributes(vzEntry *models.FilterEntry, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(vzEntry.DistinguishedName)
 	d.Set("description", vzEntry.Description)
 	d.Set("filter_dn", GetParentDn(vzEntry.DistinguishedName))
@@ -178,22 +178,22 @@ func setFilterentryAttributes(vzEntry *models.Filterentry, d *schema.ResourceDat
 	return d
 }
 
-func resourceAciFilterentryImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+func resourceAciFilterEntryImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
 
-	vzEntry, err := getRemoteFilterentry(aciClient, dn)
+	vzEntry, err := getRemoteFilterEntry(aciClient, dn)
 
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setFilterentryAttributes(vzEntry, d)
+	schemaFilled := setFilterEntryAttributes(vzEntry, d)
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciFilterentryCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciFilterEntryCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
@@ -201,7 +201,7 @@ func resourceAciFilterentryCreate(d *schema.ResourceData, m interface{}) error {
 
 	FilterDn := d.Get("filter_dn").(string)
 
-	vzEntryAttr := models.FilterentryAttributes{}
+	vzEntryAttr := models.FilterEntryAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		vzEntryAttr.Annotation = Annotation.(string)
 	}
@@ -247,7 +247,7 @@ func resourceAciFilterentryCreate(d *schema.ResourceData, m interface{}) error {
 	if TcpRules, ok := d.GetOk("tcp_rules"); ok {
 		vzEntryAttr.TcpRules = TcpRules.(string)
 	}
-	vzEntry := models.NewFilterentry(fmt.Sprintf("e-%s", name), FilterDn, desc, vzEntryAttr)
+	vzEntry := models.NewFilterEntry(fmt.Sprintf("e-%s", name), FilterDn, desc, vzEntryAttr)
 
 	err := aciClient.Save(vzEntry)
 	if err != nil {
@@ -255,10 +255,10 @@ func resourceAciFilterentryCreate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.SetId(vzEntry.DistinguishedName)
-	return resourceAciFilterentryRead(d, m)
+	return resourceAciFilterEntryRead(d, m)
 }
 
-func resourceAciFilterentryUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciFilterEntryUpdate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
@@ -266,7 +266,7 @@ func resourceAciFilterentryUpdate(d *schema.ResourceData, m interface{}) error {
 
 	FilterDn := d.Get("filter_dn").(string)
 
-	vzEntryAttr := models.FilterentryAttributes{}
+	vzEntryAttr := models.FilterEntryAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		vzEntryAttr.Annotation = Annotation.(string)
 	}
@@ -312,7 +312,7 @@ func resourceAciFilterentryUpdate(d *schema.ResourceData, m interface{}) error {
 	if TcpRules, ok := d.GetOk("tcp_rules"); ok {
 		vzEntryAttr.TcpRules = TcpRules.(string)
 	}
-	vzEntry := models.NewFilterentry(fmt.Sprintf("e-%s", name), FilterDn, desc, vzEntryAttr)
+	vzEntry := models.NewFilterEntry(fmt.Sprintf("e-%s", name), FilterDn, desc, vzEntryAttr)
 
 	vzEntry.Status = "modified"
 
@@ -323,24 +323,24 @@ func resourceAciFilterentryUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.SetId(vzEntry.DistinguishedName)
-	return resourceAciFilterentryRead(d, m)
+	return resourceAciFilterEntryRead(d, m)
 
 }
 
-func resourceAciFilterentryRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciFilterEntryRead(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
-	vzEntry, err := getRemoteFilterentry(aciClient, dn)
+	vzEntry, err := getRemoteFilterEntry(aciClient, dn)
 
 	if err != nil {
 		return err
 	}
-	setFilterentryAttributes(vzEntry, d)
+	setFilterEntryAttributes(vzEntry, d)
 	return nil
 }
 
-func resourceAciFilterentryDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciFilterEntryDelete(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "vzEntry")

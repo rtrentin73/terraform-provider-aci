@@ -7,15 +7,15 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func resourceAciCloudcontextprofile() *schema.Resource {
+func resourceAciCloudContextProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciCloudcontextprofileCreate,
-		Update: resourceAciCloudcontextprofileUpdate,
-		Read:   resourceAciCloudcontextprofileRead,
-		Delete: resourceAciCloudcontextprofileDelete,
+		Create: resourceAciCloudContextProfileCreate,
+		Update: resourceAciCloudContextProfileUpdate,
+		Read:   resourceAciCloudContextProfileRead,
+		Delete: resourceAciCloudContextProfileDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: resourceAciCloudcontextprofileImport,
+			State: resourceAciCloudContextProfileImport,
 		},
 
 		SchemaVersion: 1,
@@ -74,13 +74,13 @@ func resourceAciCloudcontextprofile() *schema.Resource {
 	}
 }
 
-func getRemoteCloudcontextprofile(client *client.Client, dn string) (*models.Cloudcontextprofile, error) {
+func getRemoteCloudContextProfile(client *client.Client, dn string) (*models.CloudContextProfile, error) {
 	cloudCtxProfileCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
 	}
 
-	cloudCtxProfile := models.CloudcontextprofileFromContainer(cloudCtxProfileCont)
+	cloudCtxProfile := models.CloudContextProfileFromContainer(cloudCtxProfileCont)
 
 	if cloudCtxProfile.DistinguishedName == "" {
 		return nil, fmt.Errorf("Bridge Domain %s not found", cloudCtxProfile.DistinguishedName)
@@ -89,7 +89,7 @@ func getRemoteCloudcontextprofile(client *client.Client, dn string) (*models.Clo
 	return cloudCtxProfile, nil
 }
 
-func setCloudcontextprofileAttributes(cloudCtxProfile *models.Cloudcontextprofile, d *schema.ResourceData) *schema.ResourceData {
+func setCloudContextProfileAttributes(cloudCtxProfile *models.CloudContextProfile, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(cloudCtxProfile.DistinguishedName)
 	d.Set("description", cloudCtxProfile.Description)
 	d.Set("tenant_dn", GetParentDn(cloudCtxProfile.DistinguishedName))
@@ -101,22 +101,22 @@ func setCloudcontextprofileAttributes(cloudCtxProfile *models.Cloudcontextprofil
 	return d
 }
 
-func resourceAciCloudcontextprofileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+func resourceAciCloudContextProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
 
-	cloudCtxProfile, err := getRemoteCloudcontextprofile(aciClient, dn)
+	cloudCtxProfile, err := getRemoteCloudContextProfile(aciClient, dn)
 
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setCloudcontextprofileAttributes(cloudCtxProfile, d)
+	schemaFilled := setCloudContextProfileAttributes(cloudCtxProfile, d)
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciCloudcontextprofileCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudContextProfileCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
@@ -124,7 +124,7 @@ func resourceAciCloudcontextprofileCreate(d *schema.ResourceData, m interface{})
 
 	TenantDn := d.Get("tenant_dn").(string)
 
-	cloudCtxProfileAttr := models.CloudcontextprofileAttributes{}
+	cloudCtxProfileAttr := models.CloudContextProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudCtxProfileAttr.Annotation = Annotation.(string)
 	}
@@ -134,7 +134,7 @@ func resourceAciCloudcontextprofileCreate(d *schema.ResourceData, m interface{})
 	if Type, ok := d.GetOk("type"); ok {
 		cloudCtxProfileAttr.Type = Type.(string)
 	}
-	cloudCtxProfile := models.NewCloudcontextprofile(fmt.Sprintf("ctxprofile-%s", name), TenantDn, desc, cloudCtxProfileAttr)
+	cloudCtxProfile := models.NewCloudContextProfile(fmt.Sprintf("ctxprofile-%s", name), TenantDn, desc, cloudCtxProfileAttr)
 
 	err := aciClient.Save(cloudCtxProfile)
 	if err != nil {
@@ -143,7 +143,7 @@ func resourceAciCloudcontextprofileCreate(d *schema.ResourceData, m interface{})
 
 	if relationTocloudRsCtxToFlowLog, ok := d.GetOk("relation_cloud_rs_ctx_to_flow_log"); ok {
 		relationParam := relationTocloudRsCtxToFlowLog.(string)
-		err = aciClient.CreateRelationcloudRsCtxToFlowLogFromCloudcontextprofile(cloudCtxProfile.DistinguishedName, relationParam)
+		err = aciClient.CreateRelationcloudRsCtxToFlowLogFromCloudContextProfile(cloudCtxProfile.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -151,7 +151,7 @@ func resourceAciCloudcontextprofileCreate(d *schema.ResourceData, m interface{})
 	}
 	if relationTocloudRsToCtx, ok := d.GetOk("relation_cloud_rs_to_ctx"); ok {
 		relationParam := relationTocloudRsToCtx.(string)
-		err = aciClient.CreateRelationcloudRsToCtxFromCloudcontextprofile(cloudCtxProfile.DistinguishedName, relationParam)
+		err = aciClient.CreateRelationcloudRsToCtxFromCloudContextProfile(cloudCtxProfile.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -159,7 +159,7 @@ func resourceAciCloudcontextprofileCreate(d *schema.ResourceData, m interface{})
 	}
 	if relationTocloudRsCtxProfileToRegion, ok := d.GetOk("relation_cloud_rs_ctx_profile_to_region"); ok {
 		relationParam := relationTocloudRsCtxProfileToRegion.(string)
-		err = aciClient.CreateRelationcloudRsCtxProfileToRegionFromCloudcontextprofile(cloudCtxProfile.DistinguishedName, relationParam)
+		err = aciClient.CreateRelationcloudRsCtxProfileToRegionFromCloudContextProfile(cloudCtxProfile.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -167,10 +167,10 @@ func resourceAciCloudcontextprofileCreate(d *schema.ResourceData, m interface{})
 	}
 
 	d.SetId(cloudCtxProfile.DistinguishedName)
-	return resourceAciCloudcontextprofileRead(d, m)
+	return resourceAciCloudContextProfileRead(d, m)
 }
 
-func resourceAciCloudcontextprofileUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudContextProfileUpdate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
@@ -178,7 +178,7 @@ func resourceAciCloudcontextprofileUpdate(d *schema.ResourceData, m interface{})
 
 	TenantDn := d.Get("tenant_dn").(string)
 
-	cloudCtxProfileAttr := models.CloudcontextprofileAttributes{}
+	cloudCtxProfileAttr := models.CloudContextProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudCtxProfileAttr.Annotation = Annotation.(string)
 	}
@@ -188,7 +188,7 @@ func resourceAciCloudcontextprofileUpdate(d *schema.ResourceData, m interface{})
 	if Type, ok := d.GetOk("type"); ok {
 		cloudCtxProfileAttr.Type = Type.(string)
 	}
-	cloudCtxProfile := models.NewCloudcontextprofile(fmt.Sprintf("ctxprofile-%s", name), TenantDn, desc, cloudCtxProfileAttr)
+	cloudCtxProfile := models.NewCloudContextProfile(fmt.Sprintf("ctxprofile-%s", name), TenantDn, desc, cloudCtxProfileAttr)
 
 	cloudCtxProfile.Status = "modified"
 
@@ -200,11 +200,11 @@ func resourceAciCloudcontextprofileUpdate(d *schema.ResourceData, m interface{})
 
 	if d.HasChange("relation_cloud_rs_ctx_to_flow_log") {
 		_, newRelParam := d.GetChange("relation_cloud_rs_ctx_to_flow_log")
-		err = aciClient.DeleteRelationcloudRsCtxToFlowLogFromCloudcontextprofile(cloudCtxProfile.DistinguishedName)
+		err = aciClient.DeleteRelationcloudRsCtxToFlowLogFromCloudContextProfile(cloudCtxProfile.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationcloudRsCtxToFlowLogFromCloudcontextprofile(cloudCtxProfile.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationcloudRsCtxToFlowLogFromCloudContextProfile(cloudCtxProfile.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -212,7 +212,7 @@ func resourceAciCloudcontextprofileUpdate(d *schema.ResourceData, m interface{})
 	}
 	if d.HasChange("relation_cloud_rs_to_ctx") {
 		_, newRelParam := d.GetChange("relation_cloud_rs_to_ctx")
-		err = aciClient.CreateRelationcloudRsToCtxFromCloudcontextprofile(cloudCtxProfile.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationcloudRsToCtxFromCloudContextProfile(cloudCtxProfile.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -220,11 +220,11 @@ func resourceAciCloudcontextprofileUpdate(d *schema.ResourceData, m interface{})
 	}
 	if d.HasChange("relation_cloud_rs_ctx_profile_to_region") {
 		_, newRelParam := d.GetChange("relation_cloud_rs_ctx_profile_to_region")
-		err = aciClient.DeleteRelationcloudRsCtxProfileToRegionFromCloudcontextprofile(cloudCtxProfile.DistinguishedName)
+		err = aciClient.DeleteRelationcloudRsCtxProfileToRegionFromCloudContextProfile(cloudCtxProfile.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationcloudRsCtxProfileToRegionFromCloudcontextprofile(cloudCtxProfile.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationcloudRsCtxProfileToRegionFromCloudContextProfile(cloudCtxProfile.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -232,24 +232,24 @@ func resourceAciCloudcontextprofileUpdate(d *schema.ResourceData, m interface{})
 	}
 
 	d.SetId(cloudCtxProfile.DistinguishedName)
-	return resourceAciCloudcontextprofileRead(d, m)
+	return resourceAciCloudContextProfileRead(d, m)
 
 }
 
-func resourceAciCloudcontextprofileRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudContextProfileRead(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
-	cloudCtxProfile, err := getRemoteCloudcontextprofile(aciClient, dn)
+	cloudCtxProfile, err := getRemoteCloudContextProfile(aciClient, dn)
 
 	if err != nil {
 		return err
 	}
-	setCloudcontextprofileAttributes(cloudCtxProfile, d)
+	setCloudContextProfileAttributes(cloudCtxProfile, d)
 	return nil
 }
 
-func resourceAciCloudcontextprofileDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudContextProfileDelete(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "cloudCtxProfile")

@@ -11,29 +11,29 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
-func TestAccAciCloudapplicationcontainer_Basic(t *testing.T) {
-	var cloudapplicationcontainer models.Cloudapplicationcontainer
+func TestAccAciCloudApplicationcontainer_Basic(t *testing.T) {
+	var cloud_applicationcontainer models.CloudApplicationcontainer
 	fv_tenant_name := acctest.RandString(5)
 	cloud_app_name := acctest.RandString(5)
-	description := "cloudapplicationcontainer created while acceptance testing"
+	description := "cloud_applicationcontainer created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciCloudapplicationcontainerDestroy,
+		CheckDestroy: testAccCheckAciCloudApplicationcontainerDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciCloudapplicationcontainerConfig_basic(fv_tenant_name, cloud_app_name),
+				Config: testAccCheckAciCloudApplicationcontainerConfig_basic(fv_tenant_name, cloud_app_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciCloudapplicationcontainerExists("aci_cloudapplicationcontainer.foocloudapplicationcontainer", &cloudapplicationcontainer),
-					testAccCheckAciCloudapplicationcontainerAttributes(fv_tenant_name, cloud_app_name, description, &cloudapplicationcontainer),
+					testAccCheckAciCloudApplicationcontainerExists("aci_cloud_applicationcontainer.foocloud_applicationcontainer", &cloud_applicationcontainer),
+					testAccCheckAciCloudApplicationcontainerAttributes(fv_tenant_name, cloud_app_name, description, &cloud_applicationcontainer),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckAciCloudapplicationcontainerConfig_basic(fv_tenant_name, cloud_app_name string) string {
+func testAccCheckAciCloudApplicationcontainerConfig_basic(fv_tenant_name, cloud_app_name string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_tenant" "footenant" {
@@ -42,25 +42,25 @@ func testAccCheckAciCloudapplicationcontainerConfig_basic(fv_tenant_name, cloud_
 
 	}
 
-	resource "aci_cloudapplicationcontainer" "foocloudapplicationcontainer" {
+	resource "aci_cloud_applicationcontainer" "foocloud_applicationcontainer" {
 		name 		= "%s"
-		description = "cloudapplicationcontainer created while acceptance testing"
+		description = "cloud_applicationcontainer created while acceptance testing"
 		tenant_dn = "${aci_tenant.footenant.id}"
 	}
 
 	`, fv_tenant_name, cloud_app_name)
 }
 
-func testAccCheckAciCloudapplicationcontainerExists(name string, cloudapplicationcontainer *models.Cloudapplicationcontainer) resource.TestCheckFunc {
+func testAccCheckAciCloudApplicationcontainerExists(name string, cloud_applicationcontainer *models.CloudApplicationcontainer) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[name]
 
 		if !ok {
-			return fmt.Errorf("Cloud application container %s not found", name)
+			return fmt.Errorf("Cloud Application container %s not found", name)
 		}
 
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("No Cloud application container dn was set")
+			return fmt.Errorf("No Cloud Application container dn was set")
 		}
 
 		client := testAccProvider.Meta().(*client.Client)
@@ -70,25 +70,25 @@ func testAccCheckAciCloudapplicationcontainerExists(name string, cloudapplicatio
 			return err
 		}
 
-		cloudapplicationcontainerFound := models.CloudapplicationcontainerFromContainer(cont)
-		if cloudapplicationcontainerFound.DistinguishedName != rs.Primary.ID {
-			return fmt.Errorf("Cloud application container %s not found", rs.Primary.ID)
+		cloud_applicationcontainerFound := models.CloudApplicationcontainerFromContainer(cont)
+		if cloud_applicationcontainerFound.DistinguishedName != rs.Primary.ID {
+			return fmt.Errorf("Cloud Application container %s not found", rs.Primary.ID)
 		}
-		*cloudapplicationcontainer = *cloudapplicationcontainerFound
+		*cloud_applicationcontainer = *cloud_applicationcontainerFound
 		return nil
 	}
 }
 
-func testAccCheckAciCloudapplicationcontainerDestroy(s *terraform.State) error {
+func testAccCheckAciCloudApplicationcontainerDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_cloudapplicationcontainer" {
+		if rs.Type == "aci_cloud_applicationcontainer" {
 			cont, err := client.Get(rs.Primary.ID)
-			cloudapplicationcontainer := models.CloudapplicationcontainerFromContainer(cont)
+			cloud_applicationcontainer := models.CloudApplicationcontainerFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("Cloud application container %s Still exists", cloudapplicationcontainer.DistinguishedName)
+				return fmt.Errorf("Cloud Application container %s Still exists", cloud_applicationcontainer.DistinguishedName)
 			}
 
 		} else {
@@ -99,18 +99,18 @@ func testAccCheckAciCloudapplicationcontainerDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciCloudapplicationcontainerAttributes(fv_tenant_name, cloud_app_name, description string, cloudapplicationcontainer *models.Cloudapplicationcontainer) resource.TestCheckFunc {
+func testAccCheckAciCloudApplicationcontainerAttributes(fv_tenant_name, cloud_app_name, description string, cloud_applicationcontainer *models.CloudApplicationcontainer) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
-		if cloud_app_name != GetMOName(cloudapplicationcontainer.DistinguishedName) {
-			return fmt.Errorf("Bad cloud_app %s", GetMOName(cloudapplicationcontainer.DistinguishedName))
+		if cloud_app_name != GetMOName(cloud_applicationcontainer.DistinguishedName) {
+			return fmt.Errorf("Bad cloud_app %s", GetMOName(cloud_applicationcontainer.DistinguishedName))
 		}
 
-		if fv_tenant_name != GetMOName(GetParentDn(cloudapplicationcontainer.DistinguishedName)) {
-			return fmt.Errorf(" Bad fv_tenant %s", GetMOName(GetParentDn(cloudapplicationcontainer.DistinguishedName)))
+		if fv_tenant_name != GetMOName(GetParentDn(cloud_applicationcontainer.DistinguishedName)) {
+			return fmt.Errorf(" Bad fv_tenant %s", GetMOName(GetParentDn(cloud_applicationcontainer.DistinguishedName)))
 		}
-		if description != cloudapplicationcontainer.Description {
-			return fmt.Errorf("Bad cloudapplicationcontainer Description %s", cloudapplicationcontainer.Description)
+		if description != cloud_applicationcontainer.Description {
+			return fmt.Errorf("Bad cloud_applicationcontainer Description %s", cloud_applicationcontainer.Description)
 		}
 
 		return nil

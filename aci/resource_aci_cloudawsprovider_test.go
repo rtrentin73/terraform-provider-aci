@@ -11,29 +11,29 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
-func TestAccAciCloudawsprovider_Basic(t *testing.T) {
-	var cloudawsprovider models.Cloudawsprovider
+func TestAccAciCloudAWSProvider_Basic(t *testing.T) {
+	var cloud_aws_provider models.CloudAWSProvider
 	fv_tenant_name := acctest.RandString(5)
 	cloud_aws_provider_name := acctest.RandString(5)
-	description := "cloudawsprovider created while acceptance testing"
+	description := "cloud_aws_provider created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciCloudawsproviderDestroy,
+		CheckDestroy: testAccCheckAciCloudAWSProviderDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciCloudawsproviderConfig_basic(fv_tenant_name, cloud_aws_provider_name),
+				Config: testAccCheckAciCloudAWSProviderConfig_basic(fv_tenant_name, cloud_aws_provider_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciCloudawsproviderExists("aci_cloudawsprovider.foocloudawsprovider", &cloudawsprovider),
-					testAccCheckAciCloudawsproviderAttributes(fv_tenant_name, cloud_aws_provider_name, description, &cloudawsprovider),
+					testAccCheckAciCloudAWSProviderExists("aci_cloud_aws_provider.foocloud_aws_provider", &cloud_aws_provider),
+					testAccCheckAciCloudAWSProviderAttributes(fv_tenant_name, cloud_aws_provider_name, description, &cloud_aws_provider),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckAciCloudawsproviderConfig_basic(fv_tenant_name, cloud_aws_provider_name string) string {
+func testAccCheckAciCloudAWSProviderConfig_basic(fv_tenant_name, cloud_aws_provider_name string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_tenant" "footenant" {
@@ -42,25 +42,25 @@ func testAccCheckAciCloudawsproviderConfig_basic(fv_tenant_name, cloud_aws_provi
 
 	}
 
-	resource "aci_cloudawsprovider" "foocloudawsprovider" {
+	resource "aci_cloud_aws_provider" "foocloud_aws_provider" {
 		name 		= "%s"
-		description = "cloudawsprovider created while acceptance testing"
+		description = "cloud_aws_provider created while acceptance testing"
 		tenant_dn = "${aci_tenant.footenant.id}"
 	}
 
 	`, fv_tenant_name, cloud_aws_provider_name)
 }
 
-func testAccCheckAciCloudawsproviderExists(name string, cloudawsprovider *models.Cloudawsprovider) resource.TestCheckFunc {
+func testAccCheckAciCloudAWSProviderExists(name string, cloud_aws_provider *models.CloudAWSProvider) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[name]
 
 		if !ok {
-			return fmt.Errorf("Cloud aws provider %s not found", name)
+			return fmt.Errorf("Cloud AWS Provider %s not found", name)
 		}
 
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("No Cloud aws provider dn was set")
+			return fmt.Errorf("No Cloud AWS Provider dn was set")
 		}
 
 		client := testAccProvider.Meta().(*client.Client)
@@ -70,25 +70,25 @@ func testAccCheckAciCloudawsproviderExists(name string, cloudawsprovider *models
 			return err
 		}
 
-		cloudawsproviderFound := models.CloudawsproviderFromContainer(cont)
-		if cloudawsproviderFound.DistinguishedName != rs.Primary.ID {
-			return fmt.Errorf("Cloud aws provider %s not found", rs.Primary.ID)
+		cloud_aws_providerFound := models.CloudAWSProviderFromContainer(cont)
+		if cloud_aws_providerFound.DistinguishedName != rs.Primary.ID {
+			return fmt.Errorf("Cloud AWS Provider %s not found", rs.Primary.ID)
 		}
-		*cloudawsprovider = *cloudawsproviderFound
+		*cloud_aws_provider = *cloud_aws_providerFound
 		return nil
 	}
 }
 
-func testAccCheckAciCloudawsproviderDestroy(s *terraform.State) error {
+func testAccCheckAciCloudAWSProviderDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_cloudawsprovider" {
+		if rs.Type == "aci_cloud_aws_provider" {
 			cont, err := client.Get(rs.Primary.ID)
-			cloudawsprovider := models.CloudawsproviderFromContainer(cont)
+			cloud_aws_provider := models.CloudAWSProviderFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("Cloud aws provider %s Still exists", cloudawsprovider.DistinguishedName)
+				return fmt.Errorf("Cloud AWS Provider %s Still exists", cloud_aws_provider.DistinguishedName)
 			}
 
 		} else {
@@ -99,18 +99,18 @@ func testAccCheckAciCloudawsproviderDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciCloudawsproviderAttributes(fv_tenant_name, cloud_aws_provider_name, description string, cloudawsprovider *models.Cloudawsprovider) resource.TestCheckFunc {
+func testAccCheckAciCloudAWSProviderAttributes(fv_tenant_name, cloud_aws_provider_name, description string, cloud_aws_provider *models.CloudAWSProvider) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
-		if cloud_aws_provider_name != GetMOName(cloudawsprovider.DistinguishedName) {
-			return fmt.Errorf("Bad cloud_aws_provider %s", GetMOName(cloudawsprovider.DistinguishedName))
+		if cloud_aws_provider_name != GetMOName(cloud_aws_provider.DistinguishedName) {
+			return fmt.Errorf("Bad cloud_aws_provider %s", GetMOName(cloud_aws_provider.DistinguishedName))
 		}
 
-		if fv_tenant_name != GetMOName(GetParentDn(cloudawsprovider.DistinguishedName)) {
-			return fmt.Errorf(" Bad fv_tenant %s", GetMOName(GetParentDn(cloudawsprovider.DistinguishedName)))
+		if fv_tenant_name != GetMOName(GetParentDn(cloud_aws_provider.DistinguishedName)) {
+			return fmt.Errorf(" Bad fv_tenant %s", GetMOName(GetParentDn(cloud_aws_provider.DistinguishedName)))
 		}
-		if description != cloudawsprovider.Description {
-			return fmt.Errorf("Bad cloudawsprovider Description %s", cloudawsprovider.Description)
+		if description != cloud_aws_provider.Description {
+			return fmt.Errorf("Bad cloud_aws_provider Description %s", cloud_aws_provider.Description)
 		}
 
 		return nil

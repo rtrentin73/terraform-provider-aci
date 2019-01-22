@@ -1,18 +1,18 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_cloudproviderprofile"
-sidebar_current: "docs-aci-resource-cloudproviderprofile"
+page_title: "ACI: aci_cloud_provider_profile"
+sidebar_current: "docs-aci-resource-cloud_provider_profile"
 description: |-
-  Manages ACI Cloud provider profile
+  Manages ACI Cloud Provider Profile
 ---
 
-# aci_cloudproviderprofile #
-Manages ACI Cloud provider profile
+# aci_cloud_provider_profile #
+Manages ACI Cloud Provider Profile
 
 ## Example Usage ##
 
 ```hcl
-resource "aci_cloudproviderprofile" "example" {
+resource "aci_cloud_provider_profile" "example" {
 
 
     vendor  = "example"
@@ -22,8 +22,8 @@ resource "aci_cloudproviderprofile" "example" {
 }
 ```
 ## Argument Reference ##
-* `vendor` - (Required) vendor of Object cloudproviderprofile.
-* `annotation` - (Optional) annotation for object cloudproviderprofile.
+* `vendor` - (Required) vendor of Object cloud_provider_profile.
+* `annotation` - (Optional) annotation for object cloud_provider_profile.
 * `vendor` - (Optional) vendor of the controller
 
 

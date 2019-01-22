@@ -11,49 +11,49 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
-func TestAccAciCloudproviderprofile_Basic(t *testing.T) {
-	var cloudproviderprofile models.Cloudproviderprofile
+func TestAccAciCloudProviderProfile_Basic(t *testing.T) {
+	var cloud_provider_profile models.CloudProviderProfile
 	cloud_prov_p_name := acctest.RandString(5)
-	description := "cloudproviderprofile created while acceptance testing"
+	description := "cloud_provider_profile created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciCloudproviderprofileDestroy,
+		CheckDestroy: testAccCheckAciCloudProviderProfileDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciCloudproviderprofileConfig_basic(cloud_prov_p_name),
+				Config: testAccCheckAciCloudProviderProfileConfig_basic(cloud_prov_p_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciCloudproviderprofileExists("aci_cloudproviderprofile.foocloudproviderprofile", &cloudproviderprofile),
-					testAccCheckAciCloudproviderprofileAttributes(cloud_prov_p_name, description, &cloudproviderprofile),
+					testAccCheckAciCloudProviderProfileExists("aci_cloud_provider_profile.foocloud_provider_profile", &cloud_provider_profile),
+					testAccCheckAciCloudProviderProfileAttributes(cloud_prov_p_name, description, &cloud_provider_profile),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckAciCloudproviderprofileConfig_basic(cloud_prov_p_name string) string {
+func testAccCheckAciCloudProviderProfileConfig_basic(cloud_prov_p_name string) string {
 	return fmt.Sprintf(`
 
-	resource "aci_cloudproviderprofile" "foocloudproviderprofile" {
+	resource "aci_cloud_provider_profile" "foocloud_provider_profile" {
 		name 		= "%s"
-		description = "cloudproviderprofile created while acceptance testing"
+		description = "cloud_provider_profile created while acceptance testing"
 
 	}
 
 	`, cloud_prov_p_name)
 }
 
-func testAccCheckAciCloudproviderprofileExists(name string, cloudproviderprofile *models.Cloudproviderprofile) resource.TestCheckFunc {
+func testAccCheckAciCloudProviderProfileExists(name string, cloud_provider_profile *models.CloudProviderProfile) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[name]
 
 		if !ok {
-			return fmt.Errorf("Cloud provider profile %s not found", name)
+			return fmt.Errorf("Cloud Provider Profile %s not found", name)
 		}
 
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("No Cloud provider profile dn was set")
+			return fmt.Errorf("No Cloud Provider Profile dn was set")
 		}
 
 		client := testAccProvider.Meta().(*client.Client)
@@ -63,25 +63,25 @@ func testAccCheckAciCloudproviderprofileExists(name string, cloudproviderprofile
 			return err
 		}
 
-		cloudproviderprofileFound := models.CloudproviderprofileFromContainer(cont)
-		if cloudproviderprofileFound.DistinguishedName != rs.Primary.ID {
-			return fmt.Errorf("Cloud provider profile %s not found", rs.Primary.ID)
+		cloud_provider_profileFound := models.CloudProviderProfileFromContainer(cont)
+		if cloud_provider_profileFound.DistinguishedName != rs.Primary.ID {
+			return fmt.Errorf("Cloud Provider Profile %s not found", rs.Primary.ID)
 		}
-		*cloudproviderprofile = *cloudproviderprofileFound
+		*cloud_provider_profile = *cloud_provider_profileFound
 		return nil
 	}
 }
 
-func testAccCheckAciCloudproviderprofileDestroy(s *terraform.State) error {
+func testAccCheckAciCloudProviderProfileDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_cloudproviderprofile" {
+		if rs.Type == "aci_cloud_provider_profile" {
 			cont, err := client.Get(rs.Primary.ID)
-			cloudproviderprofile := models.CloudproviderprofileFromContainer(cont)
+			cloud_provider_profile := models.CloudProviderProfileFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("Cloud provider profile %s Still exists", cloudproviderprofile.DistinguishedName)
+				return fmt.Errorf("Cloud Provider Profile %s Still exists", cloud_provider_profile.DistinguishedName)
 			}
 
 		} else {
@@ -92,15 +92,15 @@ func testAccCheckAciCloudproviderprofileDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciCloudproviderprofileAttributes(cloud_prov_p_name, description string, cloudproviderprofile *models.Cloudproviderprofile) resource.TestCheckFunc {
+func testAccCheckAciCloudProviderProfileAttributes(cloud_prov_p_name, description string, cloud_provider_profile *models.CloudProviderProfile) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
-		if cloud_prov_p_name != GetMOName(cloudproviderprofile.DistinguishedName) {
-			return fmt.Errorf("Bad cloud_prov_p %s", GetMOName(cloudproviderprofile.DistinguishedName))
+		if cloud_prov_p_name != GetMOName(cloud_provider_profile.DistinguishedName) {
+			return fmt.Errorf("Bad cloud_prov_p %s", GetMOName(cloud_provider_profile.DistinguishedName))
 		}
 
-		if description != cloudproviderprofile.Description {
-			return fmt.Errorf("Bad cloudproviderprofile Description %s", cloudproviderprofile.Description)
+		if description != cloud_provider_profile.Description {
+			return fmt.Errorf("Bad cloud_provider_profile Description %s", cloud_provider_profile.Description)
 		}
 
 		return nil

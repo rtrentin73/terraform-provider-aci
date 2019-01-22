@@ -7,21 +7,21 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func resourceAciCloudprovidersregion() *schema.Resource {
+func resourceAciCloudProvidersRegion() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciCloudprovidersregionCreate,
-		Update: resourceAciCloudprovidersregionUpdate,
-		Read:   resourceAciCloudprovidersregionRead,
-		Delete: resourceAciCloudprovidersregionDelete,
+		Create: resourceAciCloudProvidersRegionCreate,
+		Update: resourceAciCloudProvidersRegionUpdate,
+		Read:   resourceAciCloudProvidersRegionRead,
+		Delete: resourceAciCloudProvidersRegionDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: resourceAciCloudprovidersregionImport,
+			State: resourceAciCloudProvidersRegionImport,
 		},
 
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"cloudproviderprofile_dn": &schema.Schema{
+			"cloud_provider_profile_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -55,13 +55,13 @@ func resourceAciCloudprovidersregion() *schema.Resource {
 	}
 }
 
-func getRemoteCloudprovidersregion(client *client.Client, dn string) (*models.Cloudprovidersregion, error) {
+func getRemoteCloudProvidersRegion(client *client.Client, dn string) (*models.CloudProvidersRegion, error) {
 	cloudRegionCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
 	}
 
-	cloudRegion := models.CloudprovidersregionFromContainer(cloudRegionCont)
+	cloudRegion := models.CloudProvidersRegionFromContainer(cloudRegionCont)
 
 	if cloudRegion.DistinguishedName == "" {
 		return nil, fmt.Errorf("Bridge Domain %s not found", cloudRegion.DistinguishedName)
@@ -70,10 +70,10 @@ func getRemoteCloudprovidersregion(client *client.Client, dn string) (*models.Cl
 	return cloudRegion, nil
 }
 
-func setCloudprovidersregionAttributes(cloudRegion *models.Cloudprovidersregion, d *schema.ResourceData) *schema.ResourceData {
+func setCloudProvidersRegionAttributes(cloudRegion *models.CloudProvidersRegion, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(cloudRegion.DistinguishedName)
 	d.Set("description", cloudRegion.Description)
-	d.Set("cloudproviderprofile_dn", GetParentDn(cloudRegion.DistinguishedName))
+	d.Set("cloud_provider_profile_dn", GetParentDn(cloudRegion.DistinguishedName))
 	cloudRegionMap, _ := cloudRegion.ToMap()
 
 	d.Set("admin_st", cloudRegionMap["adminSt"])
@@ -82,30 +82,30 @@ func setCloudprovidersregionAttributes(cloudRegion *models.Cloudprovidersregion,
 	return d
 }
 
-func resourceAciCloudprovidersregionImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+func resourceAciCloudProvidersRegionImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
 
-	cloudRegion, err := getRemoteCloudprovidersregion(aciClient, dn)
+	cloudRegion, err := getRemoteCloudProvidersRegion(aciClient, dn)
 
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setCloudprovidersregionAttributes(cloudRegion, d)
+	schemaFilled := setCloudProvidersRegionAttributes(cloudRegion, d)
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciCloudprovidersregionCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudProvidersRegionCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
 
-	CloudproviderprofileDn := d.Get("cloudproviderprofile_dn").(string)
+	CloudProviderProfileDn := d.Get("cloud_provider_profile_dn").(string)
 
-	cloudRegionAttr := models.CloudprovidersregionAttributes{}
+	cloudRegionAttr := models.CloudProvidersRegionAttributes{}
 	if AdminSt, ok := d.GetOk("admin_st"); ok {
 		cloudRegionAttr.AdminSt = AdminSt.(string)
 	}
@@ -115,7 +115,7 @@ func resourceAciCloudprovidersregionCreate(d *schema.ResourceData, m interface{}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cloudRegionAttr.NameAlias = NameAlias.(string)
 	}
-	cloudRegion := models.NewCloudprovidersregion(fmt.Sprintf("region-%s", name), CloudproviderprofileDn, desc, cloudRegionAttr)
+	cloudRegion := models.NewCloudProvidersRegion(fmt.Sprintf("region-%s", name), CloudProviderProfileDn, desc, cloudRegionAttr)
 
 	err := aciClient.Save(cloudRegion)
 	if err != nil {
@@ -123,18 +123,18 @@ func resourceAciCloudprovidersregionCreate(d *schema.ResourceData, m interface{}
 	}
 
 	d.SetId(cloudRegion.DistinguishedName)
-	return resourceAciCloudprovidersregionRead(d, m)
+	return resourceAciCloudProvidersRegionRead(d, m)
 }
 
-func resourceAciCloudprovidersregionUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudProvidersRegionUpdate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
 
-	CloudproviderprofileDn := d.Get("cloudproviderprofile_dn").(string)
+	CloudProviderProfileDn := d.Get("cloud_provider_profile_dn").(string)
 
-	cloudRegionAttr := models.CloudprovidersregionAttributes{}
+	cloudRegionAttr := models.CloudProvidersRegionAttributes{}
 	if AdminSt, ok := d.GetOk("admin_st"); ok {
 		cloudRegionAttr.AdminSt = AdminSt.(string)
 	}
@@ -144,7 +144,7 @@ func resourceAciCloudprovidersregionUpdate(d *schema.ResourceData, m interface{}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cloudRegionAttr.NameAlias = NameAlias.(string)
 	}
-	cloudRegion := models.NewCloudprovidersregion(fmt.Sprintf("region-%s", name), CloudproviderprofileDn, desc, cloudRegionAttr)
+	cloudRegion := models.NewCloudProvidersRegion(fmt.Sprintf("region-%s", name), CloudProviderProfileDn, desc, cloudRegionAttr)
 
 	cloudRegion.Status = "modified"
 
@@ -155,24 +155,24 @@ func resourceAciCloudprovidersregionUpdate(d *schema.ResourceData, m interface{}
 	}
 
 	d.SetId(cloudRegion.DistinguishedName)
-	return resourceAciCloudprovidersregionRead(d, m)
+	return resourceAciCloudProvidersRegionRead(d, m)
 
 }
 
-func resourceAciCloudprovidersregionRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudProvidersRegionRead(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
-	cloudRegion, err := getRemoteCloudprovidersregion(aciClient, dn)
+	cloudRegion, err := getRemoteCloudProvidersRegion(aciClient, dn)
 
 	if err != nil {
 		return err
 	}
-	setCloudprovidersregionAttributes(cloudRegion, d)
+	setCloudProvidersRegionAttributes(cloudRegion, d)
 	return nil
 }
 
-func resourceAciCloudprovidersregionDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudProvidersRegionDelete(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "cloudRegion")

@@ -7,15 +7,15 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func resourceAciAutonomoussystemprofile() *schema.Resource {
+func resourceAciAutonomousSystemProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciAutonomoussystemprofileCreate,
-		Update: resourceAciAutonomoussystemprofileUpdate,
-		Read:   resourceAciAutonomoussystemprofileRead,
-		Delete: resourceAciAutonomoussystemprofileDelete,
+		Create: resourceAciAutonomousSystemProfileCreate,
+		Update: resourceAciAutonomousSystemProfileUpdate,
+		Read:   resourceAciAutonomousSystemProfileRead,
+		Delete: resourceAciAutonomousSystemProfileDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: resourceAciAutonomoussystemprofileImport,
+			State: resourceAciAutonomousSystemProfileImport,
 		},
 
 		SchemaVersion: 1,
@@ -46,13 +46,13 @@ func resourceAciAutonomoussystemprofile() *schema.Resource {
 	}
 }
 
-func getRemoteAutonomoussystemprofile(client *client.Client, dn string) (*models.Autonomoussystemprofile, error) {
+func getRemoteAutonomousSystemProfile(client *client.Client, dn string) (*models.AutonomousSystemProfile, error) {
 	cloudBgpAsPCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
 	}
 
-	cloudBgpAsP := models.AutonomoussystemprofileFromContainer(cloudBgpAsPCont)
+	cloudBgpAsP := models.AutonomousSystemProfileFromContainer(cloudBgpAsPCont)
 
 	if cloudBgpAsP.DistinguishedName == "" {
 		return nil, fmt.Errorf("Bridge Domain %s not found", cloudBgpAsP.DistinguishedName)
@@ -61,7 +61,7 @@ func getRemoteAutonomoussystemprofile(client *client.Client, dn string) (*models
 	return cloudBgpAsP, nil
 }
 
-func setAutonomoussystemprofileAttributes(cloudBgpAsP *models.Autonomoussystemprofile, d *schema.ResourceData) *schema.ResourceData {
+func setAutonomousSystemProfileAttributes(cloudBgpAsP *models.AutonomousSystemProfile, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(cloudBgpAsP.DistinguishedName)
 	d.Set("description", cloudBgpAsP.Description)
 	cloudBgpAsPMap, _ := cloudBgpAsP.ToMap()
@@ -72,25 +72,25 @@ func setAutonomoussystemprofileAttributes(cloudBgpAsP *models.Autonomoussystempr
 	return d
 }
 
-func resourceAciAutonomoussystemprofileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+func resourceAciAutonomousSystemProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
 
-	cloudBgpAsP, err := getRemoteAutonomoussystemprofile(aciClient, dn)
+	cloudBgpAsP, err := getRemoteAutonomousSystemProfile(aciClient, dn)
 
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setAutonomoussystemprofileAttributes(cloudBgpAsP, d)
+	schemaFilled := setAutonomousSystemProfileAttributes(cloudBgpAsP, d)
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciAutonomoussystemprofileCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciAutonomousSystemProfileCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
-	cloudBgpAsPAttr := models.AutonomoussystemprofileAttributes{}
+	cloudBgpAsPAttr := models.AutonomousSystemProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudBgpAsPAttr.Annotation = Annotation.(string)
 	}
@@ -100,7 +100,7 @@ func resourceAciAutonomoussystemprofileCreate(d *schema.ResourceData, m interfac
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cloudBgpAsPAttr.NameAlias = NameAlias.(string)
 	}
-	cloudBgpAsP := models.NewAutonomoussystemprofile(fmt.Sprintf("clouddomp/as"), "uni", desc, cloudBgpAsPAttr)
+	cloudBgpAsP := models.NewAutonomousSystemProfile(fmt.Sprintf("clouddomp/as"), "uni", desc, cloudBgpAsPAttr)
 
 	err := aciClient.Save(cloudBgpAsP)
 	if err != nil {
@@ -108,14 +108,14 @@ func resourceAciAutonomoussystemprofileCreate(d *schema.ResourceData, m interfac
 	}
 
 	d.SetId(cloudBgpAsP.DistinguishedName)
-	return resourceAciAutonomoussystemprofileRead(d, m)
+	return resourceAciAutonomousSystemProfileRead(d, m)
 }
 
-func resourceAciAutonomoussystemprofileUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciAutonomousSystemProfileUpdate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
-	cloudBgpAsPAttr := models.AutonomoussystemprofileAttributes{}
+	cloudBgpAsPAttr := models.AutonomousSystemProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudBgpAsPAttr.Annotation = Annotation.(string)
 	}
@@ -125,7 +125,7 @@ func resourceAciAutonomoussystemprofileUpdate(d *schema.ResourceData, m interfac
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cloudBgpAsPAttr.NameAlias = NameAlias.(string)
 	}
-	cloudBgpAsP := models.NewAutonomoussystemprofile(fmt.Sprintf("clouddomp/as"), "uni", desc, cloudBgpAsPAttr)
+	cloudBgpAsP := models.NewAutonomousSystemProfile(fmt.Sprintf("clouddomp/as"), "uni", desc, cloudBgpAsPAttr)
 
 	cloudBgpAsP.Status = "modified"
 
@@ -136,24 +136,24 @@ func resourceAciAutonomoussystemprofileUpdate(d *schema.ResourceData, m interfac
 	}
 
 	d.SetId(cloudBgpAsP.DistinguishedName)
-	return resourceAciAutonomoussystemprofileRead(d, m)
+	return resourceAciAutonomousSystemProfileRead(d, m)
 
 }
 
-func resourceAciAutonomoussystemprofileRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciAutonomousSystemProfileRead(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
-	cloudBgpAsP, err := getRemoteAutonomoussystemprofile(aciClient, dn)
+	cloudBgpAsP, err := getRemoteAutonomousSystemProfile(aciClient, dn)
 
 	if err != nil {
 		return err
 	}
-	setAutonomoussystemprofileAttributes(cloudBgpAsP, d)
+	setAutonomousSystemProfileAttributes(cloudBgpAsP, d)
 	return nil
 }
 
-func resourceAciAutonomoussystemprofileDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciAutonomousSystemProfileDelete(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "cloudBgpAsP")

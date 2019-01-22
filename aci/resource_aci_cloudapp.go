@@ -7,15 +7,15 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func resourceAciCloudapplicationcontainer() *schema.Resource {
+func resourceAciCloudApplicationcontainer() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciCloudapplicationcontainerCreate,
-		Update: resourceAciCloudapplicationcontainerUpdate,
-		Read:   resourceAciCloudapplicationcontainerRead,
-		Delete: resourceAciCloudapplicationcontainerDelete,
+		Create: resourceAciCloudApplicationcontainerCreate,
+		Update: resourceAciCloudApplicationcontainerUpdate,
+		Read:   resourceAciCloudApplicationcontainerRead,
+		Delete: resourceAciCloudApplicationcontainerDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: resourceAciCloudapplicationcontainerImport,
+			State: resourceAciCloudApplicationcontainerImport,
 		},
 
 		SchemaVersion: 1,
@@ -48,13 +48,13 @@ func resourceAciCloudapplicationcontainer() *schema.Resource {
 	}
 }
 
-func getRemoteCloudapplicationcontainer(client *client.Client, dn string) (*models.Cloudapplicationcontainer, error) {
+func getRemoteCloudApplicationcontainer(client *client.Client, dn string) (*models.CloudApplicationcontainer, error) {
 	cloudAppCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
 	}
 
-	cloudApp := models.CloudapplicationcontainerFromContainer(cloudAppCont)
+	cloudApp := models.CloudApplicationcontainerFromContainer(cloudAppCont)
 
 	if cloudApp.DistinguishedName == "" {
 		return nil, fmt.Errorf("Bridge Domain %s not found", cloudApp.DistinguishedName)
@@ -63,7 +63,7 @@ func getRemoteCloudapplicationcontainer(client *client.Client, dn string) (*mode
 	return cloudApp, nil
 }
 
-func setCloudapplicationcontainerAttributes(cloudApp *models.Cloudapplicationcontainer, d *schema.ResourceData) *schema.ResourceData {
+func setCloudApplicationcontainerAttributes(cloudApp *models.CloudApplicationcontainer, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(cloudApp.DistinguishedName)
 	d.Set("description", cloudApp.Description)
 	d.Set("tenant_dn", GetParentDn(cloudApp.DistinguishedName))
@@ -74,22 +74,22 @@ func setCloudapplicationcontainerAttributes(cloudApp *models.Cloudapplicationcon
 	return d
 }
 
-func resourceAciCloudapplicationcontainerImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+func resourceAciCloudApplicationcontainerImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
 
-	cloudApp, err := getRemoteCloudapplicationcontainer(aciClient, dn)
+	cloudApp, err := getRemoteCloudApplicationcontainer(aciClient, dn)
 
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setCloudapplicationcontainerAttributes(cloudApp, d)
+	schemaFilled := setCloudApplicationcontainerAttributes(cloudApp, d)
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciCloudapplicationcontainerCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudApplicationcontainerCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
@@ -97,14 +97,14 @@ func resourceAciCloudapplicationcontainerCreate(d *schema.ResourceData, m interf
 
 	TenantDn := d.Get("tenant_dn").(string)
 
-	cloudAppAttr := models.CloudapplicationcontainerAttributes{}
+	cloudAppAttr := models.CloudApplicationcontainerAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudAppAttr.Annotation = Annotation.(string)
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cloudAppAttr.NameAlias = NameAlias.(string)
 	}
-	cloudApp := models.NewCloudapplicationcontainer(fmt.Sprintf("cloudapp-%s", name), TenantDn, desc, cloudAppAttr)
+	cloudApp := models.NewCloudApplicationcontainer(fmt.Sprintf("cloudapp-%s", name), TenantDn, desc, cloudAppAttr)
 
 	err := aciClient.Save(cloudApp)
 	if err != nil {
@@ -112,10 +112,10 @@ func resourceAciCloudapplicationcontainerCreate(d *schema.ResourceData, m interf
 	}
 
 	d.SetId(cloudApp.DistinguishedName)
-	return resourceAciCloudapplicationcontainerRead(d, m)
+	return resourceAciCloudApplicationcontainerRead(d, m)
 }
 
-func resourceAciCloudapplicationcontainerUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudApplicationcontainerUpdate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
@@ -123,14 +123,14 @@ func resourceAciCloudapplicationcontainerUpdate(d *schema.ResourceData, m interf
 
 	TenantDn := d.Get("tenant_dn").(string)
 
-	cloudAppAttr := models.CloudapplicationcontainerAttributes{}
+	cloudAppAttr := models.CloudApplicationcontainerAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudAppAttr.Annotation = Annotation.(string)
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cloudAppAttr.NameAlias = NameAlias.(string)
 	}
-	cloudApp := models.NewCloudapplicationcontainer(fmt.Sprintf("cloudapp-%s", name), TenantDn, desc, cloudAppAttr)
+	cloudApp := models.NewCloudApplicationcontainer(fmt.Sprintf("cloudapp-%s", name), TenantDn, desc, cloudAppAttr)
 
 	cloudApp.Status = "modified"
 
@@ -141,24 +141,24 @@ func resourceAciCloudapplicationcontainerUpdate(d *schema.ResourceData, m interf
 	}
 
 	d.SetId(cloudApp.DistinguishedName)
-	return resourceAciCloudapplicationcontainerRead(d, m)
+	return resourceAciCloudApplicationcontainerRead(d, m)
 
 }
 
-func resourceAciCloudapplicationcontainerRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudApplicationcontainerRead(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
-	cloudApp, err := getRemoteCloudapplicationcontainer(aciClient, dn)
+	cloudApp, err := getRemoteCloudApplicationcontainer(aciClient, dn)
 
 	if err != nil {
 		return err
 	}
-	setCloudapplicationcontainerAttributes(cloudApp, d)
+	setCloudApplicationcontainerAttributes(cloudApp, d)
 	return nil
 }
 
-func resourceAciCloudapplicationcontainerDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudApplicationcontainerDelete(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "cloudApp")

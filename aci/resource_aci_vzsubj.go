@@ -7,15 +7,15 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func resourceAciContractsubject() *schema.Resource {
+func resourceAciContractSubject() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciContractsubjectCreate,
-		Update: resourceAciContractsubjectUpdate,
-		Read:   resourceAciContractsubjectRead,
-		Delete: resourceAciContractsubjectDelete,
+		Create: resourceAciContractSubjectCreate,
+		Update: resourceAciContractSubjectUpdate,
+		Read:   resourceAciContractSubjectRead,
+		Delete: resourceAciContractSubjectDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: resourceAciContractsubjectImport,
+			State: resourceAciContractSubjectImport,
 		},
 
 		SchemaVersion: 1,
@@ -103,13 +103,13 @@ func resourceAciContractsubject() *schema.Resource {
 	}
 }
 
-func getRemoteContractsubject(client *client.Client, dn string) (*models.Contractsubject, error) {
+func getRemoteContractSubject(client *client.Client, dn string) (*models.ContractSubject, error) {
 	vzSubjCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
 	}
 
-	vzSubj := models.ContractsubjectFromContainer(vzSubjCont)
+	vzSubj := models.ContractSubjectFromContainer(vzSubjCont)
 
 	if vzSubj.DistinguishedName == "" {
 		return nil, fmt.Errorf("Bridge Domain %s not found", vzSubj.DistinguishedName)
@@ -118,7 +118,7 @@ func getRemoteContractsubject(client *client.Client, dn string) (*models.Contrac
 	return vzSubj, nil
 }
 
-func setContractsubjectAttributes(vzSubj *models.Contractsubject, d *schema.ResourceData) *schema.ResourceData {
+func setContractSubjectAttributes(vzSubj *models.ContractSubject, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(vzSubj.DistinguishedName)
 	d.Set("description", vzSubj.Description)
 	d.Set("contract_dn", GetParentDn(vzSubj.DistinguishedName))
@@ -134,22 +134,22 @@ func setContractsubjectAttributes(vzSubj *models.Contractsubject, d *schema.Reso
 	return d
 }
 
-func resourceAciContractsubjectImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+func resourceAciContractSubjectImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
 
-	vzSubj, err := getRemoteContractsubject(aciClient, dn)
+	vzSubj, err := getRemoteContractSubject(aciClient, dn)
 
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setContractsubjectAttributes(vzSubj, d)
+	schemaFilled := setContractSubjectAttributes(vzSubj, d)
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciContractsubjectCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciContractSubjectCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
@@ -157,7 +157,7 @@ func resourceAciContractsubjectCreate(d *schema.ResourceData, m interface{}) err
 
 	ContractDn := d.Get("contract_dn").(string)
 
-	vzSubjAttr := models.ContractsubjectAttributes{}
+	vzSubjAttr := models.ContractSubjectAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		vzSubjAttr.Annotation = Annotation.(string)
 	}
@@ -179,7 +179,7 @@ func resourceAciContractsubjectCreate(d *schema.ResourceData, m interface{}) err
 	if TargetDscp, ok := d.GetOk("target_dscp"); ok {
 		vzSubjAttr.TargetDscp = TargetDscp.(string)
 	}
-	vzSubj := models.NewContractsubject(fmt.Sprintf("subj-%s", name), ContractDn, desc, vzSubjAttr)
+	vzSubj := models.NewContractSubject(fmt.Sprintf("subj-%s", name), ContractDn, desc, vzSubjAttr)
 
 	err := aciClient.Save(vzSubj)
 	if err != nil {
@@ -188,7 +188,7 @@ func resourceAciContractsubjectCreate(d *schema.ResourceData, m interface{}) err
 
 	if relationTovzRsSubjGraphAtt, ok := d.GetOk("relation_vz_rs_subj_graph_att"); ok {
 		relationParam := relationTovzRsSubjGraphAtt.(string)
-		err = aciClient.CreateRelationvzRsSubjGraphAttFromContractsubject(vzSubj.DistinguishedName, relationParam)
+		err = aciClient.CreateRelationvzRsSubjGraphAttFromContractSubject(vzSubj.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -196,7 +196,7 @@ func resourceAciContractsubjectCreate(d *schema.ResourceData, m interface{}) err
 	}
 	if relationTovzRsSdwanPol, ok := d.GetOk("relation_vz_rs_sdwan_pol"); ok {
 		relationParam := relationTovzRsSdwanPol.(string)
-		err = aciClient.CreateRelationvzRsSdwanPolFromContractsubject(vzSubj.DistinguishedName, relationParam)
+		err = aciClient.CreateRelationvzRsSdwanPolFromContractSubject(vzSubj.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -205,7 +205,7 @@ func resourceAciContractsubjectCreate(d *schema.ResourceData, m interface{}) err
 	if relationTovzRsSubjFiltAtt, ok := d.GetOk("relation_vz_rs_subj_filt_att"); ok {
 		relationParamList := toStringList(relationTovzRsSubjFiltAtt.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationvzRsSubjFiltAttFromContractsubject(vzSubj.DistinguishedName, relationParam)
+			err = aciClient.CreateRelationvzRsSubjFiltAttFromContractSubject(vzSubj.DistinguishedName, relationParam)
 
 			if err != nil {
 				return err
@@ -214,10 +214,10 @@ func resourceAciContractsubjectCreate(d *schema.ResourceData, m interface{}) err
 	}
 
 	d.SetId(vzSubj.DistinguishedName)
-	return resourceAciContractsubjectRead(d, m)
+	return resourceAciContractSubjectRead(d, m)
 }
 
-func resourceAciContractsubjectUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciContractSubjectUpdate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
@@ -225,7 +225,7 @@ func resourceAciContractsubjectUpdate(d *schema.ResourceData, m interface{}) err
 
 	ContractDn := d.Get("contract_dn").(string)
 
-	vzSubjAttr := models.ContractsubjectAttributes{}
+	vzSubjAttr := models.ContractSubjectAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		vzSubjAttr.Annotation = Annotation.(string)
 	}
@@ -247,7 +247,7 @@ func resourceAciContractsubjectUpdate(d *schema.ResourceData, m interface{}) err
 	if TargetDscp, ok := d.GetOk("target_dscp"); ok {
 		vzSubjAttr.TargetDscp = TargetDscp.(string)
 	}
-	vzSubj := models.NewContractsubject(fmt.Sprintf("subj-%s", name), ContractDn, desc, vzSubjAttr)
+	vzSubj := models.NewContractSubject(fmt.Sprintf("subj-%s", name), ContractDn, desc, vzSubjAttr)
 
 	vzSubj.Status = "modified"
 
@@ -259,11 +259,11 @@ func resourceAciContractsubjectUpdate(d *schema.ResourceData, m interface{}) err
 
 	if d.HasChange("relation_vz_rs_subj_graph_att") {
 		_, newRelParam := d.GetChange("relation_vz_rs_subj_graph_att")
-		err = aciClient.DeleteRelationvzRsSubjGraphAttFromContractsubject(vzSubj.DistinguishedName)
+		err = aciClient.DeleteRelationvzRsSubjGraphAttFromContractSubject(vzSubj.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationvzRsSubjGraphAttFromContractsubject(vzSubj.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationvzRsSubjGraphAttFromContractSubject(vzSubj.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -271,11 +271,11 @@ func resourceAciContractsubjectUpdate(d *schema.ResourceData, m interface{}) err
 	}
 	if d.HasChange("relation_vz_rs_sdwan_pol") {
 		_, newRelParam := d.GetChange("relation_vz_rs_sdwan_pol")
-		err = aciClient.DeleteRelationvzRsSdwanPolFromContractsubject(vzSubj.DistinguishedName)
+		err = aciClient.DeleteRelationvzRsSdwanPolFromContractSubject(vzSubj.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationvzRsSdwanPolFromContractsubject(vzSubj.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationvzRsSdwanPolFromContractSubject(vzSubj.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -289,7 +289,7 @@ func resourceAciContractsubjectUpdate(d *schema.ResourceData, m interface{}) err
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationvzRsSubjFiltAttFromContractsubject(vzSubj.DistinguishedName, relDn)
+			err = aciClient.DeleteRelationvzRsSubjFiltAttFromContractSubject(vzSubj.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
@@ -297,7 +297,7 @@ func resourceAciContractsubjectUpdate(d *schema.ResourceData, m interface{}) err
 		}
 
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationvzRsSubjFiltAttFromContractsubject(vzSubj.DistinguishedName, relDn)
+			err = aciClient.CreateRelationvzRsSubjFiltAttFromContractSubject(vzSubj.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
@@ -307,24 +307,24 @@ func resourceAciContractsubjectUpdate(d *schema.ResourceData, m interface{}) err
 	}
 
 	d.SetId(vzSubj.DistinguishedName)
-	return resourceAciContractsubjectRead(d, m)
+	return resourceAciContractSubjectRead(d, m)
 
 }
 
-func resourceAciContractsubjectRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciContractSubjectRead(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
-	vzSubj, err := getRemoteContractsubject(aciClient, dn)
+	vzSubj, err := getRemoteContractSubject(aciClient, dn)
 
 	if err != nil {
 		return err
 	}
-	setContractsubjectAttributes(vzSubj, d)
+	setContractSubjectAttributes(vzSubj, d)
 	return nil
 }
 
-func resourceAciContractsubjectDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciContractSubjectDelete(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "vzSubj")

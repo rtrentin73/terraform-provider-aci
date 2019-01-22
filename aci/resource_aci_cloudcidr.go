@@ -7,21 +7,21 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func resourceAciCloudcidrpool() *schema.Resource {
+func resourceAciCloudCIDRPool() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciCloudcidrpoolCreate,
-		Update: resourceAciCloudcidrpoolUpdate,
-		Read:   resourceAciCloudcidrpoolRead,
-		Delete: resourceAciCloudcidrpoolDelete,
+		Create: resourceAciCloudCIDRPoolCreate,
+		Update: resourceAciCloudCIDRPoolUpdate,
+		Read:   resourceAciCloudCIDRPoolRead,
+		Delete: resourceAciCloudCIDRPoolDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: resourceAciCloudcidrpoolImport,
+			State: resourceAciCloudCIDRPoolImport,
 		},
 
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"cloudcontextprofile_dn": &schema.Schema{
+			"cloud_context_profile_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -55,13 +55,13 @@ func resourceAciCloudcidrpool() *schema.Resource {
 	}
 }
 
-func getRemoteCloudcidrpool(client *client.Client, dn string) (*models.Cloudcidrpool, error) {
+func getRemoteCloudCIDRPool(client *client.Client, dn string) (*models.CloudCIDRPool, error) {
 	cloudCidrCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
 	}
 
-	cloudCidr := models.CloudcidrpoolFromContainer(cloudCidrCont)
+	cloudCidr := models.CloudCIDRPoolFromContainer(cloudCidrCont)
 
 	if cloudCidr.DistinguishedName == "" {
 		return nil, fmt.Errorf("Bridge Domain %s not found", cloudCidr.DistinguishedName)
@@ -70,10 +70,10 @@ func getRemoteCloudcidrpool(client *client.Client, dn string) (*models.Cloudcidr
 	return cloudCidr, nil
 }
 
-func setCloudcidrpoolAttributes(cloudCidr *models.Cloudcidrpool, d *schema.ResourceData) *schema.ResourceData {
+func setCloudCIDRPoolAttributes(cloudCidr *models.CloudCIDRPool, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(cloudCidr.DistinguishedName)
 	d.Set("description", cloudCidr.Description)
-	d.Set("cloudcontextprofile_dn", GetParentDn(cloudCidr.DistinguishedName))
+	d.Set("cloud_context_profile_dn", GetParentDn(cloudCidr.DistinguishedName))
 	cloudCidrMap, _ := cloudCidr.ToMap()
 
 	d.Set("addr", cloudCidrMap["addr"])
@@ -83,30 +83,30 @@ func setCloudcidrpoolAttributes(cloudCidr *models.Cloudcidrpool, d *schema.Resou
 	return d
 }
 
-func resourceAciCloudcidrpoolImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+func resourceAciCloudCIDRPoolImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
 
-	cloudCidr, err := getRemoteCloudcidrpool(aciClient, dn)
+	cloudCidr, err := getRemoteCloudCIDRPool(aciClient, dn)
 
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setCloudcidrpoolAttributes(cloudCidr, d)
+	schemaFilled := setCloudCIDRPoolAttributes(cloudCidr, d)
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciCloudcidrpoolCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudCIDRPoolCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
 	addr := d.Get("addr").(string)
 
-	CloudcontextprofileDn := d.Get("cloudcontextprofile_dn").(string)
+	CloudContextProfileDn := d.Get("cloud_context_profile_dn").(string)
 
-	cloudCidrAttr := models.CloudcidrpoolAttributes{}
+	cloudCidrAttr := models.CloudCIDRPoolAttributes{}
 	if Addr, ok := d.GetOk("addr"); ok {
 		cloudCidrAttr.Addr = Addr.(string)
 	}
@@ -119,7 +119,7 @@ func resourceAciCloudcidrpoolCreate(d *schema.ResourceData, m interface{}) error
 	if Primary, ok := d.GetOk("primary"); ok {
 		cloudCidrAttr.Primary = Primary.(string)
 	}
-	cloudCidr := models.NewCloudcidrpool(fmt.Sprintf("cidr-[%s]", addr), CloudcontextprofileDn, desc, cloudCidrAttr)
+	cloudCidr := models.NewCloudCIDRPool(fmt.Sprintf("cidr-[%s]", addr), CloudContextProfileDn, desc, cloudCidrAttr)
 
 	err := aciClient.Save(cloudCidr)
 	if err != nil {
@@ -127,18 +127,18 @@ func resourceAciCloudcidrpoolCreate(d *schema.ResourceData, m interface{}) error
 	}
 
 	d.SetId(cloudCidr.DistinguishedName)
-	return resourceAciCloudcidrpoolRead(d, m)
+	return resourceAciCloudCIDRPoolRead(d, m)
 }
 
-func resourceAciCloudcidrpoolUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudCIDRPoolUpdate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
 	addr := d.Get("addr").(string)
 
-	CloudcontextprofileDn := d.Get("cloudcontextprofile_dn").(string)
+	CloudContextProfileDn := d.Get("cloud_context_profile_dn").(string)
 
-	cloudCidrAttr := models.CloudcidrpoolAttributes{}
+	cloudCidrAttr := models.CloudCIDRPoolAttributes{}
 	if Addr, ok := d.GetOk("addr"); ok {
 		cloudCidrAttr.Addr = Addr.(string)
 	}
@@ -151,7 +151,7 @@ func resourceAciCloudcidrpoolUpdate(d *schema.ResourceData, m interface{}) error
 	if Primary, ok := d.GetOk("primary"); ok {
 		cloudCidrAttr.Primary = Primary.(string)
 	}
-	cloudCidr := models.NewCloudcidrpool(fmt.Sprintf("cidr-[%s]", addr), CloudcontextprofileDn, desc, cloudCidrAttr)
+	cloudCidr := models.NewCloudCIDRPool(fmt.Sprintf("cidr-[%s]", addr), CloudContextProfileDn, desc, cloudCidrAttr)
 
 	cloudCidr.Status = "modified"
 
@@ -162,24 +162,24 @@ func resourceAciCloudcidrpoolUpdate(d *schema.ResourceData, m interface{}) error
 	}
 
 	d.SetId(cloudCidr.DistinguishedName)
-	return resourceAciCloudcidrpoolRead(d, m)
+	return resourceAciCloudCIDRPoolRead(d, m)
 
 }
 
-func resourceAciCloudcidrpoolRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudCIDRPoolRead(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
-	cloudCidr, err := getRemoteCloudcidrpool(aciClient, dn)
+	cloudCidr, err := getRemoteCloudCIDRPool(aciClient, dn)
 
 	if err != nil {
 		return err
 	}
-	setCloudcidrpoolAttributes(cloudCidr, d)
+	setCloudCIDRPoolAttributes(cloudCidr, d)
 	return nil
 }
 
-func resourceAciCloudcidrpoolDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudCIDRPoolDelete(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "cloudCidr")

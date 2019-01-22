@@ -1,18 +1,18 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_autonomoussystemprofile"
-sidebar_current: "docs-aci-resource-autonomoussystemprofile"
+page_title: "ACI: aci_autonomous_system_profile"
+sidebar_current: "docs-aci-resource-autonomous_system_profile"
 description: |-
-  Manages ACI Autonomous system profile
+  Manages ACI Autonomous System Profile
 ---
 
-# aci_autonomoussystemprofile #
-Manages ACI Autonomous system profile
+# aci_autonomous_system_profile #
+Manages ACI Autonomous System Profile
 
 ## Example Usage ##
 
 ```hcl
-resource "aci_autonomoussystemprofile" "example" {
+resource "aci_autonomous_system_profile" "example" {
 
   annotation  = "example"
   asn  = "example"
@@ -20,9 +20,9 @@ resource "aci_autonomoussystemprofile" "example" {
 }
 ```
 ## Argument Reference ##
-* `annotation` - (Optional) annotation for object autonomoussystemprofile.
+* `annotation` - (Optional) annotation for object autonomous_system_profile.
 * `asn` - (Optional) autonomous system number
-* `name_alias` - (Optional) name_alias for object autonomoussystemprofile.
+* `name_alias` - (Optional) name_alias for object autonomous_system_profile.
 
 
 
