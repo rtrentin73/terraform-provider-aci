@@ -52,7 +52,7 @@ variable "domain_name" {
 }
 
 variable "vsphere_template" {
-  default = "test-vm-ubuntu"
+  default = "CentOS-1"
 }
 
 variable "folder" {
