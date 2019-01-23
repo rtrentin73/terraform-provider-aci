@@ -64,6 +64,10 @@ func Provider() terraform.ResourceProvider {
 			"aci_rest":                resourceAciRest(),
 		},
 
+		DataSourcesMap: map[string]*schema.Resource{
+			"aci_vmm_domain": dataSourceAciVMMDomain(),
+		},
+
 		ConfigureFunc: configureClient,
 	}
 }

@@ -31,16 +31,21 @@ resource "aci_application_profile" "app1" {
   name      = "app1"
 }
 
-resource "aci_vmm_domain" "vds" {
-  provider_profile_dn = "${var.provider_profile_dn}"
-  name                = "ESX0-leaf102"
+# resource "aci_vmm_domain" "vds" {
+#   provider_profile_dn = "${var.provider_profile_dn}"
+#   name                = "ESX0-leaf102"
+# }
+
+data "aci_vmm_domain" "vds" {
+  provider_profile_dn = "VMware"
+  name                = "ESX0-leaf103"
 }
 
 resource "aci_application_epg" "epg1" {
   application_profile_dn = "${aci_application_profile.app1.id}"
   name                   = "epg1"
   relation_fv_rs_bd      = "${aci_bridge_domain.bd1.name}"
-  relation_fv_rs_dom_att = ["${aci_vmm_domain.vds.id}"]
+  relation_fv_rs_dom_att = ["${data.aci_vmm_domain.vds.id}"]
   relation_fv_rs_cons    = ["${aci_contract.contract_epg1_epg2.name}"]
 }
 
@@ -48,7 +53,7 @@ resource "aci_application_epg" "epg2" {
   application_profile_dn = "${aci_application_profile.app1.id}"
   name                   = "epg2"
   relation_fv_rs_bd      = "${aci_bridge_domain.bd1.name}"
-  relation_fv_rs_dom_att = ["${aci_vmm_domain.vds.id}"]
+  relation_fv_rs_dom_att = ["${data.aci_vmm_domain.vds.id}"]
   relation_fv_rs_prov    = ["${aci_contract.contract_epg1_epg2.name}"]
 }
 
