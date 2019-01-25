@@ -1,0 +1,47 @@
+package aci
+
+import (
+	"fmt"
+	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform/helper/schema"
+)
+
+func dataSourceAciCloudEndpointSelector() *schema.Resource {
+	return &schema.Resource{
+
+		Read: dataSourceAciCloudEndpointSelectorRead,
+
+		SchemaVersion: 1,
+
+		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+			"cloud_e_pg_dn": &schema.Schema{
+				Type:     schema.TypeString,
+				Required: true,
+			},
+
+			"name": &schema.Schema{
+				Type:     schema.TypeString,
+				Required: true,
+			},
+		}),
+	}
+}
+
+func dataSourceAciCloudEndpointSelectorRead(d *schema.ResourceData, m interface{}) error {
+	aciClient := m.(*client.Client)
+
+	name := d.Get("name").(string)
+
+	rn := fmt.Sprintf("epselector-%s", name)
+	CloudEPgDn := d.Get("cloud_e_pg_dn").(string)
+
+	dn := fmt.Sprintf("%s/%s", CloudEPgDn, rn)
+
+	cloudEPSelector, err := getRemoteCloudEndpointSelector(aciClient, dn)
+
+	if err != nil {
+		return err
+	}
+	setCloudEndpointSelectorAttributes(cloudEPSelector, d)
+	return nil
+}
