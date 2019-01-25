@@ -67,7 +67,7 @@ func Provider() terraform.ResourceProvider {
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
-			"aci_tenat":                             dataSourceAciTenant(),
+			"aci_tenant":                            dataSourceAciTenant(),
 			"aci_application_profile":               dataSourceAciApplicationProfile(),
 			"aci_bridge_domain":                     dataSourceAciBridgeDomain(),
 			"aci_contract":                          dataSourceAciContract(),

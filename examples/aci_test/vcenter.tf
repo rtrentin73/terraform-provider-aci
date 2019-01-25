@@ -68,7 +68,7 @@ resource "vsphere_virtual_machine" "aci_vm1" {
   }
   clone {
     template_uuid = "${data.vsphere_virtual_machine.template.id}"
-
+    linked_clone  = true
     customize {
       linux_options {
         host_name = "${var.aci_vm1_name}"
@@ -121,6 +121,7 @@ resource "vsphere_virtual_machine" "aci_vm2" {
 
   clone {
     template_uuid = "${data.vsphere_virtual_machine.template.id}"
+    linked_clone  = true
 
     customize {
       linux_options {
