@@ -31,7 +31,21 @@ func resourceAciVRF() *schema.Resource {
 				Required: true,
 			},
 
+			"annotation": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: "Mo doc not defined in techpub!!!",
+			},
+
 			"bd_enforced_enable": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: "Mo doc not defined in techpub!!!",
+			},
+
+			"ip_data_plane_learning": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
 				Computed:    true,
@@ -85,18 +99,6 @@ func resourceAciVRF() *schema.Resource {
 				Description: "Create relation to vzFilter",
 				Set:         schema.HashString,
 			},
-			"relation_fv_rs_bgp_ctx_pol": &schema.Schema{
-				Type: schema.TypeString,
-
-				Optional:    true,
-				Description: "Create relation to bgpCtxPol",
-			},
-			"relation_fv_rs_ctx_to_ext_route_tag_pol": &schema.Schema{
-				Type: schema.TypeString,
-
-				Optional:    true,
-				Description: "Create relation to l3extRouteTagPol",
-			},
 			"relation_fv_rs_ctx_to_eigrp_ctx_af_pol": &schema.Schema{
 				Type:        schema.TypeSet,
 				Optional:    true,
@@ -137,11 +139,23 @@ func resourceAciVRF() *schema.Resource {
 				Optional:    true,
 				Description: "Create relation to fvEpRetPol",
 			},
+			"relation_fv_rs_bgp_ctx_pol": &schema.Schema{
+				Type: schema.TypeString,
+
+				Optional:    true,
+				Description: "Create relation to bgpCtxPol",
+			},
 			"relation_fv_rs_ctx_mon_pol": &schema.Schema{
 				Type: schema.TypeString,
 
 				Optional:    true,
 				Description: "Create relation to monEPGPol",
+			},
+			"relation_fv_rs_ctx_to_ext_route_tag_pol": &schema.Schema{
+				Type: schema.TypeString,
+
+				Optional:    true,
+				Description: "Create relation to l3extRouteTagPol",
 			},
 			"relation_fv_rs_ctx_to_bgp_ctx_af_pol": &schema.Schema{
 				Type:        schema.TypeSet,
@@ -185,7 +199,9 @@ func setVRFAttributes(fvCtx *models.VRF, d *schema.ResourceData) *schema.Resourc
 	d.Set("tenant_dn", GetParentDn(fvCtx.DistinguishedName))
 	fvCtxMap, _ := fvCtx.ToMap()
 
+	d.Set("annotation", fvCtxMap["annotation"])
 	d.Set("bd_enforced_enable", fvCtxMap["bdEnforcedEnable"])
+	d.Set("ip_data_plane_learning", fvCtxMap["ipDataPlaneLearning"])
 	d.Set("knw_mcast_act", fvCtxMap["knwMcastAct"])
 	d.Set("name_alias", fvCtxMap["nameAlias"])
 	d.Set("pc_enf_dir", fvCtxMap["pcEnfDir"])
@@ -211,12 +227,20 @@ func resourceAciVRFImport(d *schema.ResourceData, m interface{}) ([]*schema.Reso
 func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
+
 	name := d.Get("name").(string)
+
 	TenantDn := d.Get("tenant_dn").(string)
 
 	fvCtxAttr := models.VRFAttributes{}
+	if Annotation, ok := d.GetOk("annotation"); ok {
+		fvCtxAttr.Annotation = Annotation.(string)
+	}
 	if BdEnforcedEnable, ok := d.GetOk("bd_enforced_enable"); ok {
 		fvCtxAttr.BdEnforcedEnable = BdEnforcedEnable.(string)
+	}
+	if IpDataPlaneLearning, ok := d.GetOk("ip_data_plane_learning"); ok {
+		fvCtxAttr.IpDataPlaneLearning = IpDataPlaneLearning.(string)
 	}
 	if KnwMcastAct, ok := d.GetOk("knw_mcast_act"); ok {
 		fvCtxAttr.KnwMcastAct = KnwMcastAct.(string)
@@ -263,22 +287,6 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 			}
 		}
 	}
-	if relationTofvRsBgpCtxPol, ok := d.GetOk("relation_fv_rs_bgp_ctx_pol"); ok {
-		relationParam := relationTofvRsBgpCtxPol.(string)
-		err = aciClient.CreateRelationfvRsBgpCtxPolFromVRF(fvCtx.DistinguishedName, relationParam)
-		if err != nil {
-			return err
-		}
-
-	}
-	if relationTofvRsCtxToExtRouteTagPol, ok := d.GetOk("relation_fv_rs_ctx_to_ext_route_tag_pol"); ok {
-		relationParam := relationTofvRsCtxToExtRouteTagPol.(string)
-		err = aciClient.CreateRelationfvRsCtxToExtRouteTagPolFromVRF(fvCtx.DistinguishedName, relationParam)
-		if err != nil {
-			return err
-		}
-
-	}
 	if relationTofvRsCtxToEigrpCtxAfPol, ok := d.GetOk("relation_fv_rs_ctx_to_eigrp_ctx_af_pol"); ok {
 
 		relationParamList := relationTofvRsCtxToEigrpCtxAfPol.(*schema.Set).List()
@@ -311,9 +319,25 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 		}
 
 	}
+	if relationTofvRsBgpCtxPol, ok := d.GetOk("relation_fv_rs_bgp_ctx_pol"); ok {
+		relationParam := relationTofvRsBgpCtxPol.(string)
+		err = aciClient.CreateRelationfvRsBgpCtxPolFromVRF(fvCtx.DistinguishedName, relationParam)
+		if err != nil {
+			return err
+		}
+
+	}
 	if relationTofvRsCtxMonPol, ok := d.GetOk("relation_fv_rs_ctx_mon_pol"); ok {
 		relationParam := relationTofvRsCtxMonPol.(string)
 		err = aciClient.CreateRelationfvRsCtxMonPolFromVRF(fvCtx.DistinguishedName, relationParam)
+		if err != nil {
+			return err
+		}
+
+	}
+	if relationTofvRsCtxToExtRouteTagPol, ok := d.GetOk("relation_fv_rs_ctx_to_ext_route_tag_pol"); ok {
+		relationParam := relationTofvRsCtxToExtRouteTagPol.(string)
+		err = aciClient.CreateRelationfvRsCtxToExtRouteTagPolFromVRF(fvCtx.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -341,11 +365,18 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
+
 	TenantDn := d.Get("tenant_dn").(string)
 
 	fvCtxAttr := models.VRFAttributes{}
+	if Annotation, ok := d.GetOk("annotation"); ok {
+		fvCtxAttr.Annotation = Annotation.(string)
+	}
 	if BdEnforcedEnable, ok := d.GetOk("bd_enforced_enable"); ok {
 		fvCtxAttr.BdEnforcedEnable = BdEnforcedEnable.(string)
+	}
+	if IpDataPlaneLearning, ok := d.GetOk("ip_data_plane_learning"); ok {
+		fvCtxAttr.IpDataPlaneLearning = IpDataPlaneLearning.(string)
 	}
 	if KnwMcastAct, ok := d.GetOk("knw_mcast_act"); ok {
 		fvCtxAttr.KnwMcastAct = KnwMcastAct.(string)
@@ -400,22 +431,6 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 		}
 
 	}
-	if d.HasChange("relation_fv_rs_bgp_ctx_pol") {
-		_, newRelParam := d.GetChange("relation_fv_rs_bgp_ctx_pol")
-		err = aciClient.CreateRelationfvRsBgpCtxPolFromVRF(fvCtx.DistinguishedName, newRelParam.(string))
-		if err != nil {
-			return err
-		}
-
-	}
-	if d.HasChange("relation_fv_rs_ctx_to_ext_route_tag_pol") {
-		_, newRelParam := d.GetChange("relation_fv_rs_ctx_to_ext_route_tag_pol")
-		err = aciClient.CreateRelationfvRsCtxToExtRouteTagPolFromVRF(fvCtx.DistinguishedName, newRelParam.(string))
-		if err != nil {
-			return err
-		}
-
-	}
 	if d.HasChange("relation_fv_rs_ctx_to_eigrp_ctx_af_pol") {
 		oldRel, newRel := d.GetChange("relation_fv_rs_ctx_to_eigrp_ctx_af_pol")
 		oldRelList := oldRel.(*schema.Set).List()
@@ -464,6 +479,14 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 		}
 
 	}
+	if d.HasChange("relation_fv_rs_bgp_ctx_pol") {
+		_, newRelParam := d.GetChange("relation_fv_rs_bgp_ctx_pol")
+		err = aciClient.CreateRelationfvRsBgpCtxPolFromVRF(fvCtx.DistinguishedName, newRelParam.(string))
+		if err != nil {
+			return err
+		}
+
+	}
 	if d.HasChange("relation_fv_rs_ctx_mon_pol") {
 		_, newRelParam := d.GetChange("relation_fv_rs_ctx_mon_pol")
 		err = aciClient.DeleteRelationfvRsCtxMonPolFromVRF(fvCtx.DistinguishedName)
@@ -471,6 +494,14 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		err = aciClient.CreateRelationfvRsCtxMonPolFromVRF(fvCtx.DistinguishedName, newRelParam.(string))
+		if err != nil {
+			return err
+		}
+
+	}
+	if d.HasChange("relation_fv_rs_ctx_to_ext_route_tag_pol") {
+		_, newRelParam := d.GetChange("relation_fv_rs_ctx_to_ext_route_tag_pol")
+		err = aciClient.CreateRelationfvRsCtxToExtRouteTagPolFromVRF(fvCtx.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}

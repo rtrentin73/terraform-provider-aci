@@ -31,6 +31,13 @@ func resourceAciApplicationProfile() *schema.Resource {
 				Required: true,
 			},
 
+			"annotation": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: "Mo doc not defined in techpub!!!",
+			},
+
 			"name_alias": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -76,6 +83,7 @@ func setApplicationProfileAttributes(fvAp *models.ApplicationProfile, d *schema.
 	d.Set("tenant_dn", GetParentDn(fvAp.DistinguishedName))
 	fvApMap, _ := fvAp.ToMap()
 
+	d.Set("annotation", fvApMap["annotation"])
 	d.Set("name_alias", fvApMap["nameAlias"])
 	d.Set("prio", fvApMap["prio"])
 	return d
@@ -99,10 +107,15 @@ func resourceAciApplicationProfileImport(d *schema.ResourceData, m interface{}) 
 func resourceAciApplicationProfileCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
+
 	name := d.Get("name").(string)
+
 	TenantDn := d.Get("tenant_dn").(string)
 
 	fvApAttr := models.ApplicationProfileAttributes{}
+	if Annotation, ok := d.GetOk("annotation"); ok {
+		fvApAttr.Annotation = Annotation.(string)
+	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		fvApAttr.NameAlias = NameAlias.(string)
 	}
@@ -134,9 +147,13 @@ func resourceAciApplicationProfileUpdate(d *schema.ResourceData, m interface{}) 
 	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
+
 	TenantDn := d.Get("tenant_dn").(string)
 
 	fvApAttr := models.ApplicationProfileAttributes{}
+	if Annotation, ok := d.GetOk("annotation"); ok {
+		fvApAttr.Annotation = Annotation.(string)
+	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		fvApAttr.NameAlias = NameAlias.(string)
 	}

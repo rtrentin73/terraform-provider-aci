@@ -31,6 +31,13 @@ func resourceAciFilterEntry() *schema.Resource {
 				Required: true,
 			},
 
+			"annotation": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: "Mo doc not defined in techpub!!!",
+			},
+
 			"apply_to_frag": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -153,6 +160,7 @@ func setFilterEntryAttributes(vzEntry *models.FilterEntry, d *schema.ResourceDat
 	d.Set("filter_dn", GetParentDn(vzEntry.DistinguishedName))
 	vzEntryMap, _ := vzEntry.ToMap()
 
+	d.Set("annotation", vzEntryMap["annotation"])
 	d.Set("apply_to_frag", vzEntryMap["applyToFrag"])
 	d.Set("arp_opc", vzEntryMap["arpOpc"])
 	d.Set("d_from_port", vzEntryMap["dFromPort"])
@@ -188,10 +196,15 @@ func resourceAciFilterEntryImport(d *schema.ResourceData, m interface{}) ([]*sch
 func resourceAciFilterEntryCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
+
 	name := d.Get("name").(string)
+
 	FilterDn := d.Get("filter_dn").(string)
 
 	vzEntryAttr := models.FilterEntryAttributes{}
+	if Annotation, ok := d.GetOk("annotation"); ok {
+		vzEntryAttr.Annotation = Annotation.(string)
+	}
 	if ApplyToFrag, ok := d.GetOk("apply_to_frag"); ok {
 		vzEntryAttr.ApplyToFrag = ApplyToFrag.(string)
 	}
@@ -250,9 +263,13 @@ func resourceAciFilterEntryUpdate(d *schema.ResourceData, m interface{}) error {
 	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
+
 	FilterDn := d.Get("filter_dn").(string)
 
 	vzEntryAttr := models.FilterEntryAttributes{}
+	if Annotation, ok := d.GetOk("annotation"); ok {
+		vzEntryAttr.Annotation = Annotation.(string)
+	}
 	if ApplyToFrag, ok := d.GetOk("apply_to_frag"); ok {
 		vzEntryAttr.ApplyToFrag = ApplyToFrag.(string)
 	}

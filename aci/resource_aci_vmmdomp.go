@@ -38,7 +38,28 @@ func resourceAciVMMDomain() *schema.Resource {
 				Description: "Mo doc not defined in techpub!!!",
 			},
 
+			"annotation": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: "Mo doc not defined in techpub!!!",
+			},
+
 			"arp_learning": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: "Mo doc not defined in techpub!!!",
+			},
+
+			"ave_time_out": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: "Mo doc not defined in techpub!!!",
+			},
+
+			"config_infra_pg": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
 				Computed:    true,
@@ -66,6 +87,13 @@ func resourceAciVMMDomain() *schema.Resource {
 				Description: "Mo doc not defined in techpub!!!",
 			},
 
+			"enable_tag": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: "Mo doc not defined in techpub!!!",
+			},
+
 			"encap_mode": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -80,7 +108,21 @@ func resourceAciVMMDomain() *schema.Resource {
 				Description: "switching enforcement preference",
 			},
 
+			"ep_inventory_type": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: "Mo doc not defined in techpub!!!",
+			},
+
 			"ep_ret_time": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: "Mo doc not defined in techpub!!!",
+			},
+
+			"hv_avail_monitor": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
 				Computed:    true,
@@ -115,6 +157,12 @@ func resourceAciVMMDomain() *schema.Resource {
 				Description: "Mo doc not defined in techpub!!!",
 			},
 
+			"relation_vmm_rs_pref_enhanced_lag_pol": &schema.Schema{
+				Type: schema.TypeString,
+
+				Optional:    true,
+				Description: "Create relation to lacpEnhancedLagPol",
+			},
 			"relation_infra_rs_vlan_ns": &schema.Schema{
 				Type: schema.TypeString,
 
@@ -157,12 +205,6 @@ func resourceAciVMMDomain() *schema.Resource {
 				Optional:    true,
 				Description: "Create relation to lldpIfPol",
 			},
-			"relation_vmm_rs_default_l2_inst_pol": &schema.Schema{
-				Type: schema.TypeString,
-
-				Optional:    true,
-				Description: "Create relation to l2InstPol",
-			},
 			"relation_vmm_rs_default_stp_if_pol": &schema.Schema{
 				Type: schema.TypeString,
 
@@ -180,6 +222,12 @@ func resourceAciVMMDomain() *schema.Resource {
 
 				Optional:    true,
 				Description: "Create relation to nwsFwPol",
+			},
+			"relation_vmm_rs_default_l2_inst_pol": &schema.Schema{
+				Type: schema.TypeString,
+
+				Optional:    true,
+				Description: "Create relation to l2InstPol",
 			},
 		}),
 	}
@@ -207,13 +255,19 @@ func setVMMDomainAttributes(vmmDomP *models.VMMDomain, d *schema.ResourceData) *
 	vmmDomPMap, _ := vmmDomP.ToMap()
 
 	d.Set("access_mode", vmmDomPMap["accessMode"])
+	d.Set("annotation", vmmDomPMap["annotation"])
 	d.Set("arp_learning", vmmDomPMap["arpLearning"])
+	d.Set("ave_time_out", vmmDomPMap["aveTimeOut"])
+	d.Set("config_infra_pg", vmmDomPMap["configInfraPg"])
 	d.Set("ctrl_knob", vmmDomPMap["ctrlKnob"])
 	d.Set("delimiter", vmmDomPMap["delimiter"])
 	d.Set("enable_ave", vmmDomPMap["enableAVE"])
+	d.Set("enable_tag", vmmDomPMap["enableTag"])
 	d.Set("encap_mode", vmmDomPMap["encapMode"])
 	d.Set("enf_pref", vmmDomPMap["enfPref"])
+	d.Set("ep_inventory_type", vmmDomPMap["epInventoryType"])
 	d.Set("ep_ret_time", vmmDomPMap["epRetTime"])
+	d.Set("hv_avail_monitor", vmmDomPMap["hvAvailMonitor"])
 	d.Set("mcast_addr", vmmDomPMap["mcastAddr"])
 	d.Set("mode", vmmDomPMap["mode"])
 	d.Set("name_alias", vmmDomPMap["nameAlias"])
@@ -239,15 +293,26 @@ func resourceAciVMMDomainImport(d *schema.ResourceData, m interface{}) ([]*schem
 func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
+
 	name := d.Get("name").(string)
+
 	ProviderProfileDn := d.Get("provider_profile_dn").(string)
 
 	vmmDomPAttr := models.VMMDomainAttributes{}
 	if AccessMode, ok := d.GetOk("access_mode"); ok {
 		vmmDomPAttr.AccessMode = AccessMode.(string)
 	}
+	if Annotation, ok := d.GetOk("annotation"); ok {
+		vmmDomPAttr.Annotation = Annotation.(string)
+	}
 	if ArpLearning, ok := d.GetOk("arp_learning"); ok {
 		vmmDomPAttr.ArpLearning = ArpLearning.(string)
+	}
+	if AveTimeOut, ok := d.GetOk("ave_time_out"); ok {
+		vmmDomPAttr.AveTimeOut = AveTimeOut.(string)
+	}
+	if ConfigInfraPg, ok := d.GetOk("config_infra_pg"); ok {
+		vmmDomPAttr.ConfigInfraPg = ConfigInfraPg.(string)
 	}
 	if CtrlKnob, ok := d.GetOk("ctrl_knob"); ok {
 		vmmDomPAttr.CtrlKnob = CtrlKnob.(string)
@@ -258,14 +323,23 @@ func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
 	if EnableAVE, ok := d.GetOk("enable_ave"); ok {
 		vmmDomPAttr.EnableAVE = EnableAVE.(string)
 	}
+	if EnableTag, ok := d.GetOk("enable_tag"); ok {
+		vmmDomPAttr.EnableTag = EnableTag.(string)
+	}
 	if EncapMode, ok := d.GetOk("encap_mode"); ok {
 		vmmDomPAttr.EncapMode = EncapMode.(string)
 	}
 	if EnfPref, ok := d.GetOk("enf_pref"); ok {
 		vmmDomPAttr.EnfPref = EnfPref.(string)
 	}
+	if EpInventoryType, ok := d.GetOk("ep_inventory_type"); ok {
+		vmmDomPAttr.EpInventoryType = EpInventoryType.(string)
+	}
 	if EpRetTime, ok := d.GetOk("ep_ret_time"); ok {
 		vmmDomPAttr.EpRetTime = EpRetTime.(string)
+	}
+	if HvAvailMonitor, ok := d.GetOk("hv_avail_monitor"); ok {
+		vmmDomPAttr.HvAvailMonitor = HvAvailMonitor.(string)
 	}
 	if McastAddr, ok := d.GetOk("mcast_addr"); ok {
 		vmmDomPAttr.McastAddr = McastAddr.(string)
@@ -286,6 +360,14 @@ func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
+	if relationTovmmRsPrefEnhancedLagPol, ok := d.GetOk("relation_vmm_rs_pref_enhanced_lag_pol"); ok {
+		relationParam := relationTovmmRsPrefEnhancedLagPol.(string)
+		err = aciClient.CreateRelationvmmRsPrefEnhancedLagPolFromVMMDomain(vmmDomP.DistinguishedName, relationParam)
+		if err != nil {
+			return err
+		}
+
+	}
 	if relationToinfraRsVlanNs, ok := d.GetOk("relation_infra_rs_vlan_ns"); ok {
 		relationParam := relationToinfraRsVlanNs.(string)
 		err = aciClient.CreateRelationinfraRsVlanNsFromVMMDomain(vmmDomP.DistinguishedName, relationParam)
@@ -342,14 +424,6 @@ func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
 		}
 
 	}
-	if relationTovmmRsDefaultL2InstPol, ok := d.GetOk("relation_vmm_rs_default_l2_inst_pol"); ok {
-		relationParam := relationTovmmRsDefaultL2InstPol.(string)
-		err = aciClient.CreateRelationvmmRsDefaultL2InstPolFromVMMDomain(vmmDomP.DistinguishedName, relationParam)
-		if err != nil {
-			return err
-		}
-
-	}
 	if relationTovmmRsDefaultStpIfPol, ok := d.GetOk("relation_vmm_rs_default_stp_if_pol"); ok {
 		relationParam := relationTovmmRsDefaultStpIfPol.(string)
 		err = aciClient.CreateRelationvmmRsDefaultStpIfPolFromVMMDomain(vmmDomP.DistinguishedName, relationParam)
@@ -374,6 +448,14 @@ func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
 		}
 
 	}
+	if relationTovmmRsDefaultL2InstPol, ok := d.GetOk("relation_vmm_rs_default_l2_inst_pol"); ok {
+		relationParam := relationTovmmRsDefaultL2InstPol.(string)
+		err = aciClient.CreateRelationvmmRsDefaultL2InstPolFromVMMDomain(vmmDomP.DistinguishedName, relationParam)
+		if err != nil {
+			return err
+		}
+
+	}
 
 	d.SetId(vmmDomP.DistinguishedName)
 	return resourceAciVMMDomainRead(d, m)
@@ -384,14 +466,24 @@ func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
 	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
+
 	ProviderProfileDn := d.Get("provider_profile_dn").(string)
 
 	vmmDomPAttr := models.VMMDomainAttributes{}
 	if AccessMode, ok := d.GetOk("access_mode"); ok {
 		vmmDomPAttr.AccessMode = AccessMode.(string)
 	}
+	if Annotation, ok := d.GetOk("annotation"); ok {
+		vmmDomPAttr.Annotation = Annotation.(string)
+	}
 	if ArpLearning, ok := d.GetOk("arp_learning"); ok {
 		vmmDomPAttr.ArpLearning = ArpLearning.(string)
+	}
+	if AveTimeOut, ok := d.GetOk("ave_time_out"); ok {
+		vmmDomPAttr.AveTimeOut = AveTimeOut.(string)
+	}
+	if ConfigInfraPg, ok := d.GetOk("config_infra_pg"); ok {
+		vmmDomPAttr.ConfigInfraPg = ConfigInfraPg.(string)
 	}
 	if CtrlKnob, ok := d.GetOk("ctrl_knob"); ok {
 		vmmDomPAttr.CtrlKnob = CtrlKnob.(string)
@@ -402,14 +494,23 @@ func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
 	if EnableAVE, ok := d.GetOk("enable_ave"); ok {
 		vmmDomPAttr.EnableAVE = EnableAVE.(string)
 	}
+	if EnableTag, ok := d.GetOk("enable_tag"); ok {
+		vmmDomPAttr.EnableTag = EnableTag.(string)
+	}
 	if EncapMode, ok := d.GetOk("encap_mode"); ok {
 		vmmDomPAttr.EncapMode = EncapMode.(string)
 	}
 	if EnfPref, ok := d.GetOk("enf_pref"); ok {
 		vmmDomPAttr.EnfPref = EnfPref.(string)
 	}
+	if EpInventoryType, ok := d.GetOk("ep_inventory_type"); ok {
+		vmmDomPAttr.EpInventoryType = EpInventoryType.(string)
+	}
 	if EpRetTime, ok := d.GetOk("ep_ret_time"); ok {
 		vmmDomPAttr.EpRetTime = EpRetTime.(string)
+	}
+	if HvAvailMonitor, ok := d.GetOk("hv_avail_monitor"); ok {
+		vmmDomPAttr.HvAvailMonitor = HvAvailMonitor.(string)
 	}
 	if McastAddr, ok := d.GetOk("mcast_addr"); ok {
 		vmmDomPAttr.McastAddr = McastAddr.(string)
@@ -433,6 +534,18 @@ func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
+	if d.HasChange("relation_vmm_rs_pref_enhanced_lag_pol") {
+		_, newRelParam := d.GetChange("relation_vmm_rs_pref_enhanced_lag_pol")
+		err = aciClient.DeleteRelationvmmRsPrefEnhancedLagPolFromVMMDomain(vmmDomP.DistinguishedName)
+		if err != nil {
+			return err
+		}
+		err = aciClient.CreateRelationvmmRsPrefEnhancedLagPolFromVMMDomain(vmmDomP.DistinguishedName, newRelParam.(string))
+		if err != nil {
+			return err
+		}
+
+	}
 	if d.HasChange("relation_infra_rs_vlan_ns") {
 		_, newRelParam := d.GetChange("relation_infra_rs_vlan_ns")
 		err = aciClient.DeleteRelationinfraRsVlanNsFromVMMDomain(vmmDomP.DistinguishedName)
@@ -501,14 +614,6 @@ func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
 		}
 
 	}
-	if d.HasChange("relation_vmm_rs_default_l2_inst_pol") {
-		_, newRelParam := d.GetChange("relation_vmm_rs_default_l2_inst_pol")
-		err = aciClient.CreateRelationvmmRsDefaultL2InstPolFromVMMDomain(vmmDomP.DistinguishedName, newRelParam.(string))
-		if err != nil {
-			return err
-		}
-
-	}
 	if d.HasChange("relation_vmm_rs_default_stp_if_pol") {
 		_, newRelParam := d.GetChange("relation_vmm_rs_default_stp_if_pol")
 		err = aciClient.CreateRelationvmmRsDefaultStpIfPolFromVMMDomain(vmmDomP.DistinguishedName, newRelParam.(string))
@@ -528,6 +633,14 @@ func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
 	if d.HasChange("relation_vmm_rs_default_fw_pol") {
 		_, newRelParam := d.GetChange("relation_vmm_rs_default_fw_pol")
 		err = aciClient.CreateRelationvmmRsDefaultFwPolFromVMMDomain(vmmDomP.DistinguishedName, newRelParam.(string))
+		if err != nil {
+			return err
+		}
+
+	}
+	if d.HasChange("relation_vmm_rs_default_l2_inst_pol") {
+		_, newRelParam := d.GetChange("relation_vmm_rs_default_l2_inst_pol")
+		err = aciClient.CreateRelationvmmRsDefaultL2InstPolFromVMMDomain(vmmDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}

@@ -38,6 +38,13 @@ func resourceAciBridgeDomain() *schema.Resource {
 				Description: "Mo doc not defined in techpub!!!",
 			},
 
+			"annotation": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: "Mo doc not defined in techpub!!!",
+			},
+
 			"arp_flood": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -59,18 +66,25 @@ func resourceAciBridgeDomain() *schema.Resource {
 				Description: "ep move detection garp based mode",
 			},
 
+			"host_based_routing": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: "enables advertising host routes out of l3outs of this BD",
+			},
+
 			"intersite_bum_traffic_allow": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
 				Computed:    true,
-				Description: "Mo doc not defined in techpub!!!",
+				Description: "",
 			},
 
 			"intersite_l2_stretch": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
 				Computed:    true,
-				Description: "Mo doc not defined in techpub!!!",
+				Description: "",
 			},
 
 			"ip_learning": &schema.Schema{
@@ -78,6 +92,13 @@ func resourceAciBridgeDomain() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "Endpoint Dataplane Learning",
+			},
+
+			"ipv6_mcast_allow": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: "Mo doc not defined in techpub!!!",
 			},
 
 			"limit_ip_learn_to_subnets": &schema.Schema{
@@ -150,6 +171,13 @@ func resourceAciBridgeDomain() *schema.Resource {
 				Description: "parameter used by node to forward data",
 			},
 
+			"v6unk_mcast_act": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: "Mo doc not defined in techpub!!!",
+			},
+
 			"vmac": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -163,11 +191,11 @@ func resourceAciBridgeDomain() *schema.Resource {
 				Optional:    true,
 				Description: "Create relation to rtctrlProfile",
 			},
-			"relation_fv_rs_bd_to_relay_p": &schema.Schema{
+			"relation_fv_rs_mldsn": &schema.Schema{
 				Type: schema.TypeString,
 
 				Optional:    true,
-				Description: "Create relation to dhcpRelayP",
+				Description: "Create relation to mldSnoopPol",
 			},
 			"relation_fv_rs_abd_pol_mon_pol": &schema.Schema{
 				Type: schema.TypeString,
@@ -193,6 +221,12 @@ func resourceAciBridgeDomain() *schema.Resource {
 
 				Optional:    true,
 				Description: "Create relation to fhsBDPol",
+			},
+			"relation_fv_rs_bd_to_relay_p": &schema.Schema{
+				Type: schema.TypeString,
+
+				Optional:    true,
+				Description: "Create relation to dhcpRelayP",
 			},
 			"relation_fv_rs_ctx": &schema.Schema{
 				Type: schema.TypeString,
@@ -262,12 +296,15 @@ func setBridgeDomainAttributes(fvBD *models.BridgeDomain, d *schema.ResourceData
 	fvBDMap, _ := fvBD.ToMap()
 
 	d.Set("optimize_wan_bandwidth", fvBDMap["OptimizeWanBandwidth"])
+	d.Set("annotation", fvBDMap["annotation"])
 	d.Set("arp_flood", fvBDMap["arpFlood"])
 	d.Set("ep_clear", fvBDMap["epClear"])
 	d.Set("ep_move_detect_mode", fvBDMap["epMoveDetectMode"])
+	d.Set("host_based_routing", fvBDMap["hostBasedRouting"])
 	d.Set("intersite_bum_traffic_allow", fvBDMap["intersiteBumTrafficAllow"])
 	d.Set("intersite_l2_stretch", fvBDMap["intersiteL2Stretch"])
 	d.Set("ip_learning", fvBDMap["ipLearning"])
+	d.Set("ipv6_mcast_allow", fvBDMap["ipv6McastAllow"])
 	d.Set("limit_ip_learn_to_subnets", fvBDMap["limitIpLearnToSubnets"])
 	d.Set("ll_addr", fvBDMap["llAddr"])
 	d.Set("mac", fvBDMap["mac"])
@@ -278,6 +315,7 @@ func setBridgeDomainAttributes(fvBD *models.BridgeDomain, d *schema.ResourceData
 	d.Set("unicast_route", fvBDMap["unicastRoute"])
 	d.Set("unk_mac_ucast_act", fvBDMap["unkMacUcastAct"])
 	d.Set("unk_mcast_act", fvBDMap["unkMcastAct"])
+	d.Set("v6unk_mcast_act", fvBDMap["v6unkMcastAct"])
 	d.Set("vmac", fvBDMap["vmac"])
 	return d
 }
@@ -300,12 +338,17 @@ func resourceAciBridgeDomainImport(d *schema.ResourceData, m interface{}) ([]*sc
 func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
+
 	name := d.Get("name").(string)
+
 	TenantDn := d.Get("tenant_dn").(string)
 
 	fvBDAttr := models.BridgeDomainAttributes{}
 	if OptimizeWanBandwidth, ok := d.GetOk("optimize_wan_bandwidth"); ok {
 		fvBDAttr.OptimizeWanBandwidth = OptimizeWanBandwidth.(string)
+	}
+	if Annotation, ok := d.GetOk("annotation"); ok {
+		fvBDAttr.Annotation = Annotation.(string)
 	}
 	if ArpFlood, ok := d.GetOk("arp_flood"); ok {
 		fvBDAttr.ArpFlood = ArpFlood.(string)
@@ -316,6 +359,9 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 	if EpMoveDetectMode, ok := d.GetOk("ep_move_detect_mode"); ok {
 		fvBDAttr.EpMoveDetectMode = EpMoveDetectMode.(string)
 	}
+	if HostBasedRouting, ok := d.GetOk("host_based_routing"); ok {
+		fvBDAttr.HostBasedRouting = HostBasedRouting.(string)
+	}
 	if IntersiteBumTrafficAllow, ok := d.GetOk("intersite_bum_traffic_allow"); ok {
 		fvBDAttr.IntersiteBumTrafficAllow = IntersiteBumTrafficAllow.(string)
 	}
@@ -324,6 +370,9 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 	}
 	if IpLearning, ok := d.GetOk("ip_learning"); ok {
 		fvBDAttr.IpLearning = IpLearning.(string)
+	}
+	if Ipv6McastAllow, ok := d.GetOk("ipv6_mcast_allow"); ok {
+		fvBDAttr.Ipv6McastAllow = Ipv6McastAllow.(string)
 	}
 	if LimitIpLearnToSubnets, ok := d.GetOk("limit_ip_learn_to_subnets"); ok {
 		fvBDAttr.LimitIpLearnToSubnets = LimitIpLearnToSubnets.(string)
@@ -355,6 +404,9 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 	if UnkMcastAct, ok := d.GetOk("unk_mcast_act"); ok {
 		fvBDAttr.UnkMcastAct = UnkMcastAct.(string)
 	}
+	if V6unkMcastAct, ok := d.GetOk("v6unk_mcast_act"); ok {
+		fvBDAttr.V6unkMcastAct = V6unkMcastAct.(string)
+	}
 	if Vmac, ok := d.GetOk("vmac"); ok {
 		fvBDAttr.Vmac = Vmac.(string)
 	}
@@ -373,9 +425,9 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 		}
 
 	}
-	if relationTofvRsBDToRelayP, ok := d.GetOk("relation_fv_rs_bd_to_relay_p"); ok {
-		relationParam := relationTofvRsBDToRelayP.(string)
-		err = aciClient.CreateRelationfvRsBDToRelayPFromBridgeDomain(fvBD.DistinguishedName, relationParam)
+	if relationTofvRsMldsn, ok := d.GetOk("relation_fv_rs_mldsn"); ok {
+		relationParam := relationTofvRsMldsn.(string)
+		err = aciClient.CreateRelationfvRsMldsnFromBridgeDomain(fvBD.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -410,6 +462,14 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 	if relationTofvRsBDToFhs, ok := d.GetOk("relation_fv_rs_bd_to_fhs"); ok {
 		relationParam := relationTofvRsBDToFhs.(string)
 		err = aciClient.CreateRelationfvRsBDToFhsFromBridgeDomain(fvBD.DistinguishedName, relationParam)
+		if err != nil {
+			return err
+		}
+
+	}
+	if relationTofvRsBDToRelayP, ok := d.GetOk("relation_fv_rs_bd_to_relay_p"); ok {
+		relationParam := relationTofvRsBDToRelayP.(string)
+		err = aciClient.CreateRelationfvRsBDToRelayPFromBridgeDomain(fvBD.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -471,11 +531,15 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
+
 	TenantDn := d.Get("tenant_dn").(string)
 
 	fvBDAttr := models.BridgeDomainAttributes{}
 	if OptimizeWanBandwidth, ok := d.GetOk("optimize_wan_bandwidth"); ok {
 		fvBDAttr.OptimizeWanBandwidth = OptimizeWanBandwidth.(string)
+	}
+	if Annotation, ok := d.GetOk("annotation"); ok {
+		fvBDAttr.Annotation = Annotation.(string)
 	}
 	if ArpFlood, ok := d.GetOk("arp_flood"); ok {
 		fvBDAttr.ArpFlood = ArpFlood.(string)
@@ -486,6 +550,9 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 	if EpMoveDetectMode, ok := d.GetOk("ep_move_detect_mode"); ok {
 		fvBDAttr.EpMoveDetectMode = EpMoveDetectMode.(string)
 	}
+	if HostBasedRouting, ok := d.GetOk("host_based_routing"); ok {
+		fvBDAttr.HostBasedRouting = HostBasedRouting.(string)
+	}
 	if IntersiteBumTrafficAllow, ok := d.GetOk("intersite_bum_traffic_allow"); ok {
 		fvBDAttr.IntersiteBumTrafficAllow = IntersiteBumTrafficAllow.(string)
 	}
@@ -494,6 +561,9 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 	}
 	if IpLearning, ok := d.GetOk("ip_learning"); ok {
 		fvBDAttr.IpLearning = IpLearning.(string)
+	}
+	if Ipv6McastAllow, ok := d.GetOk("ipv6_mcast_allow"); ok {
+		fvBDAttr.Ipv6McastAllow = Ipv6McastAllow.(string)
 	}
 	if LimitIpLearnToSubnets, ok := d.GetOk("limit_ip_learn_to_subnets"); ok {
 		fvBDAttr.LimitIpLearnToSubnets = LimitIpLearnToSubnets.(string)
@@ -525,6 +595,9 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 	if UnkMcastAct, ok := d.GetOk("unk_mcast_act"); ok {
 		fvBDAttr.UnkMcastAct = UnkMcastAct.(string)
 	}
+	if V6unkMcastAct, ok := d.GetOk("v6unk_mcast_act"); ok {
+		fvBDAttr.V6unkMcastAct = V6unkMcastAct.(string)
+	}
 	if Vmac, ok := d.GetOk("vmac"); ok {
 		fvBDAttr.Vmac = Vmac.(string)
 	}
@@ -550,13 +623,9 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 		}
 
 	}
-	if d.HasChange("relation_fv_rs_bd_to_relay_p") {
-		_, newRelParam := d.GetChange("relation_fv_rs_bd_to_relay_p")
-		err = aciClient.DeleteRelationfvRsBDToRelayPFromBridgeDomain(fvBD.DistinguishedName)
-		if err != nil {
-			return err
-		}
-		err = aciClient.CreateRelationfvRsBDToRelayPFromBridgeDomain(fvBD.DistinguishedName, newRelParam.(string))
+	if d.HasChange("relation_fv_rs_mldsn") {
+		_, newRelParam := d.GetChange("relation_fv_rs_mldsn")
+		err = aciClient.CreateRelationfvRsMldsnFromBridgeDomain(fvBD.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -613,6 +682,18 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		err = aciClient.CreateRelationfvRsBDToFhsFromBridgeDomain(fvBD.DistinguishedName, newRelParam.(string))
+		if err != nil {
+			return err
+		}
+
+	}
+	if d.HasChange("relation_fv_rs_bd_to_relay_p") {
+		_, newRelParam := d.GetChange("relation_fv_rs_bd_to_relay_p")
+		err = aciClient.DeleteRelationfvRsBDToRelayPFromBridgeDomain(fvBD.DistinguishedName)
+		if err != nil {
+			return err
+		}
+		err = aciClient.CreateRelationfvRsBDToRelayPFromBridgeDomain(fvBD.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}

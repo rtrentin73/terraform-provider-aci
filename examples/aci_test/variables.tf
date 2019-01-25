@@ -52,7 +52,7 @@ variable "domain_name" {
 }
 
 variable "vsphere_template" {
-  default = "CentOS-1"
+  default = "centos-guest-enabled"
 }
 
 variable "folder" {

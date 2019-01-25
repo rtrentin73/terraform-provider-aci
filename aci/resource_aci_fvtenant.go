@@ -27,6 +27,13 @@ func resourceAciTenant() *schema.Resource {
 				Required: true,
 			},
 
+			"annotation": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: "Mo doc not defined in techpub!!!",
+			},
+
 			"name_alias": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -71,6 +78,7 @@ func setTenantAttributes(fvTenant *models.Tenant, d *schema.ResourceData) *schem
 	d.Set("description", fvTenant.Description)
 	fvTenantMap, _ := fvTenant.ToMap()
 
+	d.Set("annotation", fvTenantMap["annotation"])
 	d.Set("name_alias", fvTenantMap["nameAlias"])
 	return d
 }
@@ -93,8 +101,13 @@ func resourceAciTenantImport(d *schema.ResourceData, m interface{}) ([]*schema.R
 func resourceAciTenantCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
+
 	name := d.Get("name").(string)
+
 	fvTenantAttr := models.TenantAttributes{}
+	if Annotation, ok := d.GetOk("annotation"); ok {
+		fvTenantAttr.Annotation = Annotation.(string)
+	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		fvTenantAttr.NameAlias = NameAlias.(string)
 	}
@@ -135,6 +148,9 @@ func resourceAciTenantUpdate(d *schema.ResourceData, m interface{}) error {
 	name := d.Get("name").(string)
 
 	fvTenantAttr := models.TenantAttributes{}
+	if Annotation, ok := d.GetOk("annotation"); ok {
+		fvTenantAttr.Annotation = Annotation.(string)
+	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		fvTenantAttr.NameAlias = NameAlias.(string)
 	}
