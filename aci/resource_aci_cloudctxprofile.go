@@ -2,6 +2,7 @@ package aci
 
 import (
 	"fmt"
+
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -52,6 +53,18 @@ func resourceAciCloudContextProfile() *schema.Resource {
 				Description: "component type",
 			},
 
+			"primary_cidr": &schema.Schema{
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Primary CIDR block",
+			},
+
+			"region": &schema.Schema{
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "region",
+			},
+
 			"relation_cloud_rs_ctx_to_flow_log": &schema.Schema{
 				Type: schema.TypeString,
 
@@ -75,7 +88,9 @@ func resourceAciCloudContextProfile() *schema.Resource {
 }
 
 func getRemoteCloudContextProfile(client *client.Client, dn string) (*models.CloudContextProfile, error) {
-	cloudCtxProfileCont, err := client.Get(dn)
+	baseurlStr := "/api/node/mo"
+	dnUrl := fmt.Sprintf("%s/%s.json?rsp-subtree=children", baseurlStr, dn)
+	cloudCtxProfileCont, err := client.GetViaURL(dnUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -98,6 +113,9 @@ func setCloudContextProfileAttributes(cloudCtxProfile *models.CloudContextProfil
 	d.Set("annotation", cloudCtxProfileMap["annotation"])
 	d.Set("name_alias", cloudCtxProfileMap["nameAlias"])
 	d.Set("type", cloudCtxProfileMap["type"])
+	d.Set("primary_cidr", cloudCtxProfileMap["primary_cidr"])
+	d.Set("region", cloudCtxProfileMap["region"])
+
 	return d
 }
 
@@ -134,9 +152,15 @@ func resourceAciCloudContextProfileCreate(d *schema.ResourceData, m interface{})
 	if Type, ok := d.GetOk("type"); ok {
 		cloudCtxProfileAttr.Type = Type.(string)
 	}
+
+	PrimaryCIDR := d.Get("primary_cidr").(string)
+
+	Region := d.Get("region").(string)
+
 	cloudCtxProfile := models.NewCloudContextProfile(fmt.Sprintf("ctxprofile-%s", name), TenantDn, desc, cloudCtxProfileAttr)
 
-	err := aciClient.Save(cloudCtxProfile)
+	cloudCtxProfile, err := aciClient.CreateCloudContextProfile(name, TenantDn, desc, models.CloudContextProfileAttributes{}, PrimaryCIDR, Region)
+	//err := aciClient.Save(cloudCtxProfile)
 	if err != nil {
 		return err
 	}

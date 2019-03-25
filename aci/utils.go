@@ -3,6 +3,7 @@ package aci
 import (
 	"fmt"
 	"regexp"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 )
@@ -47,9 +48,11 @@ func preparePayload(className string, inputMap map[string]string) (*container.Co
 }
 
 func GetMOName(dn string) string {
-	re := regexp.MustCompile(".*/\\S+-(\\S+.*)$")
-	match := re.FindStringSubmatch(dn)
-	return match[1]
+	arr := strings.Split(dn, "/")
+	hashedName := arr[len(arr)-1]
+	nameArr := strings.Split(hashedName, "-")
+	name := strings.Join(nameArr[1:], "-")
+	return name
 
 }
 
