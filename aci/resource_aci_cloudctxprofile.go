@@ -215,8 +215,12 @@ func resourceAciCloudContextProfileUpdate(d *schema.ResourceData, m interface{})
 	cloudCtxProfile := models.NewCloudContextProfile(fmt.Sprintf("ctxprofile-%s", name), TenantDn, desc, cloudCtxProfileAttr)
 
 	cloudCtxProfile.Status = "modified"
+	PrimaryCIDR := d.Get("primary_cidr").(string)
 
-	err := aciClient.Save(cloudCtxProfile)
+	Region := d.Get("region").(string)
+
+	cloudCtxProfile, err := aciClient.CreateCloudContextProfile(name, TenantDn, desc, models.CloudContextProfileAttributes{}, PrimaryCIDR, Region)
+	//err := aciClient.Save(cloudCtxProfile)
 
 	if err != nil {
 		return err
