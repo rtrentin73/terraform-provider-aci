@@ -78,6 +78,10 @@ func Provider() terraform.ResourceProvider {
 			"aci_cloud_endpoint_selectorfor_external_e_pgs": resourceAciCloudEndpointSelectorforExternalEPgs(),
 		},
 
+		DataSourcesMap: map[string]*schema.Resource{
+			"aci_cloud_domain_profile": dataSourceAciCloudDomainProfile(),
+		},
+
 		ConfigureFunc: configureClient,
 	}
 }
