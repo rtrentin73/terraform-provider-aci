@@ -159,7 +159,7 @@ func resourceAciCloudContextProfileCreate(d *schema.ResourceData, m interface{})
 
 	cloudCtxProfile := models.NewCloudContextProfile(fmt.Sprintf("ctxprofile-%s", name), TenantDn, desc, cloudCtxProfileAttr)
 
-	cloudCtxProfile, err := aciClient.CreateCloudContextProfile(name, TenantDn, desc, models.CloudContextProfileAttributes{}, PrimaryCIDR, Region)
+	cloudCtxProfile, err := aciClient.CreateCloudContextProfile(name, TenantDn, desc, models.CloudContextProfileAttributes{}, PrimaryCIDR, Region, d.Get("relation_cloud_rs_to_ctx").(string))
 	//err := aciClient.Save(cloudCtxProfile)
 	if err != nil {
 		return err
@@ -168,14 +168,6 @@ func resourceAciCloudContextProfileCreate(d *schema.ResourceData, m interface{})
 	if relationTocloudRsCtxToFlowLog, ok := d.GetOk("relation_cloud_rs_ctx_to_flow_log"); ok {
 		relationParam := relationTocloudRsCtxToFlowLog.(string)
 		err = aciClient.CreateRelationcloudRsCtxToFlowLogFromCloudContextProfile(cloudCtxProfile.DistinguishedName, relationParam)
-		if err != nil {
-			return err
-		}
-
-	}
-	if relationTocloudRsToCtx, ok := d.GetOk("relation_cloud_rs_to_ctx"); ok {
-		relationParam := relationTocloudRsToCtx.(string)
-		err = aciClient.CreateRelationcloudRsToCtxFromCloudContextProfile(cloudCtxProfile.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -219,7 +211,7 @@ func resourceAciCloudContextProfileUpdate(d *schema.ResourceData, m interface{})
 
 	Region := d.Get("region").(string)
 
-	cloudCtxProfile, err := aciClient.CreateCloudContextProfile(name, TenantDn, desc, models.CloudContextProfileAttributes{}, PrimaryCIDR, Region)
+	cloudCtxProfile, err := aciClient.CreateCloudContextProfile(name, TenantDn, desc, models.CloudContextProfileAttributes{}, PrimaryCIDR, Region, d.Get("relation_cloud_rs_to_ctx").(string))
 	//err := aciClient.Save(cloudCtxProfile)
 
 	if err != nil {
@@ -233,14 +225,6 @@ func resourceAciCloudContextProfileUpdate(d *schema.ResourceData, m interface{})
 			return err
 		}
 		err = aciClient.CreateRelationcloudRsCtxToFlowLogFromCloudContextProfile(cloudCtxProfile.DistinguishedName, newRelParam.(string))
-		if err != nil {
-			return err
-		}
-
-	}
-	if d.HasChange("relation_cloud_rs_to_ctx") {
-		_, newRelParam := d.GetChange("relation_cloud_rs_to_ctx")
-		err = aciClient.CreateRelationcloudRsToCtxFromCloudContextProfile(cloudCtxProfile.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
