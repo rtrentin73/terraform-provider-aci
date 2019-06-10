@@ -2,6 +2,7 @@ package aci
 
 import (
 	"fmt"
+
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -68,6 +69,7 @@ func setCloudApplicationcontainerAttributes(cloudApp *models.CloudApplicationcon
 	d.Set("description", cloudApp.Description)
 	d.Set("tenant_dn", GetParentDn(cloudApp.DistinguishedName))
 	cloudAppMap, _ := cloudApp.ToMap()
+	d.Set("name", GetMOName(cloudApp.DistinguishedName))
 
 	d.Set("annotation", cloudAppMap["annotation"])
 	d.Set("name_alias", cloudAppMap["nameAlias"])

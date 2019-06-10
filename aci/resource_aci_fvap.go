@@ -2,6 +2,7 @@ package aci
 
 import (
 	"fmt"
+
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -82,7 +83,7 @@ func setApplicationProfileAttributes(fvAp *models.ApplicationProfile, d *schema.
 	d.Set("description", fvAp.Description)
 	d.Set("tenant_dn", GetParentDn(fvAp.DistinguishedName))
 	fvApMap, _ := fvAp.ToMap()
-
+	d.Set("name", GetMOName(fvAp.DistinguishedName))
 	d.Set("annotation", fvApMap["annotation"])
 	d.Set("name_alias", fvApMap["nameAlias"])
 	d.Set("prio", fvApMap["prio"])

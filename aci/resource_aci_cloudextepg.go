@@ -2,6 +2,7 @@ package aci
 
 import (
 	"fmt"
+
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -165,6 +166,7 @@ func setCloudExternalEPgAttributes(cloudExtEPg *models.CloudExternalEPg, d *sche
 	d.Set("description", cloudExtEPg.Description)
 	d.Set("cloud_applicationcontainer_dn", GetParentDn(cloudExtEPg.DistinguishedName))
 	cloudExtEPgMap, _ := cloudExtEPg.ToMap()
+	d.Set("name", GetMOName(cloudExtEPg.DistinguishedName))
 
 	d.Set("annotation", cloudExtEPgMap["annotation"])
 	d.Set("exception_tag", cloudExtEPgMap["exceptionTag"])

@@ -2,6 +2,7 @@ package aci
 
 import (
 	"fmt"
+
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -123,6 +124,7 @@ func setContractSubjectAttributes(vzSubj *models.ContractSubject, d *schema.Reso
 	d.Set("description", vzSubj.Description)
 	d.Set("contract_dn", GetParentDn(vzSubj.DistinguishedName))
 	vzSubjMap, _ := vzSubj.ToMap()
+	d.Set("name", GetMOName(vzSubj.DistinguishedName))
 
 	d.Set("annotation", vzSubjMap["annotation"])
 	d.Set("cons_match_t", vzSubjMap["consMatchT"])

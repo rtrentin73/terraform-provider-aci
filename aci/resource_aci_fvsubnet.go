@@ -2,6 +2,7 @@ package aci
 
 import (
 	"fmt"
+
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -116,7 +117,7 @@ func setSubnetAttributes(fvSubnet *models.Subnet, d *schema.ResourceData) *schem
 	d.Set("description", fvSubnet.Description)
 	d.Set("bridge_domain_dn", GetParentDn(fvSubnet.DistinguishedName))
 	fvSubnetMap, _ := fvSubnet.ToMap()
-
+	d.Set("name", fvSubnetMap["ip"])
 	d.Set("annotation", fvSubnetMap["annotation"])
 	d.Set("ctrl", fvSubnetMap["ctrl"])
 	d.Set("ip", fvSubnetMap["ip"])

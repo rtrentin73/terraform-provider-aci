@@ -2,6 +2,7 @@ package aci
 
 import (
 	"fmt"
+
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -68,7 +69,7 @@ func setCloudAvailabilityZoneAttributes(cloudZone *models.CloudAvailabilityZone,
 	d.Set("description", cloudZone.Description)
 	d.Set("cloud_providers_region_dn", GetParentDn(cloudZone.DistinguishedName))
 	cloudZoneMap, _ := cloudZone.ToMap()
-
+	d.Set("name", GetMOName(cloudZone.DistinguishedName))
 	d.Set("annotation", cloudZoneMap["annotation"])
 	d.Set("name_alias", cloudZoneMap["nameAlias"])
 	return d

@@ -2,6 +2,7 @@ package aci
 
 import (
 	"fmt"
+
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -75,6 +76,7 @@ func setCloudEndpointSelectorAttributes(cloudEPSelector *models.CloudEndpointSel
 	d.Set("description", cloudEPSelector.Description)
 	d.Set("cloud_e_pg_dn", GetParentDn(cloudEPSelector.DistinguishedName))
 	cloudEPSelectorMap, _ := cloudEPSelector.ToMap()
+	d.Set("name", GetMOName(cloudEPSelector.DistinguishedName))
 
 	d.Set("annotation", cloudEPSelectorMap["annotation"])
 	d.Set("match_expression", cloudEPSelectorMap["matchExpression"])

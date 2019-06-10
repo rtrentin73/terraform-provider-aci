@@ -2,6 +2,7 @@ package aci
 
 import (
 	"fmt"
+
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -96,7 +97,7 @@ func setContractAttributes(vzBrCP *models.Contract, d *schema.ResourceData) *sch
 	d.Set("description", vzBrCP.Description)
 	d.Set("tenant_dn", GetParentDn(vzBrCP.DistinguishedName))
 	vzBrCPMap, _ := vzBrCP.ToMap()
-
+	d.Set("name", GetMOName(vzBrCP.DistinguishedName))
 	d.Set("annotation", vzBrCPMap["annotation"])
 	d.Set("name_alias", vzBrCPMap["nameAlias"])
 	d.Set("prio", vzBrCPMap["prio"])

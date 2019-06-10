@@ -2,6 +2,7 @@ package aci
 
 import (
 	"fmt"
+
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -184,7 +185,7 @@ func setVRFAttributes(fvCtx *models.VRF, d *schema.ResourceData) *schema.Resourc
 	d.Set("description", fvCtx.Description)
 	d.Set("tenant_dn", GetParentDn(fvCtx.DistinguishedName))
 	fvCtxMap, _ := fvCtx.ToMap()
-
+	d.Set("name", GetMOName(fvCtx.DistinguishedName))
 	d.Set("bd_enforced_enable", fvCtxMap["bdEnforcedEnable"])
 	d.Set("knw_mcast_act", fvCtxMap["knwMcastAct"])
 	d.Set("name_alias", fvCtxMap["nameAlias"])

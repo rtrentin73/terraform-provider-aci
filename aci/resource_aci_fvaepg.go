@@ -2,6 +2,7 @@ package aci
 
 import (
 	"fmt"
+
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -253,7 +254,7 @@ func setApplicationEPGAttributes(fvAEPg *models.ApplicationEPG, d *schema.Resour
 	d.Set("description", fvAEPg.Description)
 	d.Set("application_profile_dn", GetParentDn(fvAEPg.DistinguishedName))
 	fvAEPgMap, _ := fvAEPg.ToMap()
-
+	d.Set("name", GetMOName(fvAEPg.DistinguishedName))
 	d.Set("annotation", fvAEPgMap["annotation"])
 	d.Set("exception_tag", fvAEPgMap["exceptionTag"])
 	d.Set("flood_on_encap", fvAEPgMap["floodOnEncap"])

@@ -109,6 +109,7 @@ func setCloudContextProfileAttributes(cloudCtxProfile *models.CloudContextProfil
 	d.Set("description", cloudCtxProfile.Description)
 	d.Set("tenant_dn", GetParentDn(cloudCtxProfile.DistinguishedName))
 	cloudCtxProfileMap, _ := cloudCtxProfile.ToMap()
+	d.Set("name", GetMOName(cloudCtxProfile.DistinguishedName))
 
 	d.Set("annotation", cloudCtxProfileMap["annotation"])
 	d.Set("name_alias", cloudCtxProfileMap["nameAlias"])

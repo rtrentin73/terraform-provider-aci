@@ -2,6 +2,7 @@ package aci
 
 import (
 	"fmt"
+
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -87,6 +88,7 @@ func setFilterAttributes(vzFilter *models.Filter, d *schema.ResourceData) *schem
 	d.Set("description", vzFilter.Description)
 	d.Set("tenant_dn", GetParentDn(vzFilter.DistinguishedName))
 	vzFilterMap, _ := vzFilter.ToMap()
+	d.Set("name", GetMOName(vzFilter.DistinguishedName))
 
 	d.Set("annotation", vzFilterMap["annotation"])
 	d.Set("name_alias", vzFilterMap["nameAlias"])

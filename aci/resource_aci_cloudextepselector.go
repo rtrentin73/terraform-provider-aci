@@ -89,6 +89,7 @@ func setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector *model
 	d.Set("description", cloudExtEPSelector.Description)
 	d.Set("cloud_external_e_pg_dn", GetParentDn(cloudExtEPSelector.DistinguishedName))
 	cloudExtEPSelectorMap, _ := cloudExtEPSelector.ToMap()
+	d.Set("name", GetMOName(cloudExtEPSelector.DistinguishedName))
 
 	d.Set("annotation", cloudExtEPSelectorMap["annotation"])
 	d.Set("is_shared", cloudExtEPSelectorMap["isShared"])

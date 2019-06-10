@@ -2,6 +2,7 @@ package aci
 
 import (
 	"fmt"
+
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -205,7 +206,7 @@ func setVMMDomainAttributes(vmmDomP *models.VMMDomain, d *schema.ResourceData) *
 	d.Set("description", vmmDomP.Description)
 	d.Set("provider_profile_dn", GetParentDn(vmmDomP.DistinguishedName))
 	vmmDomPMap, _ := vmmDomP.ToMap()
-
+	d.Set("name", GetMOName(vmmDomP.DistinguishedName))
 	d.Set("access_mode", vmmDomPMap["accessMode"])
 	d.Set("arp_learning", vmmDomPMap["arpLearning"])
 	d.Set("ctrl_knob", vmmDomPMap["ctrlKnob"])

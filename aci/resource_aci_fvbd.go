@@ -2,6 +2,7 @@ package aci
 
 import (
 	"fmt"
+
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -294,7 +295,7 @@ func setBridgeDomainAttributes(fvBD *models.BridgeDomain, d *schema.ResourceData
 	d.Set("description", fvBD.Description)
 	d.Set("tenant_dn", GetParentDn(fvBD.DistinguishedName))
 	fvBDMap, _ := fvBD.ToMap()
-
+	d.Set("name", GetMOName(fvBD.DistinguishedName))
 	d.Set("optimize_wan_bandwidth", fvBDMap["OptimizeWanBandwidth"])
 	d.Set("annotation", fvBDMap["annotation"])
 	d.Set("arp_flood", fvBDMap["arpFlood"])

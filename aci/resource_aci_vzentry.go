@@ -2,6 +2,7 @@ package aci
 
 import (
 	"fmt"
+
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -159,6 +160,7 @@ func setFilterEntryAttributes(vzEntry *models.FilterEntry, d *schema.ResourceDat
 	d.Set("description", vzEntry.Description)
 	d.Set("filter_dn", GetParentDn(vzEntry.DistinguishedName))
 	vzEntryMap, _ := vzEntry.ToMap()
+	d.Set("name", GetMOName(vzEntry.DistinguishedName))
 
 	d.Set("annotation", vzEntryMap["annotation"])
 	d.Set("apply_to_frag", vzEntryMap["applyToFrag"])

@@ -2,6 +2,7 @@ package aci
 
 import (
 	"fmt"
+
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -77,7 +78,7 @@ func setTenantAttributes(fvTenant *models.Tenant, d *schema.ResourceData) *schem
 	d.SetId(fvTenant.DistinguishedName)
 	d.Set("description", fvTenant.Description)
 	fvTenantMap, _ := fvTenant.ToMap()
-
+	d.Set("name", GetMOName(fvTenant.DistinguishedName))
 	d.Set("annotation", fvTenantMap["annotation"])
 	d.Set("name_alias", fvTenantMap["nameAlias"])
 	return d

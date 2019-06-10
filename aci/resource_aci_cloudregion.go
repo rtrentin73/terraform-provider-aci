@@ -2,6 +2,7 @@ package aci
 
 import (
 	"fmt"
+
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -75,6 +76,7 @@ func setCloudProvidersRegionAttributes(cloudRegion *models.CloudProvidersRegion,
 	d.Set("description", cloudRegion.Description)
 	d.Set("cloud_provider_profile_dn", GetParentDn(cloudRegion.DistinguishedName))
 	cloudRegionMap, _ := cloudRegion.ToMap()
+	d.Set("name", GetMOName(cloudRegion.DistinguishedName))
 
 	d.Set("admin_st", cloudRegionMap["adminSt"])
 	d.Set("annotation", cloudRegionMap["annotation"])
