@@ -119,8 +119,6 @@ func resourceAciCloudEndpointSelectorforExternalEPgsCreate(d *schema.ResourceDat
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
-	name := d.Get("name").(string)
-
 	CloudExternalEPgDn := d.Get("cloud_external_e_pg_dn").(string)
 
 	cloudExtEPSelectorAttr := models.CloudEndpointSelectorforExternalEPgsAttributes{}
@@ -139,7 +137,7 @@ func resourceAciCloudEndpointSelectorforExternalEPgsCreate(d *schema.ResourceDat
 	if Subnet, ok := d.GetOk("subnet"); ok {
 		cloudExtEPSelectorAttr.Subnet = Subnet.(string)
 	}
-	cloudExtEPSelector := models.NewCloudEndpointSelectorforExternalEPgs(fmt.Sprintf("extepselector-%s", name), CloudExternalEPgDn, desc, cloudExtEPSelectorAttr)
+	cloudExtEPSelector := models.NewCloudEndpointSelectorforExternalEPgs(fmt.Sprintf("extepselector-[%s]", cloudExtEPSelectorAttr.Subnet), CloudExternalEPgDn, desc, cloudExtEPSelectorAttr)
 
 	err := aciClient.Save(cloudExtEPSelector)
 	if err != nil {
@@ -163,8 +161,6 @@ func resourceAciCloudEndpointSelectorforExternalEPgsUpdate(d *schema.ResourceDat
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
-	name := d.Get("name").(string)
-
 	CloudExternalEPgDn := d.Get("cloud_external_e_pg_dn").(string)
 
 	cloudExtEPSelectorAttr := models.CloudEndpointSelectorforExternalEPgsAttributes{}
@@ -183,7 +179,7 @@ func resourceAciCloudEndpointSelectorforExternalEPgsUpdate(d *schema.ResourceDat
 	if Subnet, ok := d.GetOk("subnet"); ok {
 		cloudExtEPSelectorAttr.Subnet = Subnet.(string)
 	}
-	cloudExtEPSelector := models.NewCloudEndpointSelectorforExternalEPgs(fmt.Sprintf("extepselector-%s", name), CloudExternalEPgDn, desc, cloudExtEPSelectorAttr)
+	cloudExtEPSelector := models.NewCloudEndpointSelectorforExternalEPgs(fmt.Sprintf("extepselector-[%s]", cloudExtEPSelectorAttr.Subnet), CloudExternalEPgDn, desc, cloudExtEPSelectorAttr)
 
 	cloudExtEPSelector.Status = "modified"
 
