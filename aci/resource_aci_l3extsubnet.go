@@ -11,10 +11,10 @@ import (
 
 func resourceAciL3ExtSubnet() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciSubnetCreate,
-		Update: resourceAciSubnetUpdate,
-		Read:   resourceAciSubnetRead,
-		Delete: resourceAciSubnetDelete,
+		Create: resourceAciL3ExtSubnetCreate,
+		Update: resourceAciL3ExtSubnetUpdate,
+		Read:   resourceAciL3ExtSubnetRead,
+		Delete: resourceAciL3ExtSubnetDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciSubnetImport,
@@ -134,10 +134,12 @@ func resourceAciL3ExtSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] Subnet: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
-
+	log.Printf("[DEBUG] Getting IP")
 	ip := d.Get("ip").(string)
+	log.Printf("[DEBUG] Got IP")
 
 	ExternalNetworkInstanceProfileDn := d.Get("external_network_instance_profile_dn").(string)
+	log.Printf("[DEBUG] Got parentdn")
 
 	l3extSubnetAttr := models.L3ExtSubnetAttributes{}
 	if Aggregate, ok := d.GetOk("aggregate"); ok {
@@ -323,7 +325,7 @@ func resourceAciL3ExtSubnetRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAciSubnetL3ExtDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3ExtSubnetDelete(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
