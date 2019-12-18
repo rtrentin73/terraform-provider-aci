@@ -65,6 +65,8 @@ github.com/ciscoecosystem/aci-go-client v0.0.0-20190904064107-dde4aac0eff5 h1:Jp
 github.com/ciscoecosystem/aci-go-client v0.0.0-20190904064107-dde4aac0eff5/go.mod h1:CdAsTn+C4mVzzaeok7pHsOPnCiaf7ihxmWFIpeQk1mw=
 github.com/ciscoecosystem/aci-go-client v0.0.0-20191104055353-65e3d4bd5bb5 h1:aRmpkpb48Q6RhYC6EqKYTwOs7wwPPV9Unz/PYv3oZeM=
 github.com/ciscoecosystem/aci-go-client v0.0.0-20191104055353-65e3d4bd5bb5/go.mod h1:CdAsTn+C4mVzzaeok7pHsOPnCiaf7ihxmWFIpeQk1mw=
+github.com/ciscoecosystem/aci-go-client v0.0.0-20191218124820-6ed237eb9342 h1:QtXfRm4ZXWLHU3rMvPHXsQkJZRvpljF1JM802uEzb5I=
+github.com/ciscoecosystem/aci-go-client v0.0.0-20191218124820-6ed237eb9342/go.mod h1:CdAsTn+C4mVzzaeok7pHsOPnCiaf7ihxmWFIpeQk1mw=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/coreos/bbolt v1.3.0/go.mod h1:iRUV2dpdMOn7Bo10OQBFzIJO9kkE559Wcmn+qkEiiKk=
 github.com/coreos/etcd v3.3.10+incompatible/go.mod h1:uF7uidLiAD3TWHmW31ZFd/JWoc32PjwdhPthX9715RE=
