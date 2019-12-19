@@ -6,7 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 func resourceAciSubnet() *schema.Resource {
@@ -176,11 +176,6 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
-	d.Partial(true)
-
-	d.SetPartial("ip")
-
-	d.Partial(false)
 
 	if relationTofvRsBDSubnetToOut, ok := d.GetOk("relation_fv_rs_bd_subnet_to_out"); ok {
 		relationParamList := toStringList(relationTofvRsBDSubnetToOut.(*schema.Set).List())
@@ -190,9 +185,7 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 			if err != nil {
 				return err
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_bd_subnet_to_out")
-			d.Partial(false)
+
 		}
 	}
 	if relationTofvRsNdPfxPol, ok := d.GetOk("relation_fv_rs_nd_pfx_pol"); ok {
@@ -201,9 +194,6 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_nd_pfx_pol")
-		d.Partial(false)
 
 	}
 	if relationTofvRsBDSubnetToProfile, ok := d.GetOk("relation_fv_rs_bd_subnet_to_profile"); ok {
@@ -212,9 +202,6 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_bd_subnet_to_profile")
-		d.Partial(false)
 
 	}
 
@@ -265,11 +252,6 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
-	d.Partial(true)
-
-	d.SetPartial("ip")
-
-	d.Partial(false)
 
 	if d.HasChange("relation_fv_rs_bd_subnet_to_out") {
 		oldRel, newRel := d.GetChange("relation_fv_rs_bd_subnet_to_out")
@@ -291,9 +273,6 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 			if err != nil {
 				return err
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_bd_subnet_to_out")
-			d.Partial(false)
 
 		}
 
@@ -308,9 +287,6 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_nd_pfx_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_fv_rs_bd_subnet_to_profile") {
@@ -323,9 +299,6 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_bd_subnet_to_profile")
-		d.Partial(false)
 
 	}
 
@@ -342,15 +315,22 @@ func resourceAciSubnetRead(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
+	log.Printf("[DEBUG] %s: Start Get ", d.Id())
 	fvSubnet, err := getRemoteSubnet(aciClient, dn)
+	log.Printf("[DEBUG] %s: Finished Get ", d.Id())
 
 	if err != nil {
 		d.SetId("")
 		return nil
 	}
+	log.Printf("[DEBUG] %s: Start set attributes ", d.Id())
+
 	setSubnetAttributes(fvSubnet, d)
+	log.Printf("[DEBUG] %s: Finish set attributes ", d.Id())
 
 	fvRsBDSubnetToOutData, err := aciClient.ReadRelationfvRsBDSubnetToOutFromSubnet(dn)
+	log.Printf("[DEBUG] %s: Finished reading relation fvRsBDSubnetToOut", d.Id())
+
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsBDSubnetToOut %v", err)
 
@@ -359,6 +339,8 @@ func resourceAciSubnetRead(d *schema.ResourceData, m interface{}) error {
 	}
 
 	fvRsNdPfxPolData, err := aciClient.ReadRelationfvRsNdPfxPolFromSubnet(dn)
+	log.Printf("[DEBUG] %s: Finished reading relation fvRsNdPfxPol", d.Id())
+
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsNdPfxPol %v", err)
 
@@ -367,6 +349,8 @@ func resourceAciSubnetRead(d *schema.ResourceData, m interface{}) error {
 	}
 
 	fvRsBDSubnetToProfileData, err := aciClient.ReadRelationfvRsBDSubnetToProfileFromSubnet(dn)
+	log.Printf("[DEBUG] %s: Finished reading relation fvRsBDSubnetToProfile", d.Id())
+
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsBDSubnetToProfile %v", err)
 
