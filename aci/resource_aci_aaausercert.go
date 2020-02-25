@@ -57,7 +57,7 @@ func getRemoteUserCert(client *client.Client, dn string) (*models.UserCert, erro
 		return nil, err
 	}
 
-	aaaUserCert := models.UserFromContainer(aaaUserCertCont)
+	aaaUserCert := models.UserCertFromContainer(aaaUserCertCont)
 
 	if aaaUserCert.DistinguishedName == "" {
 		return nil, fmt.Errorf("UserCert %s not found", aaaUserCert.DistinguishedName)
@@ -154,7 +154,7 @@ func resourceAciUserCertUpdate(d *schema.ResourceData, m interface{}) error {
 		userCertAttr.Data = Data.(string)
 	}
 
-	aaaUserCert := models.NewCertUser(fmt.Sprintf("usercert-%s", name), Username, desc, userCertAttr)
+	aaaUserCert := models.NewUserCert(fmt.Sprintf("usercert-%s", name), Username, desc, userCertAttr)
 
 	aaaUserCert.Status = "modified"
 

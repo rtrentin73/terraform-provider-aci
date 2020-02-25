@@ -58,7 +58,7 @@ github.com/bgentry/go-netrc/netrc
 github.com/bgentry/speakeasy
 # github.com/blang/semver v3.5.1+incompatible
 github.com/blang/semver
-# github.com/ciscoecosystem/aci-go-client v0.0.0-20200225102632-a0d8b649800b
+# github.com/ciscoecosystem/aci-go-client v0.0.0-20200225124247-3161553343b5
 github.com/ciscoecosystem/aci-go-client/client
 github.com/ciscoecosystem/aci-go-client/container
 github.com/ciscoecosystem/aci-go-client/models
