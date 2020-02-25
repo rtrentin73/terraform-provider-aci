@@ -244,7 +244,7 @@ func resourceAciUserCreate(d *schema.ResourceData, m interface{}) error {
 		userAttr.LastName = LastName.(string)
 	}
 
-	user := models.NewUser(fmt.Sprintf("tn-%s", name), "uni", desc, userAttr)
+	user := models.NewUser(fmt.Sprintf("userext/user-%s", name), "uni", desc, userAttr)
 
 	err := aciClient.Save(user)
 	if err != nil {
@@ -325,7 +325,7 @@ func resourceAciUserUpdate(d *schema.ResourceData, m interface{}) error {
 	if LastName, ok := d.GetOk("last_name"); ok {
 		userAttr.LastName = LastName.(string)
 	}
-	aaaUser := models.NewUser(fmt.Sprintf("tn-%s", name), "uni", desc, userAttr)
+	aaaUser := models.NewUser(fmt.Sprintf("userext/user-%s", name), "uni", desc, userAttr)
 
 	aaaUser.Status = "modified"
 

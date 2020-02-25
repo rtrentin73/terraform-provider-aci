@@ -119,7 +119,7 @@ func dataSourceAciUserRead(d *schema.ResourceData, m interface{}) error {
 
 	name := d.Get("name").(string)
 
-	rn := fmt.Sprintf("tn-%s", name)
+	rn := fmt.Sprintf("userext/user-%s", name)
 
 	dn := fmt.Sprintf("uni/%s", rn)
 

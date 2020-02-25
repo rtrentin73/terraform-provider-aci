@@ -104,6 +104,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_cloud_subnet":                              resourceAciCloudSubnet(),
 			"aci_cloud_availability_zone":                   resourceAciCloudAvailabilityZone(),
 			"aci_user":                                      resourceAciUser(),
+			"aci_usercert":                                  resourceAciUserCert(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -154,6 +155,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_cloud_subnet":                              dataSourceAciCloudSubnet(),
 			"aci_cloud_availability_zone":                   dataSourceAciCloudAvailabilityZone(),
 			"aci_user":                                      dataSourceAciUser(),
+			"aci_usercert":                                  dataSourceAciUserCert(),
 		},
 
 		ConfigureFunc: configureClient,
