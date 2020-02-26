@@ -31,8 +31,7 @@ func resourceAciUserCert() *schema.Resource {
 			},
 			"data": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Required: true,
 			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,

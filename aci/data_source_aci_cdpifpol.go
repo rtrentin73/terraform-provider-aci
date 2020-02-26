@@ -4,13 +4,13 @@ import (
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func dataSourceAciUserCert() *schema.Resource {
+func dataSourceAciCDPInterfacePolicy() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciUserCertRead,
+		Read: dataSourceAciCDPInterfacePolicyRead,
 
 		SchemaVersion: 1,
 
@@ -21,12 +21,7 @@ func dataSourceAciUserCert() *schema.Resource {
 				Required: true,
 			},
 
-			"user_name": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-			},
-
-			"name_alias": &schema.Schema{
+			"admin_st": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -38,7 +33,7 @@ func dataSourceAciUserCert() *schema.Resource {
 				Computed: true,
 			},
 
-			"data": &schema.Schema{
+			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -47,22 +42,20 @@ func dataSourceAciUserCert() *schema.Resource {
 	}
 }
 
-func dataSourceAciUserCertRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciCDPInterfacePolicyRead(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
 
-	rn := fmt.Sprintf("usercert-%s", name)
+	rn := fmt.Sprintf("infra/cdpIfP-%s", name)
 
-	Username := d.Get("user_name").(string)
+	dn := fmt.Sprintf("uni/%s", rn)
 
-	dn := fmt.Sprintf("%s/%s", Username, rn)
-
-	aaaUserCert, err := getRemoteUserCert(aciClient, dn)
+	cdpIfPol, err := getRemoteCDPInterfacePolicy(aciClient, dn)
 
 	if err != nil {
 		return err
 	}
-	setUserCertAttributes(aaaUserCert, d)
+	setCDPInterfacePolicyAttributes(cdpIfPol, d)
 	return nil
 }

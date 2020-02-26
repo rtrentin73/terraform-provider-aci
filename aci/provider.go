@@ -105,6 +105,8 @@ func Provider() terraform.ResourceProvider {
 			"aci_cloud_availability_zone":                   resourceAciCloudAvailabilityZone(),
 			"aci_user":                                      resourceAciUser(),
 			"aci_usercert":                                  resourceAciUserCert(),
+			"aci_cdpifpol":                                  resourceAciCDPInterfacePolicy(),
+			"aci_usercert_2":                                resourceAciX509Certificate(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -156,6 +158,8 @@ func Provider() terraform.ResourceProvider {
 			"aci_cloud_availability_zone":                   dataSourceAciCloudAvailabilityZone(),
 			"aci_user":                                      dataSourceAciUser(),
 			"aci_usercert":                                  dataSourceAciUserCert(),
+			"aci_cdpifpol":                                  dataSourceAciCDPInterfacePolicy(),
+			"aci_UserCert_2":                                dataSourceAciX509Certificate(),
 		},
 
 		ConfigureFunc: configureClient,
