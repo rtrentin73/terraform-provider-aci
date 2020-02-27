@@ -12,19 +12,23 @@ provider "aci" {
 #   description = "This tenant is created by terraform"
 # }
 
-resource "aci_user" "user2" {
-  name = "demouser4"
-  pwd = "12345"
+
+
+resource "aci_user" "user3" {
+  name = "demouser5"
+  pwd = "12345678"
   description="kjfas"
 }
 
 
 
 
-resource "aci_UserCert_2" "cert2" {
+resource "aci_usercert_2" "cert2" {
   name = "certificate_2"
   description = "njkdcdsfdfdfd"
-  user_name = "${aci_user.user2.id}"
+  local_user_dn = "${aci_user.user3.id}"
+  file_path = "C:/Windows/System32/public.cer"
+  
 }
 
 

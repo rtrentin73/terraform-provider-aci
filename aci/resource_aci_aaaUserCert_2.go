@@ -2,11 +2,12 @@ package aci
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 func resourceAciX509Certificate() *schema.Resource {
@@ -50,6 +51,11 @@ func resourceAciX509Certificate() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+
+			"file_path": &schema.Schema{
+				Type:     schema.TypeString,
+				Required: true,
+			},
 		}),
 	}
 }
@@ -75,7 +81,7 @@ func setX509CertificateAttributes(aaaUserCert *models.X509Certificate, d *schema
 	aaaUserCertMap, _ := aaaUserCert.ToMap()
 
 	d.Set("name", aaaUserCertMap["name"])
-
+	//d.Set("file_path", aaaUserCertMap["file_path"])
 	d.Set("annotation", aaaUserCertMap["annotation"])
 	d.Set("data", aaaUserCertMap["data"])
 	d.Set("name_alias", aaaUserCertMap["nameAlias"])
@@ -109,6 +115,16 @@ func resourceAciX509CertificateCreate(d *schema.ResourceData, m interface{}) err
 
 	LocalUserDn := d.Get("local_user_dn").(string)
 
+	FilePath := d.Get("file_path").(string)
+
+	file, err1 := ioutil.ReadFile(FilePath)
+	if err1 != nil {
+		fmt.Println("File reading error", err1)
+		return nil
+	}
+
+	d.Set("data", string(file))
+
 	aaaUserCertAttr := models.X509CertificateAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		aaaUserCertAttr.Annotation = Annotation.(string)
@@ -119,6 +135,10 @@ func resourceAciX509CertificateCreate(d *schema.ResourceData, m interface{}) err
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		aaaUserCertAttr.NameAlias = NameAlias.(string)
 	}
+	//if FilePath, ok := d.GetOk("file_path"); ok {
+	//	aaaUserCertAttr.FilePath = FilePath.(string)
+	//}
+
 	aaaUserCert := models.NewX509Certificate(fmt.Sprintf("usercert-%s", name), LocalUserDn, desc, aaaUserCertAttr)
 
 	err := aciClient.Save(aaaUserCert)
@@ -147,6 +167,8 @@ func resourceAciX509CertificateUpdate(d *schema.ResourceData, m interface{}) err
 
 	LocalUserDn := d.Get("local_user_dn").(string)
 
+	//FilePath := d.Get("file_path").(string)
+
 	aaaUserCertAttr := models.X509CertificateAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		aaaUserCertAttr.Annotation = Annotation.(string)
@@ -157,6 +179,9 @@ func resourceAciX509CertificateUpdate(d *schema.ResourceData, m interface{}) err
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		aaaUserCertAttr.NameAlias = NameAlias.(string)
 	}
+	//if FilePath, ok := d.GetOk("file_path"); ok {
+	//	aaaUserCertAttr.FilePath = FilePath.(string)
+	//}
 	aaaUserCert := models.NewX509Certificate(fmt.Sprintf("usercert-%s", name), LocalUserDn, desc, aaaUserCertAttr)
 
 	aaaUserCert.Status = "modified"
