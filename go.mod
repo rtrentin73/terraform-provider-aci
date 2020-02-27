@@ -3,7 +3,7 @@ module github.com/ciscoecosystem/terraform-provider-aci
 go 1.12
 
 require (
-	github.com/ciscoecosystem/aci-go-client v0.0.0-20200125094916-6da52bd743c6
+	github.com/ciscoecosystem/aci-go-client v0.0.0-20200227130321-d0a3cc114ebb
 	github.com/hashicorp/terraform v0.12.5
 	github.com/hashicorp/terraform-plugin-sdk v1.4.1
 )

@@ -104,6 +104,10 @@ github.com/ciscoecosystem/aci-go-client v0.0.0-20191219125820-7a1f92bb46fc h1:gV
 github.com/ciscoecosystem/aci-go-client v0.0.0-20191219125820-7a1f92bb46fc/go.mod h1:CdAsTn+C4mVzzaeok7pHsOPnCiaf7ihxmWFIpeQk1mw=
 github.com/ciscoecosystem/aci-go-client v0.0.0-20200125094916-6da52bd743c6 h1:bjBCNe+uONA2nEUMaA1tkt5C+GoC2L/QUhlA7PEx73I=
 github.com/ciscoecosystem/aci-go-client v0.0.0-20200125094916-6da52bd743c6/go.mod h1:jFrITzPN2qjycddQVHNFIDOe3rvR00YCdkPK7N24vkM=
+github.com/ciscoecosystem/aci-go-client v0.0.0-20200226102713-78f028e7b086 h1:R1qp2PHWShdzx+0hWmEpUjR8wg+Oim1eSHuZ7Kkh52w=
+github.com/ciscoecosystem/aci-go-client v0.0.0-20200226102713-78f028e7b086/go.mod h1:jFrITzPN2qjycddQVHNFIDOe3rvR00YCdkPK7N24vkM=
+github.com/ciscoecosystem/aci-go-client v0.0.0-20200227130321-d0a3cc114ebb h1:uQiURN9TCguOdI4QKCt2oNSZGv4g+Hp3kwOi9MODd4g=
+github.com/ciscoecosystem/aci-go-client v0.0.0-20200227130321-d0a3cc114ebb/go.mod h1:jFrITzPN2qjycddQVHNFIDOe3rvR00YCdkPK7N24vkM=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/coreos/bbolt v1.3.0/go.mod h1:iRUV2dpdMOn7Bo10OQBFzIJO9kkE559Wcmn+qkEiiKk=
 github.com/coreos/etcd v3.3.10+incompatible/go.mod h1:uF7uidLiAD3TWHmW31ZFd/JWoc32PjwdhPthX9715RE=
