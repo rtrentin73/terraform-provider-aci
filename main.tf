@@ -5,8 +5,16 @@ provider "aci" {
   insecure = true
 }
 
-resource "aci_user" "demo1" {
-  name          = "user_demo"
-  pwd           = "123456789"
-  description   = "This user is created by terraform"
+# resource "aci_user" "demo1" {
+#   name          = "user_demo1"
+#   pwd           = "123456786"
+#   description   = "This user is created by terraform"
+# }
+
+resource "aci_maintGrp" "demo1" {
+  name          = "maintGrp1"
+}
+
+resource "aci_maintP" "demo1" {
+  name = "maintP1"
 }
