@@ -107,6 +107,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_maintGrp":                                  resourceAciPODMaintenanceGroup(),
 			"aci_maintP":                                    resourceAciMaintenancePolicy(),
 			"aci_mon_epg_pol":                               resourceAciMonitoringPolicy(),
+			"aci_phys_dom_p":                                resourceAciPhysicalDomain(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -160,6 +161,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_maintGrp":                                  dataSourceAciPODMaintenanceGroup(),
 			"aci_maintP":                                    dataSourceAciMaintenancePolicy(),
 			"aci_mon_epg_pol":                               dataSourceAciMonitoringPolicy(),
+			"aci_phys_dom_p":                                dataSourceAciPhysicalDomain(),
 		},
 
 		ConfigureFunc: configureClient,
