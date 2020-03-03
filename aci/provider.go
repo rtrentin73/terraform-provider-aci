@@ -110,6 +110,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_phys_dom_p":                                resourceAciPhysicalDomain(),
 			"aci_rtctrl_attr_p":                             resourceAciActionRuleProfile(),
 			"aci_trig_sched_p":                              resourceAciTriggerScheduler(),
+			"aci_vz_taboo":                                  resourceAciTabooContract(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -166,6 +167,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_phys_dom_p":                                dataSourceAciPhysicalDomain(),
 			"aci_rtctrl_attr_p":                             dataSourceAciActionRuleProfile(),
 			"aci_trig_sched_p":                              dataSourceAciTriggerScheduler(),
+			"aci_vz_taboo":                                  dataSourceAciTabooContract(),
 		},
 
 		ConfigureFunc: configureClient,

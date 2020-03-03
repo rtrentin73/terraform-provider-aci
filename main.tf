@@ -30,7 +30,7 @@ resource "aci_mon_epg_pol" "demo1" {
 }
 
 resource "aci_rtctrl_attr_p" "demo1" {
-   tenant_dn = "${aci_tenant.test_tenant1.id}"
+  tenant_dn = "${aci_tenant.test_tenant1.id}"
   name = "rtctrlAttrP1"
 }
 
@@ -40,4 +40,9 @@ resource "aci_trig_sched_p" "demo1" {
 
 resource "aci_phys_dom_p" "demo1" {
   name = "physDomP1"
+}
+
+resource "aci_vz_taboo" "demo1" {
+  tenant_dn = "${aci_tenant.test_tenant1.id}"
+  name = "vztaboo1"
 }
