@@ -29,3 +29,6 @@ resource "aci_mon_epg_pol" "demo1" {
   name = "monepgpol1"
 }
 
+resource "aci_phys_dom_p" "demo1" {
+  name = "physDomP1"
+}
