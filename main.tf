@@ -29,6 +29,15 @@ resource "aci_mon_epg_pol" "demo1" {
   name = "monepgpol1"
 }
 
+resource "aci_rtctrl_attr_p" "demo1" {
+   tenant_dn = "${aci_tenant.test_tenant1.id}"
+  name = "rtctrlAttrP1"
+}
+
+resource "aci_trig_sched_p" "demo1" {
+  name = "trigSchedP"
+}
+
 resource "aci_phys_dom_p" "demo1" {
   name = "physDomP1"
 }
